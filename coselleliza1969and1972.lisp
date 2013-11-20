@@ -505,6 +505,12 @@
  (LAMBDA (WHAT LIST)
    (COND
     ((NULL LIST)
+     ;; This clause wouldn't work for its side-effect bcs it
+     ;; side-effects a local! You could use the result, though. I
+     ;; don't think that the main code actually uses the results of
+     ;; BCONC anywhere, but only depends upon the side effect...so
+     ;; this bascially won't work, but I also don't think that it's
+     ;; ever used bcs the list is always a cons cell, which isn't nil.
      (CONS (SETQ LIST (CONS NIL WHAT))
 	   LIST))
     ((NULL (CAR LIST))
@@ -515,7 +521,7 @@
 
 #| 
 
-I don&t think that this is used anyplace? If it was, it&d have to be a
+I don't think that this is used anyplace? If it was, it'd have to be a
 macro in cl.
 
 (RPLOQ
