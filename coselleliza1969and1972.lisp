@@ -104,9 +104,8 @@
 
 (defmacro defineq (&rest fns)
   `(progn
-     ,@(loop for (name (nil args . body)) in fns
+     ,@(loop for (name (nil args . body)) in fns ;; the nil is always = 'lambda (in theory)
 	     collect
-	     ;; (format t "Defuning ~a~%" name)
 	     `(defun ,name
 		,(if args `(&optional ,@args) nil)
 		,@body)
@@ -118,12 +117,12 @@
 (defun quotient (a b) (/ a b))
 ;;; I'm sure that some fancy format can do this better:
 (defun spaces (n) (loop for i below n do (princ #\space)))
-(defun REMAINDER (a b) (mod a b))
-(defun PLUS (&rest l) (apply #'+ l))
-(defun MINUS (&rest l) (apply #'- l))
+(defun remainder (a b) (mod a b))
+(defun plus (&rest l) (apply #'+ l))
+(defun minus (&rest l) (apply #'- l))
 (defun pack (l)
   (loop for i in l with r = "" do (setq r (format nil "~a~a" r i)) finally (return r)))
-(defun GREATERP (a b) (> a b))
+(defun greaterp (a b) (> a b))
 (defun ratom () (read))
 
 ;;; From https://code.google.com/p/lsw2/source/browse/branches/bona/ext-asdf/snark-20080805r038/src/collectors.lisp?spec=svn196&r=196
@@ -2586,7 +2585,55 @@ EMOTION
            (MAYBE NOW WE CAN DISCUSS WHY YOU ARE 4 %.)
            (DID YOU TELL ME YOU WERE 4]
 
-;;; ******************** MISSING 7 of 11 ???????????????????????
+;;; Eliza-19720424-SCRIPTp1-07of11.txt
+
+[RPLQQ YOU PRIORITY 0 TRANSLATION I RULES
+       (((0 I REMIND YOU OF 0)
+          (NIL)
+          DIT)
+         ((0 I ARE 0)
+          (NIL)
+          (WHAT MAKES YOU THINK I AM 4)
+          (DOES IT PLEASE YOU TO BELIEVE I AM 4)
+          (PERHAPS YOU WOULD LIKE TO BE 4 %.)
+          (DO YOU SOMETIMES WISH YOU WERE 4))
+         ((0 I 0 YOU)
+          (NIL)
+          (WHY DO YOU THINK I 3 YOU)
+          (YOU LIKE TO THINK I 3 YOU - DON'T YOU)
+          (WHAT MAKES YOU THINK I 3 YOU)
+          (REALLY? I 3 YOU)
+          (DO YOU WISH TO BELIEVE I 3 YOU)
+          (SUPPOSE I DID 3 YOU - WHAT WOULD THAT MEAN)
+          (DOES SOMEONE ELSE BELIEVE I 3 YOU))
+         ((0 I 1 0)
+          (NIL)
+          (SUPPOSE YOU 3 4 %.)
+          (OH? I 3 4)
+          (WHAT MAKES YOU THINK I 3 4)
+          (WHO ARE YOU REALLY TALKING ABOUT]
+ [RPLQQ XXYYZZ RULES (((0)
+          (NIL)
+          (IS THERE SOMETHING BOTHERING YOU)
+          (CAN YOU BE MORE INFORMATIVE)
+          (PERHAPS YOU'D RATHER TALK ABOUT SOMETHING ELSE %.)
+          (PLEASE TELL ME MORE %.]
+ [RPLQQ YES PRIORITY -1 RULES (((0)
+          (NIL)
+          XXYYZZ
+          (WHY ARE YOU SO SURE)
+          (I SEE %.)
+          (I UNDERSTAND %.]
+ [RPLQQ NO PRIORITY -1 RULES (((0 NO (BODY ONE)
+                                  0)
+          (NIL)
+          NOBODY)
+         ((0)
+          (NIL)
+          XXYYZZ
+          (VERY WELL %.)
+          (WHY NOT)
+          (WHY 'NO']
 
 ;;; Eliza-19720424-SCRIPTp1-08of11.txt
 
