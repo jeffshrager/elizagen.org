@@ -233,28 +233,32 @@
             ((NUMBERP WORD)
               (SETQ WORD (PACK (LIST (QUOTE *)
                     WORD)))))
+	  ;; Word by word processing:
           (COND
-	   ;; Un-necessary these days.
+	   ;; Un-necessary these days:
 	   ;; ((EQ WORD RUBOUT)
 	   ;;  (RETURN (TERPRI)))
+
 	   ;; Check for terminal symbol:
 	   ((MEMBER WORD TRMLIS)
               (TERPRI)
               (RETURN (RPLACD SENTENCE KEYSTACK)))
-            ((MEMBER WORD PCTLIS)
-              (COND
-                ((NULL (CDR KEYSTACK))
-                  (GO A1))
-                ((NULL (SETQ FLAG (MAKESENTENCE)))
-                  (RETURN))
-                ((AND (CDDR FLAG)
-                    (NOT (GREATERP (GETP (CDR KEYSTACK)
-                          (QUOTE PRIORITY))
-                         (GETP (CDDR FLAG)
-                           (QUOTE PRIORITY)))))
-                  (RETURN FLAG))
-                (T (RETURN (RPLACD SENTENCE KEYSTACK))))))
-	  ;; Valid word so far, translte if there is any translation.
+	   ;; Punctuation causes us to start a new sentence:
+           ((MEMBER WORD PCTLIS)
+	    (COND
+	     ((NULL (CDR KEYSTACK))
+	      (GO A1))
+	     ((NULL (SETQ FLAG (MAKESENTENCE)))
+	      (RETURN))
+	     ((AND (CDDR FLAG)
+		   (NOT (GREATERP (GETP (CDR KEYSTACK)
+					(QUOTE PRIORITY))
+				  (GETP (CDDR FLAG)
+					(QUOTE PRIORITY)))))
+	      (RETURN FLAG))
+	     (T (RETURN (RPLACD SENTENCE KEYSTACK))))))
+	  ;; Valid word so far, translate if there is any translation,
+	  ;; and add to the end of the sentence.
           (TCONC
 	   (COND
 	    ((GETP WORD (QUOTE TRANSLATION)))
@@ -263,25 +267,39 @@
           (COND
 	   ((SETQ FLAG (GETP WORD (QUOTE MEMR)))
 	    (SETQ MEMSTACK (APPEND FLAG MEMSTACK))))
-	  ;; There's something extremely f'ed up here with the
-	  ;; keystack. There keep being NILs on the front of what are
-	  ;; supposed to be PLISTS.
+	  ;; This is supposed to push the word's plist contents onto
+	  ;; the keystack in something like the right place by
+	  ;; priority. However, there's something f'ed up here with
+	  ;; the keystack. There keep being NILs on the front of what
+	  ;; are supposed to be PLISTS. See ??? notes below.
           (COND
 	   ((AND (SETQ FLAG (GETP WORD (QUOTE PRIORITY)))
 		 (CDR KEYSTACK) 
 		 (pprint (cdr keystack)) ;; DDDDDDDDDDDDDDDDDDDDDDDDDDD
-		 (GREATERP FLAG (GETP (CDR KEYSTACK)  ;; ??? Looks like this might want to
-						      ;; be a CDDR bcs CDR KEYSTACK has an errant
-						      ;; NIL in its CAR !!!
+		 ;; ??? Looks like the following might want to be a
+		 ;; CDDR bcs (CDR KEYSTACK) has an errant NIL in its
+		 ;; CAR, making the result not PLISTP, crashing GETP
+		 ;; here as a result, but the problem could actually
+		 ;; be where that NIL gets entered, which is prior to
+		 ;; this, e.g., just below, where the keytack is
+		 ;; actually built up. Is it possible that those nils
+		 ;; are supposed to be there???
+		 (GREATERP FLAG (GETP (CDR KEYSTACK)
 				      (QUOTE PRIORITY))))
+	    ;; This, and the next, T, clause, are the only places that
+	    ;; the keystack is hacked (I think), so if the keystack is
+	    ;; getting screwed up, here's where it's happening. See notes
+	    ;; on BCONC, below -- might be the source of the problem.
 	    (RPLACD KEYSTACK (CONS (CDR KEYSTACK)
-				   ;; (CDR WORD) = plist per bbn lisp.
-				   (symbol-plist word)
+				   (symbol-plist word) ;; was (CDR WORD)
 				   )))
 	   (FLAG 
-            (BCONC ;; (CDR WORD) = plist per bbn lisp.
-		  (symbol-plist word)
-		  KEYSTACK)))
+	    ;; ??? BCONC might be doing the wrong thing. If you do
+	    ;; (setq l (cons-cell)) and then
+	    ;; (bconc 'a l) you get
+	    ;; ((NIL . A) NIL . A) which looks wrong!
+            (BCONC (symbol-plist word) ;; was (CDR WORD)
+		   KEYSTACK)))
           (GO A)
       )))
 
@@ -291,7 +309,6 @@
 
 (ANALYZE
   (LAMBDA NIL
-	  (print (list 'aaaaaa 'sentence sentence 'keystack keystack))
     (PROG (RULES PARSELIST CR)
           (BCONC (GETP (QUOTE NONE)
               (COND
