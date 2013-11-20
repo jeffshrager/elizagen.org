@@ -298,6 +298,14 @@
 	    ;; (setq l (cons-cell)) and then
 	    ;; (bconc 'a l) you get
 	    ;; ((NIL . A) NIL . A) which looks wrong!
+	    ;; Similarly: 
+	    ;; (setq l (cons-cell))
+	    ;; (NIL)
+	    ;; (setq n '(a s d f))
+            ;; (A S D F)
+	    ;; (bconc n l)
+	    ;; (BCONC (A S D F) (NIL))
+	    ;; => ((NIL A S D F) NIL A S D F) which has the errant nils!
             (BCONC (symbol-plist word) ;; was (CDR WORD)
 		   KEYSTACK)))
           (GO A)
@@ -310,12 +318,12 @@
 (ANALYZE
   (LAMBDA NIL
     (PROG (RULES PARSELIST CR)
-          (BCONC (GETP (QUOTE NONE)
-              (COND
-                ((ZEROP (SETQ FLIPFLOP (PLUS 2 (MINUS
-                            FLIPFLOP))))
-                  (QUOTE MEM))
-                ((QUOTE LASTRESORT))))
+          (BCONC 
+	   (GETP (QUOTE NONE)
+		 (COND
+		  ((ZEROP (SETQ FLIPFLOP (PLUS 2 (MINUS FLIPFLOP))))
+		   (QUOTE MEM))
+		  ((QUOTE LASTRESORT))))
             KEYSTACK)
           (SETQ KEYSTACK (CDR KEYSTACK))
       A   (SETQ RULES (GETP KEYSTACK (QUOTE RULES)))
