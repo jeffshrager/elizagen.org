@@ -503,14 +503,14 @@
 (BCONC
  (LAMBDA (WHAT LIST)
    (COND
-     ((NULL LIST)
-      (CONS (SETQ LIST (CONS NIL WHAT))
-        LIST))
-     ((NULL (CAR LIST))
-      (RPLACA LIST (CDR (RPLACD LIST (CONS NIL WHAT)))))
-     ((RPLACA LIST (CAR (RPLACA (CAR LIST)
-              (RPLACA (CONS LIST WHAT)
-                NIL))))))))
+    ((NULL LIST)
+     (CONS (SETQ LIST (CONS NIL WHAT))
+	   LIST))
+    ((NULL (CAR LIST))
+     (RPLACA LIST (CDR (RPLACD LIST (CONS NIL WHAT)))))
+    ((RPLACA LIST (CAR (RPLACA (CAR LIST)
+			       (RPLACA (CONS LIST WHAT)
+				       NIL))))))))
 
 #| 
 
