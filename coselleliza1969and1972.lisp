@@ -92,16 +92,17 @@
 (defvar *trace-all* t)
 
 (defmacro defineq (&rest fns)
-  (loop for (name fn) in fns
-	as args = (second fn)
-	as body = (cddr fn)
-	do 
-	;; (format t "Defuning ~a~%" name)
-	(eval `(progn (defun ,name
-			,(if args `(&optional ,@args) nil)
-			,@body)
-		      ,(when *trace-all* `(trace ,name))))
-	))
+  `(progn
+     ,@(loop for (name fn) in fns
+	     as args = (second fn)
+	     as body = (cddr fn)
+	     collect
+	     ;; (format t "Defuning ~a~%" name)
+	     `(progn (defun ,name
+		       ,(if args `(&optional ,@args) nil)
+		       ,@body)
+		     ,(when *trace-all* `(trace ,name))))
+     ))
 
 ;;; Various bbn fns missing in cl
 
