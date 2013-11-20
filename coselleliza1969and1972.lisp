@@ -1,5 +1,9 @@
 ; (load "coselleliza1969and1972.lisp")
 
+;;; ELIZA in Lisp by Bernie Cosell
+;;; For more information see http://elizagen.org or http://shrager.org/eliza
+
+;;; TESTING:
 ;;; To test, after loading, enter: 
 ;;;  (doctor) 
 ;;; then try: 
@@ -7,19 +11,30 @@
 ;;; Note that, at the moment, you need to separate the punctuation by a
 ;;; space, and it only takes either an ! or ?
 
-;;; ELIZA in Lisp by Bernie Cosell
-;;; For more information see http://elizagen.org or http://shrager.org/eliza
+;;; TODO:
+;;;   * The BCONC bug.
+;;;   * Replace the I/O so that it's usable w/o havin to pu
+;;;     spaces around punctuation, etc.
+
+;;; GENERAL NOTES:
 
 ;;; This file contains two separate, complete Elizas: one from 1969
-;;; and one from 1972. Each has a functions and a script part. 
+;;; and one from 1972. Each has a function part and a script part.  So
+;;; far only the 1969 version has been worked on. (Part of the point
+;;; is to get the oldest working Eliza, but also, presumably once one
+;;; is figured out, the other is easy.)
+
+;;; ACKNOWLEDGEMENTS:
 
 ;;; Thanks to the following for assistance in transcribing this code
 ;;; from the original printouts, and then making it work: eMBee, Dave
-;;; Cooper, Bob Felts, Saul Good, Ben Hyde, Charlie McMackin, Paul
-;;; Nathan, Peter De Wachter, Thomas Russ, Patrick Stein, and Jeff
-;;; Shrager.
+;;; Cooper, Bob Felts, Saul Good, Ben Hyde, Patrick May, Charlie
+;;; McMackin, Paul Nathan, Peter De Wachter, Thomas Russ, Patrick
+;;; Stein, and Jeff Shrager.
 
 ;;; For more information, please contact Jeff Shrager (jshrager@stanford.edu)
+
+;;; LICENSE:
 
 ;;; Cosell's original code is licensed under the Creative Commons
 ;;; "Attribution-ShareAlike 3.0 Unported" license, which is described
@@ -62,7 +77,6 @@
 ;;; (CONS) is used like (CONS NIL NIL) and got changed to (CONS-CELL).
 
 (defmacro SETQQ (sym val)
-  ;; (format t "Setting ~a~%" sym)
   `(setf ,sym ',val))
 
 ;;; RPLQQ sets an atom's plist. This is a slight cheat. Since this is
@@ -70,7 +84,6 @@
 ;;; key-by-key setting the entries.
 
 (defmacro RPLQQ (sym &rest kvpairs)
-  ;; (format t "Setting PLIST of ~a~%" sym)
   `(setf (symbol-plist ',sym) ',kvpairs))
 
 ;;; This is InterLISP's GETPROP (I think). Special handling for the
@@ -89,20 +102,15 @@
 ;;; in lambda lists, so we have to actually use EVAL here, which is
 ;;; ugly.
 
-(defvar *trace-all* t)
-
 (defmacro defineq (&rest fns)
   `(progn
-     ,@(loop for (name fn) in fns
-	     as args = (second fn)
-	     as body = (cddr fn)
+     ,@(loop for (name (nil args . body)) in fns
 	     collect
 	     ;; (format t "Defuning ~a~%" name)
-	     `(progn (defun ,name
-		       ,(if args `(&optional ,@args) nil)
-		       ,@body)
-		     ,(when *trace-all* `(trace ,name))))
-     ))
+	     `(defun ,name
+		,(if args `(&optional ,@args) nil)
+		,@body)
+	     )))
 
 ;;; Various bbn fns missing in cl
 
@@ -276,7 +284,6 @@
           (COND
 	   ((AND (SETQ FLAG (GETP WORD (QUOTE PRIORITY)))
 		 (CDR KEYSTACK) 
-		 (pprint (cdr keystack)) ;; DDDDDDDDDDDDDDDDDDDDDDDDDDD
 		 ;; ??? Looks like the following might want to be a
 		 ;; CDDR bcs (CDR KEYSTACK) has an errant NIL in its
 		 ;; CAR, making the result not PLISTP, crashing GETP
