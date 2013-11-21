@@ -28,9 +28,9 @@
 
 ;;; Thanks to the following for assistance in transcribing this code
 ;;; from the original printouts, and then making it work: eMBee, Dave
-;;; Cooper, Bob Felts, Saul Good, Ben Hyde, Patrick May, Charlie
-;;; McMackin, Paul Nathan, Peter De Wachter, Thomas Russ, Patrick
-;;; Stein, and Jeff Shrager.
+;;; Cooper, Bob Felts, Saul Good, Ben Hyde, Simon Leinen, Patrick May,
+;;; Charlie McMackin, Paul Nathan, Peter De Wachter, Thomas Russ,
+;;; Patrick Stein, and Jeff Shrager.
 
 ;;; For more information, please contact Jeff Shrager (jshrager@stanford.edu)
 
@@ -2467,8 +2467,6 @@ EMOTION
 ;;; Eliza-19720424-SCRIPTp1-04of11.txt
 
 ;;; transcribed from Eliza-19720424-SCRIPTp1-04of11.TIF
-;;; by Simon Leinen  <simon.leinen@gmail.com>
-;;; ------------------------------ snip ------------------------------
 ;  <SOURCES>SCRIPT.;1   MON 24-APR-72 10:01AM            PAGE 1:4
 
            (NIL)
@@ -2804,5 +2802,7 @@ EMOTION
   (RPLQQ WOMAN PRIORITY 3 PERSON T RULES (BOY))
   (RPLQQ SEXY PRIORITY 5 RULES (SEX))
   (RPLQQ SEXUAL PRIORITY 5 RULES (SEX))
+
+;;; ******************** MISSING 11 of 11 ???????????????????????
 
 |#
