@@ -29,7 +29,7 @@
 ;;; "Attribution-ShareAlike 3.0 Unported" license, which is described
 ;;; here: http://creativecommons.org/licenses/by-sa/3.0/deed.en_US,
 ;;; and as this is merely a transcript of his original code, it seems
-;;; like it should carry the same license. 
+;;; like it should carry the same license.
 
 ;;; ===================================================================================
 ;;; |                                    1969 DOCFNS                                  |
@@ -40,9 +40,9 @@
 ;;; /DOCFNS/   31 JULY 1969  1007:42                             PAGE 1
 
 (PROGN (PRIN1 (QUOTE FILE" CREATED ")
-	      T)
+              T)
        (PRIN1 (QUOTE 08/22/68" 1522:26")
-	      T)
+              T)
        (TERPRI T))
 
 (DEFINEQ
@@ -102,7 +102,7 @@
               (SETQ WORD (PACK (LIST (QUOTE *)
                     WORD)))))
           (COND
-	   ((MEMBER WORD TRMLIS)
+           ((MEMBER WORD TRMLIS)
               (TERPRI)
               (RETURN (RPLACD SENTENCE KEYSTACK)))
             ((MEMBER WORD PCTLIS)
@@ -119,24 +119,24 @@
                   (RETURN FLAG))
                 (T (RETURN (RPLACD SENTENCE KEYSTACK))))))
           (TCONC
-	   (COND
-	    ((GETP WORD (QUOTE TRANSLATION)))
-	    (WORD))
-	   SENTENCE)
+           (COND
+            ((GETP WORD (QUOTE TRANSLATION)))
+            (WORD))
+           SENTENCE)
           (COND
-	   ((SETQ FLAG (GETP WORD (QUOTE MEMR)))
-	    (SETQ MEMSTACK (APPEND FLAG MEMSTACK))))
+           ((SETQ FLAG (GETP WORD (QUOTE MEMR)))
+            (SETQ MEMSTACK (APPEND FLAG MEMSTACK))))
           (COND
-	   ((AND (SETQ FLAG (GETP WORD (QUOTE PRIORITY)))
-		 (CDR KEYSTACK) 
-		 (GREATERP FLAG (GETP (CDR KEYSTACK)  
-				      (QUOTE PRIORITY))))
-	    (RPLACD KEYSTACK (CONS (CDR KEYSTACK)
-				   (CDR WORD)
-				   )))
-	   (FLAG 
+           ((AND (SETQ FLAG (GETP WORD (QUOTE PRIORITY)))
+                 (CDR KEYSTACK)
+                 (GREATERP FLAG (GETP (CDR KEYSTACK)
+                                      (QUOTE PRIORITY))))
+            (RPLACD KEYSTACK (CONS (CDR KEYSTACK)
+                                   (CDR WORD)
+                                   )))
+           (FLAG
             (BCONC (CDR WORD)
-		  KEYSTACK)))
+                  KEYSTACK)))
           (GO A)
       )))
 
@@ -146,7 +146,7 @@
 
 (ANALYZE
   (LAMBDA NIL
-	  (print (list 'aaaaaa 'sentence sentence 'keystack keystack))
+          (print (list 'aaaaaa 'sentence sentence 'keystack keystack))
     (PROG (RULES PARSELIST CR)
           (BCONC (GETP (QUOTE NONE)
               (COND
@@ -158,27 +158,27 @@
           (SETQ KEYSTACK (CDR KEYSTACK))
       A   (SETQ RULES (GETP KEYSTACK (QUOTE RULES)))
       B   (COND
-	   ((OR (NULL RULES)
+           ((OR (NULL RULES)
                 (EQ (CAR RULES)
-		    (QUOTE NEWKEY)))
-	    (SETQ KEYSTACK (CAR KEYSTACK))
-	    (GO A))
-	   ((ATOM (CAR RULES))
-	    (SETQ RULES (GETP (CAR RULES)
-			      (QUOTE RULES)))
-	    (GO B)))
+                    (QUOTE NEWKEY)))
+            (SETQ KEYSTACK (CAR KEYSTACK))
+            (GO A))
+           ((ATOM (CAR RULES))
+            (SETQ RULES (GETP (CAR RULES)
+                              (QUOTE RULES)))
+            (GO B)))
           (SETQ PARSELIST (CONS NIL NIL))
           (COND
-	   ((NOT (TEST (CAAR RULES)
-		       SENTENCE))
-	    (SETQ RULES (CDR RULES)))
-	   ((ATOM (SETQ CR (CAR (SETQ RULES (CAR (ADVANCE
-						  RULES)))))))
-	   ((EQ (CAR CR)
+           ((NOT (TEST (CAAR RULES)
+                       SENTENCE))
+            (SETQ RULES (CDR RULES)))
+           ((ATOM (SETQ CR (CAR (SETQ RULES (CAR (ADVANCE
+                                                  RULES)))))))
+           ((EQ (CAR CR)
                 (QUOTE PRE))
-	    (SETQ SENTENCE (RECONSTRUCT (CADR CR)))
-	    (SETQ RULES (CDDR CR)))
-	   (T (RECONSTRUCT CR T)
+            (SETQ SENTENCE (RECONSTRUCT (CADR CR)))
+            (SETQ RULES (CDDR CR)))
+           (T (RECONSTRUCT CR T)
               (MEMORY)
               (RETURN)))
           (GO B)
@@ -191,49 +191,49 @@
 (TEST
   (LAMBDA (D S)
     (PROG (CD PSV)
-	  (SETQ PSV (CDR PARSELIST))
+          (SETQ PSV (CDR PARSELIST))
       LP  (COND
-	    ((NULL D)
-	      (COND
-	        (S (GO RN))
-		(T (SETQ PARSELIST (CAR PARSELIST))
-		  (RETURN T))))
-	    ((EQ 0 (SETQ CD (CAR D)))
-	      (GO T0))
-	    ((NULL S)
-	      (GO RN))
-	    ((NUMBERP CD)
-	      (TCONC S PARSELIST)
-	      (COND
-	        ((SETQ S (NTH S CD))
-		  (GO T3))
-	        (T (GO RN))))
+            ((NULL D)
+              (COND
+                (S (GO RN))
+                (T (SETQ PARSELIST (CAR PARSELIST))
+                  (RETURN T))))
+            ((EQ 0 (SETQ CD (CAR D)))
+              (GO T0))
+            ((NULL S)
+              (GO RN))
+            ((NUMBERP CD)
+              (TCONC S PARSELIST)
+              (COND
+                ((SETQ S (NTH S CD))
+                  (GO T3))
+                (T (GO RN))))
             ((ATOM CD)
-	      (COND
-	        ((EQ CD (CAR S)))
-		(T (GO RN))))
-	    ((CAR CD)
-	      (COND
-	        ((MEMBER (CAR S)
-	            CD))
-		(T (GO RN))))
-	    ((TEST4 (CAR S)
-		    (CDR CD)))
-	    (T (GO RN)))
-    	  (TCONC S PARSELIST)
+              (COND
+                ((EQ CD (CAR S)))
+                (T (GO RN))))
+            ((CAR CD)
+              (COND
+                ((MEMBER (CAR S)
+                    CD))
+                (T (GO RN))))
+            ((TEST4 (CAR S)
+                    (CDR CD)))
+            (T (GO RN)))
+          (TCONC S PARSELIST)
       T3  (SETQ S (CDR S))
           (SETQ D (CDR D))
-	  (GO LP)
+          (GO LP)
       T0  (TCONC S PARSELIST)
           (COND
-	    ((NULL (SETQ D (CDR D)))
-	      (SETQ PARSELIST (CAR PARSELIST))
-	      (RETURN T)))
+            ((NULL (SETQ D (CDR D)))
+              (SETQ PARSELIST (CAR PARSELIST))
+              (RETURN T)))
       T1  (COND
-	    ((TEST D S)
-	      (RETURN T))
-	    ((SETQ S (CDR S))
-	      (GO T1)))
+            ((TEST D S)
+              (RETURN T))
+            ((SETQ S (CDR S))
+              (GO T1)))
       RN  (RPLACD PARSELIST (COND
 	      (PSV (RPLACD PSV NIL))))
           (RETURN NIL)
@@ -242,7 +242,7 @@
 ;;; Eliza-19690731-DOCFNSp1-04of06
 
 ;;; * /DOCFNS/ 31 JULY 1969 1007:42
- 
+
 (TEST4
 (LAMBDA (CS L)
     (PROG NIL
@@ -253,7 +253,7 @@
                (GO LP)))
            (RETURN NIL)
         )))
- 
+
 (ADVANCE
 (LAMBDA (RULES)
     (RPLACA (CDAR RULES)
@@ -261,7 +261,7 @@
                ((NULL (CDADAR RULES))
                  (CDDAR RULES))
                ((CDADAR RULES))))))
- 
+
 (RECONSTRUCT
 (LAMBDA (RULE PF)
     (PROG (SENT CR V1 V2 TPF QMF)
@@ -279,7 +279,7 @@
             ((NUMBERP (SETQ CR (CAR RULE)))
               (GO T1))
             (PF (COND
-                ((MEMBER CR TRMLIS) 
+                ((MEMBER CR TRMLIS)
                   (PRIN1 CR)
                   (SETQ QMF T))
                 (T (COND
@@ -385,7 +385,7 @@ STOP
 
 ;;; /SCRIPT/   31 JULY 1969  1008:27                            PAGE 1
 
-(SETQQ WDLIST 
+(SETQQ WDLIST
        (SORRY DONT CANT WONT REMEMBER IF DREAMT DREAMED DREAM
 	      DREAMS HOW WHEN ALIKE SAME CERTAINLY FEEL THINK BELIEVE WISH MY
 	      NONE PERHAPS MAYBE NAME DEUTSCH FRANCAIS SVENSKA ITALIANO ESPANOL
@@ -775,7 +775,7 @@ RULES
 (RPLQQ YOUR
 PRIORITY
    0
-TRANSLATION 
+TRANSLATION
    MY
 RULES
   (((0 MY 1)
@@ -820,7 +820,7 @@ TRANSLATION
    WAS
 RULES
    (WAS))
-       
+
 
 ;;; Eliza-19690731-SCRIPTp1-09of21
 
@@ -977,7 +977,7 @@ RULES
 	0)
      (NIL)
      (WHAT ELSE DO YOU 3)
-     
+
 
 ;;; Eliza-19690731-SCRIPTp1-12of21
 
@@ -1934,7 +1934,7 @@ STOP
            (I AM SORRY "," I SPEAK ONLY ENGLISH]
   (RPLQQ FRANCAIS PRIORITY 0 RULES (DEUTSCH))
   (RPLQQ SVENSKA PRIORITY 0 RULES (DEUTSCH))
-   
+
 ;;; Eliza-19720424-SCRIPTp1-03of11.txt
 
 ; Eliza-19720424-SCRIPTp1-03of11.TIF
@@ -2281,12 +2281,12 @@ STOP
 ;;
 
 ;  <SOURCES>SCRIPT.;1  MON 24-APR-72 10:01 AM                PAGE 1:10
- 
+
   (RPLQQ EVERY PRIORITY 0 RULES (((0 EVERY (ONE BODY)
 				     0)
            (NIL)
 	   EVERYONE)
-          ((0 EVERY TIME 0)				
+          ((0 EVERY TIME 0)
 	   (NIL)
 	   ALWAYS)))
   (RPLQQ DO PRIORITY 0 RULES (((DO I 0)
@@ -2294,7 +2294,7 @@ STOP
 	   (PRE (I 3)
 		YOU)
 	   XXWHAT)
-          ((DO YOU 0)			     
+          ((DO YOU 0)
 	   (NIL)
 	   (PRE (YOU 3)
 		I)
