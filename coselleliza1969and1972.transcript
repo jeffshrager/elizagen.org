@@ -144,7 +144,6 @@
 
 (ANALYZE
   (LAMBDA NIL
-          (print (list 'aaaaaa 'sentence sentence 'keystack keystack))
     (PROG (RULES PARSELIST CR)
           (BCONC (GETP (QUOTE NONE)
               (COND
