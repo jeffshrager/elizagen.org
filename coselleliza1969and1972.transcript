@@ -44,7 +44,6 @@
        (PRIN1 (QUOTE 08/22/68" 1522:26")
               T)
        (TERPRI T))
-
 (DEFINEQ
 
 (DOCTOR
@@ -94,15 +93,17 @@
 (MAKESENTENCE
   (LAMBDA NIL
     (PROG (FLAG WORD SENTENCE KEYSTACK)
-      A1  (SETQ KEYSTACK (CONS-CELL))
-          (SETQ SENTENCE (CONS-CELL))
+      A1  (SETQ KEYSTACK (CONS))
+          (SETQ SENTENCE (CONS))
       A   (SETQ WORD (RATOM))
           (COND
             ((NUMBERP WORD)
               (SETQ WORD (PACK (LIST (QUOTE *)
                     WORD)))))
           (COND
-           ((MEMBER WORD TRMLIS)
+            ((EQ WORD RUBOUT)
+              (RETURN (TERPRI)))
+            ((MEMBER WORD TRMLIS)
               (TERPRI)
               (RETURN (RPLACD SENTENCE KEYSTACK)))
             ((MEMBER WORD PCTLIS)
@@ -118,8 +119,7 @@
                            (QUOTE PRIORITY)))))
                   (RETURN FLAG))
                 (T (RETURN (RPLACD SENTENCE KEYSTACK))))))
-          (TCONC
-           (COND
+          (TCONC (COND
             ((GETP WORD (QUOTE TRANSLATION)))
             (WORD))
            SENTENCE)
@@ -132,11 +132,9 @@
                  (GREATERP FLAG (GETP (CDR KEYSTACK)
                                       (QUOTE PRIORITY))))
             (RPLACD KEYSTACK (CONS (CDR KEYSTACK)
-                                   (CDR WORD)
-                                   )))
-           (FLAG
-            (BCONC (CDR WORD)
-                  KEYSTACK)))
+                 (CDR WORD))))
+            (FLAG (BCONC (CDR WORD)
+                KEYSTACK)))
           (GO A)
       )))
 
@@ -342,7 +340,7 @@
               (RPLACA (CONS LIST WHAT)
                 NIL))))))))
 
-(RPLOQ
+(RPLQQ
  (NLAMBDA RPLQ
           (RPLACD (CAR RPLQ)
             (CDR RPLQ))))
@@ -671,7 +669,7 @@ PRIORITY
 RULES
    (((0)
          (NIL)
-         (HOW DO YOU DO ","))))
+         (HOW DO YOU DO "."))))
 
 (RPLQQ COMPUTER
 PRIORITY
@@ -681,8 +679,8 @@ RULES
          (NIL)
          (DO COMPUTERS WORRY YOU)
          (WHY DO YOU MENTION COMPUTERS)
-         (WHAT DO YOU THINK MACHINES HAVE TO DO WITH YOUR PROBLEMS)
-         (DO'T YOU THINK COMPUTERS CAN HELP PEOPLE))))
+         (WHAT DO YOU THINK MACHINES HAVE TO DO WITH YOUR PROBLEM)
+         (DON'T YOU THINK COMPUTERS CAN HELP PEOPLE))))
 
 ;;; Eliza-19690731-SCRIPTp1-06of21
 
@@ -707,15 +705,18 @@ RULES
    (COMPUTER))
 
 (RPLQQ AM
-       PRIORITY 0
-       TRANSLATION ARE
-       RULES (((ARE YOU 0)
+PRIORITY
+   0
+TRANSLATION
+   ARE
+RULES
+   (((ARE YOU 0)
 	       (NIL)
 	       (DO YOU BELIEVE YOU ARE 3)
 	       (WOULD YOU WANT TO BE 3)
 	       (YOU WISH I WOULD TELL YOU YOU ARE 3 ".")
 	       (WHAT WOULD IT MEAN IF YOU WERE 3)
-	       (XXWHAT))
+	       XXWHAT)
 	      ((0)
 	       (NIL)
 	       (WHY DO YOU SAY 'AM')
@@ -1306,9 +1307,12 @@ RULES
    (GIRLS))
 
 (RPLQQ BOY
-       PRIORITY 3
-       PERSON T
-       RULES (((0 (NIL PERSON)
+PRIORITY
+   3
+PERSON
+   T
+RULES
+   (((0 (NIL PERSON)
 		  FRIEND
 		  0)
 	       (NIL)
@@ -1328,7 +1332,7 @@ RULES
 	       (NIL)
 	       (WHAT GROUP OF 2 ARE YOU THINKING OF)
 	       (I EXPECTED THAT YOU WOULD WANT TO TALK ABOUT 2 ".")
-	       (DO YOU KNOW THAT MANY 2))))
+	       (DO YOU KNOW MANY 2))))
 
 
 ;;; Eliza-19690731-SCRIPTp1-19of21
@@ -1433,6 +1437,7 @@ RULES
          (REALLY 2)
          (WOULD YOU LIKE TO LAUGH)
          NEWKEY)))
+
 (RPLQQ LOVE
 EMOTION
    T)
@@ -1445,7 +1450,7 @@ EMOTION
 EMOTION
    NIL)
 STOP
-'L
+&L
 
 ;;; ===================================================================================
 ;;; |                                    1972 DOCTOR                                  |
@@ -1491,7 +1496,7 @@ STOP
           [COND
             ((EQUAL SENTENCE (QUOTE (GOODBYE)))
 
-          (* Rate computed at $6 aminute, or $1 per 10
+          (* Rate computed at $6 a minute, or $1 per 10
           seconds, CLOCK returns value in milliseconds.)
 
 ;;; doctorp1-01of06
@@ -1519,8 +1524,8 @@ STOP
 (MAKESENTENCE
   [LAMBDA NIL
     (PROG (FLAG WORD SENTENCE KEYSTACK)
-      A1  (SETQ KEYSTACK (CONS-CELL))
-          (SETQ SENTENCE (CONS-CELL))
+      A1  (SETQ KEYSTACK (CONS))
+          (SETQ SENTENCE (CONS))
       A   (SETQ WORD (RATOM))
           [COND
             ((NUMBERP WORD)
