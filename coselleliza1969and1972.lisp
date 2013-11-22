@@ -12,8 +12,8 @@
 ;;; space, and it only takes either an ! or ?
 
 ;;; TODO:
-;;;   * Replace the I/O so that it's usable w/o havin to pu
-;;;     spaces around punctuation, etc.
+;;;   * Replace the I/O so that it's usable w/o having to put
+;;;     spaces around punctuation, use &s, etc.
 
 ;;; GENERAL NOTES:
 
