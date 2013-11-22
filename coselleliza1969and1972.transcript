@@ -29,7 +29,7 @@
 ;;; "Attribution-ShareAlike 3.0 Unported" license, which is described
 ;;; here: http://creativecommons.org/licenses/by-sa/3.0/deed.en_US,
 ;;; and as this is merely a transcript of his original code, it seems
-;;; like it should carry the same license. 
+;;; like it should carry the same license.
 
 ;;; ===================================================================================
 ;;; |                                    1969 DOCFNS                                  |
@@ -40,11 +40,10 @@
 ;;; /DOCFNS/   31 JULY 1969  1007:42                             PAGE 1
 
 (PROGN (PRIN1 (QUOTE FILE" CREATED ")
-	      T)
+              T)
        (PRIN1 (QUOTE 08/22/68" 1522:26")
-	      T)
+              T)
        (TERPRI T))
-
 (DEFINEQ
 
 (DOCTOR
@@ -94,15 +93,17 @@
 (MAKESENTENCE
   (LAMBDA NIL
     (PROG (FLAG WORD SENTENCE KEYSTACK)
-      A1  (SETQ KEYSTACK (CONS-CELL))
-          (SETQ SENTENCE (CONS-CELL))
+      A1  (SETQ KEYSTACK (CONS))
+          (SETQ SENTENCE (CONS))
       A   (SETQ WORD (RATOM))
           (COND
             ((NUMBERP WORD)
               (SETQ WORD (PACK (LIST (QUOTE *)
                     WORD)))))
           (COND
-	   ((MEMBER WORD TRMLIS)
+            ((EQ WORD RUBOUT)
+              (RETURN (TERPRI)))
+            ((MEMBER WORD TRMLIS)
               (TERPRI)
               (RETURN (RPLACD SENTENCE KEYSTACK)))
             ((MEMBER WORD PCTLIS)
@@ -118,25 +119,22 @@
                            (QUOTE PRIORITY)))))
                   (RETURN FLAG))
                 (T (RETURN (RPLACD SENTENCE KEYSTACK))))))
-          (TCONC
-	   (COND
-	    ((GETP WORD (QUOTE TRANSLATION)))
-	    (WORD))
-	   SENTENCE)
+          (TCONC (COND
+            ((GETP WORD (QUOTE TRANSLATION)))
+            (WORD))
+           SENTENCE)
           (COND
-	   ((SETQ FLAG (GETP WORD (QUOTE MEMR)))
-	    (SETQ MEMSTACK (APPEND FLAG MEMSTACK))))
+           ((SETQ FLAG (GETP WORD (QUOTE MEMR)))
+            (SETQ MEMSTACK (APPEND FLAG MEMSTACK))))
           (COND
-	   ((AND (SETQ FLAG (GETP WORD (QUOTE PRIORITY)))
-		 (CDR KEYSTACK) 
-		 (GREATERP FLAG (GETP (CDR KEYSTACK)  
-				      (QUOTE PRIORITY))))
-	    (RPLACD KEYSTACK (CONS (CDR KEYSTACK)
-				   (CDR WORD)
-				   )))
-	   (FLAG 
-            (BCONC (CDR WORD)
-		  KEYSTACK)))
+           ((AND (SETQ FLAG (GETP WORD (QUOTE PRIORITY)))
+                 (CDR KEYSTACK)
+                 (GREATERP FLAG (GETP (CDR KEYSTACK)
+                                      (QUOTE PRIORITY))))
+            (RPLACD KEYSTACK (CONS (CDR KEYSTACK)
+                 (CDR WORD))))
+            (FLAG (BCONC (CDR WORD)
+                KEYSTACK)))
           (GO A)
       )))
 
@@ -146,7 +144,6 @@
 
 (ANALYZE
   (LAMBDA NIL
-	  (print (list 'aaaaaa 'sentence sentence 'keystack keystack))
     (PROG (RULES PARSELIST CR)
           (BCONC (GETP (QUOTE NONE)
               (COND
@@ -158,27 +155,27 @@
           (SETQ KEYSTACK (CDR KEYSTACK))
       A   (SETQ RULES (GETP KEYSTACK (QUOTE RULES)))
       B   (COND
-	   ((OR (NULL RULES)
+           ((OR (NULL RULES)
                 (EQ (CAR RULES)
-		    (QUOTE NEWKEY)))
-	    (SETQ KEYSTACK (CAR KEYSTACK))
-	    (GO A))
-	   ((ATOM (CAR RULES))
-	    (SETQ RULES (GETP (CAR RULES)
-			      (QUOTE RULES)))
-	    (GO B)))
+                    (QUOTE NEWKEY)))
+            (SETQ KEYSTACK (CAR KEYSTACK))
+            (GO A))
+           ((ATOM (CAR RULES))
+            (SETQ RULES (GETP (CAR RULES)
+                              (QUOTE RULES)))
+            (GO B)))
           (SETQ PARSELIST (CONS NIL NIL))
           (COND
-	   ((NOT (TEST (CAAR RULES)
-		       SENTENCE))
-	    (SETQ RULES (CDR RULES)))
-	   ((ATOM (SETQ CR (CAR (SETQ RULES (CAR (ADVANCE
-						  RULES)))))))
-	   ((EQ (CAR CR)
+           ((NOT (TEST (CAAR RULES)
+                       SENTENCE))
+            (SETQ RULES (CDR RULES)))
+           ((ATOM (SETQ CR (CAR (SETQ RULES (CAR (ADVANCE
+                                                  RULES)))))))
+           ((EQ (CAR CR)
                 (QUOTE PRE))
-	    (SETQ SENTENCE (RECONSTRUCT (CADR CR)))
-	    (SETQ RULES (CDDR CR)))
-	   (T (RECONSTRUCT CR T)
+            (SETQ SENTENCE (RECONSTRUCT (CADR CR)))
+            (SETQ RULES (CDDR CR)))
+           (T (RECONSTRUCT CR T)
               (MEMORY)
               (RETURN)))
           (GO B)
@@ -188,61 +185,61 @@
 
 ;;; /docfns/   31 July 1969  1007:42
 
-(test
-  (lambda (d s)
-    (prog (cd psv)
-	  (setq psv (cdr parselist))
-      lp  (cond
-	    ((null d)
-	      (cond
-	        (s (go rn))
-		(t (setq parselist (car parselist))
-		  (return t))))
-	    ((eq 0 (setq cd (car d)))
-	      (go t0))
-	    ((null s)
-	      (go rn))
-	    ((numberp cd)
-	      (tconc s parselist)
-	      (cond
-	        ((setq s (nth s cd))
-		  (go t3))
-	        (t (go rn))))
-            ((atom cd)
-	      (cond
-	        ((eq cd (car s)))
-		(t (go rn))))
-	    ((car cd)
-	      (cond
-	        ((member (car s)
-	            cd))
-		(t (go rn))))
-	    ((test4 (car s)
-		    (cdr cd)))
-	    (t (go rn)))
-    	  (tconc s parselist)
-      t3  (setq s (cdr s))
-          (setq d (cdr d))
-	  (go lp)
-      t0  (tconc s parselist)
-          (cond
-	    ((null (setq d (cdr d)))
-	      (setq parselist (car parselist))
-	      (return t)))
-      t1  (cond
-	    ((test d s)
-	      (return t))
-	    ((setq s (cdr s))
-	      (go t1)))
-      rn  (rplacd parselist (cond
-	      (psv (rplacd psv nil))))
-          (return nil)
+(TEST
+  (LAMBDA (D S)
+    (PROG (CD PSV)
+          (SETQ PSV (CDR PARSELIST))
+      LP  (COND
+            ((NULL D)
+              (COND
+                (S (GO RN))
+                (T (SETQ PARSELIST (CAR PARSELIST))
+                  (RETURN T))))
+            ((EQ 0 (SETQ CD (CAR D)))
+              (GO T0))
+            ((NULL S)
+              (GO RN))
+            ((NUMBERP CD)
+              (TCONC S PARSELIST)
+              (COND
+                ((SETQ S (NTH S CD))
+                  (GO T3))
+                (T (GO RN))))
+            ((ATOM CD)
+              (COND
+                ((EQ CD (CAR S)))
+                (T (GO RN))))
+            ((CAR CD)
+              (COND
+                ((MEMBER (CAR S)
+                    CD))
+                (T (GO RN))))
+            ((TEST4 (CAR S)
+                    (CDR CD)))
+            (T (GO RN)))
+          (TCONC S PARSELIST)
+      T3  (SETQ S (CDR S))
+          (SETQ D (CDR D))
+          (GO LP)
+      T0  (TCONC S PARSELIST)
+          (COND
+            ((NULL (SETQ D (CDR D)))
+              (SETQ PARSELIST (CAR PARSELIST))
+              (RETURN T)))
+      T1  (COND
+            ((TEST D S)
+              (RETURN T))
+            ((SETQ S (CDR S))
+              (GO T1)))
+      RN  (RPLACD PARSELIST (COND
+	      (PSV (RPLACD PSV NIL))))
+          (RETURN NIL)
       )))
 
 ;;; Eliza-19690731-DOCFNSp1-04of06
 
 ;;; * /DOCFNS/ 31 JULY 1969 1007:42
- 
+
 (TEST4
 (LAMBDA (CS L)
     (PROG NIL
@@ -253,7 +250,7 @@
                (GO LP)))
            (RETURN NIL)
         )))
- 
+
 (ADVANCE
 (LAMBDA (RULES)
     (RPLACA (CDAR RULES)
@@ -261,13 +258,13 @@
                ((NULL (CDADAR RULES))
                  (CDDAR RULES))
                ((CDADAR RULES))))))
- 
+
 (RECONSTRUCT
 (LAMBDA (RULE PF)
     (PROG (SENT CR V1 V2 TPF QMF)
           (COND
             ((NULL PF)
-             (SETQ SENT (CONS-CELL))))
+             (SETQ SENT (CONS))))
       LP  (COND
             ((NULL RULE)
               (COND
@@ -279,7 +276,7 @@
             ((NUMBERP (SETQ CR (CAR RULE)))
               (GO T1))
             (PF (COND
-                ((MEMBER CR TRMLIS) 
+                ((MEMBER CR TRMLIS)
                   (PRIN1 CR)
                   (SETQ QMF T))
                 (T (COND
@@ -342,7 +339,7 @@
               (RPLACA (CONS LIST WHAT)
                 NIL))))))))
 
-(RPLOQ
+(RPLQQ
  (NLAMBDA RPLQ
           (RPLACD (CAR RPLQ)
             (CDR RPLQ))))
@@ -385,7 +382,7 @@ STOP
 
 ;;; /SCRIPT/   31 JULY 1969  1008:27                            PAGE 1
 
-(SETQQ WDLIST 
+(SETQQ WDLIST
        (SORRY DONT CANT WONT REMEMBER IF DREAMT DREAMED DREAM
 	      DREAMS HOW WHEN ALIKE SAME CERTAINLY FEEL THINK BELIEVE WISH MY
 	      NONE PERHAPS MAYBE NAME DEUTSCH FRANCAIS SVENSKA ITALIANO ESPANOL
@@ -434,50 +431,50 @@ STOP
 
 ;;; Eliza-19690731-SCRIPTp1-01of21
 
-(rplqq if
-       priority
+(RPLQQ IF
+       PRIORITY
        3
-       rules
-       (((0 if 0
-	    (nil)
-	    (do you think it's likely that 3)
-	    (do you wish that 3)
-	    (what do you think about 3)
-	    (really"," if 3)))))
+       RULES
+       (((0 IF 0
+	    (NIL)
+	    (DO YOU THINK IT'S LIKELY THAT 3)
+	    (DO YOU WISH THAT 3)
+	    (WHAT DO YOU THINK ABOUT 3)
+	    (REALLY"," IF 3)))))
 
-(rplqq dreamt
-       priority
+(RPLQQ DREAMT
+       PRIORITY
        4
-       rules
-       (((0 you dreamt 0)
-         (nil)
-	 (really 4)
-	 (have you ever fantasized 4 while you were awake)
-	 (have you dreamt 4 before)
-	 dream
-	 newkey)))
+       RULES
+       (((0 YOU DREAMT 0)
+         (NIL)
+	 (REALLY 4)
+	 (HAVE YOU EVER FANTASIZED 4 WHILE YOU WERE AWAKE)
+	 (HAVE YOU DREAMT 4 BEFORE)
+	 DREAM
+	 NEWKEY)))
 
-(rplqq dreamed
-       translation
-       dreamt
-       priority
+(RPLQQ DREAMED
+       TRANSLATION
+       DREAMT
+       PRIORITY
        4
-       rules
-       (dreamt))
+       RULES
+       (DREAMT))
 
-(rplqq dream
-       priority 3
-       rules (((0 you dream (of about) 0)
-	       (nil)
-	       (what might 5 represent)
-	       (what does 5 suggest to you)
-	       (how does that dream relate to your problem))
+(RPLQQ DREAM
+       PRIORITY 3
+       RULES (((0 YOU DREAM (OF ABOUT) 0)
+	       (NIL)
+	       (WHAT MIGHT 5 REPRESENT)
+	       (WHAT DOES 5 SUGGEST TO YOU)
+	       (HOW DOES THAT DREAM RELATE TO YOUR PROBLEM))
 	      ((0)
-	       (nil)
-	       (what do you dream about)
-	       (what persons appear in your dreams)
-	       (what may dreams have to do with your problem)
-	       newkey)))
+	       (NIL)
+	       (WHAT DO YOU DREAM ABOUT)
+	       (WHAT PERSONS APPEAR IN YOUR DREAMS)
+	       (WHAT MAY DREAMS HAVE TO DO WITH YOUR PROBLEM)
+	       NEWKEY)))
 
 ;;; Eliza-19690731-SCRIPTp1-02of21
 
@@ -535,57 +532,57 @@ BELIEF
 
 ;;; Eliza-19690731-SCRIPTp1-03of21
 
-(rplqq think
-belief
-  t)
+(RPLQQ THINK
+BELIEF
+  T)
 
-(rplqq believe
-belief
-  t)
+(RPLQQ BELIEVE
+BELIEF
+  T)
 
-(rplqq wish
-belief
-  t)
+(RPLQQ WISH
+BELIEF
+  T)
 
-(rplqq my
-memr
-   (((your 2 0)
-        (nil)
-	(lets discuss further why your 2 3 ".")
-	(earlier you said your 2 3 ".")
-	(but your 2 3 ".")
-	(does that have anything to do with the fact that your 2 3))
-    ((0 your 1)
-        (nil)
-	(would you like to discuss your 3)
-	(perhaps that concerns your 3 ".")
-	(tell me more about your 3 ".")))
-priority
+(RPLQQ MY
+MEMR
+   (((YOUR 2 0)
+        (NIL)
+	(LETS DISCUSS FURTHER WHY YOUR 2 3 ".")
+	(EARLIER YOU SAID YOUR 2 3 ".")
+	(BUT YOUR 2 3 ".")
+	(DOES THAT HAVE ANYTHING TO DO WITH THE FACT THAT YOUR 2 3))
+    ((0 YOUR 1)
+        (NIL)
+	(WOULD YOU LIKE TO DISCUSS YOUR 3)
+	(PERHAPS THAT CONCERNS YOUR 3 ".")
+	(TELL ME MORE ABOUT YOUR 3 ".")))
+PRIORITY
   0
-translation
-  your
-rules
-  (((0 your 0 (nil family)
+TRANSLATION
+  YOUR
+RULES
+  (((0 YOUR 0 (NIL FAMILY)
            0)
-        (nil)
-	(tell me more about your family ".")
-	(who else in your family 5)
-	(your 4)
-	(what else comes to mind when you think of your 4))
-   ((your 2 0)
-        (nil)
-	(is it important to you that your 2 3)
-	(do you suppose anyone else's 2 3)
-	(what makes you think your 2 3)
-	(suppose I didn't believe that your 2 3 "."))
-   ((0 your 1)
-        (nil)
-	(your 3)
-	(why do you say that your 3)
-	(who else knows about your 3)
-	(why do you mention your 3 just now)
-	(why is your 3 important to you)
-	(do you often discuss your 3))))
+        (NIL)
+	(TELL ME MORE ABOUT YOUR FAMILY ".")
+	(WHO ELSE IN YOUR FAMILY 5)
+	(YOUR 4)
+	(WHAT ELSE COMES TO MIND WHEN YOU THINK OF YOUR 4))
+   ((YOUR 2 0)
+        (NIL)
+	(IS IT IMPORTANT TO YOU THAT YOUR 2 3)
+	(DO YOU SUPPOSE ANYONE ELSE'S 2 3)
+	(WHAT MAKES YOU THINK YOUR 2 3)
+	(SUPPOSE I DIDN'T BELIEVE THAT YOUR 2 3 "."))
+   ((0 YOUR 1)
+        (NIL)
+	(YOUR 3)
+	(WHY DO YOU SAY THAT YOUR 3)
+	(WHO ELSE KNOWS ABOUT YOUR 3)
+	(WHY DO YOU MENTION YOUR 3 JUST NOW)
+	(WHY IS YOUR 3 IMPORTANT TO YOU)
+	(DO YOU OFTEN DISCUSS YOUR 3))))
 
 ;;; Eliza-19690731-SCRIPTp1-04of21
 
@@ -671,7 +668,7 @@ PRIORITY
 RULES
    (((0)
          (NIL)
-         (HOW DO YOU DO ","))))
+         (HOW DO YOU DO "."))))
 
 (RPLQQ COMPUTER
 PRIORITY
@@ -681,8 +678,8 @@ RULES
          (NIL)
          (DO COMPUTERS WORRY YOU)
          (WHY DO YOU MENTION COMPUTERS)
-         (WHAT DO YOU THINK MACHINES HAVE TO DO WITH YOUR PROBLEMS)
-         (DO'T YOU THINK COMPUTERS CAN HELP PEOPLE))))
+         (WHAT DO YOU THINK MACHINES HAVE TO DO WITH YOUR PROBLEM)
+         (DON'T YOU THINK COMPUTERS CAN HELP PEOPLE))))
 
 ;;; Eliza-19690731-SCRIPTp1-06of21
 
@@ -707,15 +704,18 @@ RULES
    (COMPUTER))
 
 (RPLQQ AM
-       PRIORITY 0
-       TRANSLATION ARE
-       RULES (((ARE YOU 0)
+PRIORITY
+   0
+TRANSLATION
+   ARE
+RULES
+   (((ARE YOU 0)
 	       (NIL)
 	       (DO YOU BELIEVE YOU ARE 3)
 	       (WOULD YOU WANT TO BE 3)
 	       (YOU WISH I WOULD TELL YOU YOU ARE 3 ".")
 	       (WHAT WOULD IT MEAN IF YOU WERE 3)
-	       (XXWHAT))
+	       XXWHAT)
 	      ((0)
 	       (NIL)
 	       (WHY DO YOU SAY 'AM')
@@ -772,55 +772,55 @@ RULES
 
 ;;; Eliza-19690731-SCRIPTp1-08of21
 
-(rplqq your
-priority
+(RPLQQ YOUR
+PRIORITY
    0
-translation 
-   my
-rules
-  (((0 my 1)
-       (nil)
-       (why are you concerned over my 3)
-       (what about your own 3)
-       (are you worried about someone elses 3)
-       (really"," my 3))
-   ((my 0)
-       (nil)
-       (perhaps your own 2 ".")
-       (are you worried that my 2))))
+TRANSLATION
+   MY
+RULES
+  (((0 MY 1)
+       (NIL)
+       (WHY ARE YOU CONCERNED OVER MY 3)
+       (WHAT ABOUT YOUR OWN 3)
+       (ARE YOU WORRIED ABOUT SOMEONE ELSES 3)
+       (REALLY"," MY 3))
+   ((MY 0)
+       (NIL)
+       (PERHAPS YOUR OWN 2 ".")
+       (ARE YOU WORRIED THAT MY 2))))
 
-(rplqq was
-priority
+(RPLQQ WAS
+PRIORITY
   2
-rules
-   (((was you 0)
-        (nil)
-	(what if you were 3)
-	(do you think you were 3)
-	(were you 3)
-	(what would it mean if you were 3)
-	xxwhat)
-    ((you was 0)
-        (nil)
-	(were you really)
-	(why do you tell me you were 3 now)
-	(perhaps I already knew you were 3 "."))
-    ((was i 0)
-       (nil)
-       (would you like to believe i was 3)
-       (what suggest that I was 3)
-       (what do you think)
-       (perhaps i was 3 ".")
-       (what if i had been 3))))
+RULES
+   (((WAS YOU 0)
+        (NIL)
+	(WHAT IF YOU WERE 3)
+	(DO YOU THINK YOU WERE 3)
+	(WERE YOU 3)
+	(WHAT WOULD IT MEAN IF YOU WERE 3)
+	XXWHAT)
+    ((YOU WAS 0)
+        (NIL)
+	(WERE YOU REALLY)
+	(WHY DO YOU TELL ME YOU WERE 3 NOW)
+	(PERHAPS I ALREADY KNEW YOU WERE 3 "."))
+    ((WAS I 0)
+       (NIL)
+       (WOULD YOU LIKE TO BELIEVE I WAS 3)
+       (WHAT SUGGESTS THAT I WAS 3)
+       (WHAT DO YOU THINK)
+       (PERHAPS I WAS 3 ".")
+       (WHAT IF I HAD BEEN 3))))
 
-(rplqq were
-priority
+(RPLQQ WERE
+PRIORITY
    0
-translation
-   was
-rules
-   (was))
-       
+TRANSLATION
+   WAS
+RULES
+   (WAS))
+
 
 ;;; Eliza-19690731-SCRIPTp1-09of21
 
@@ -927,57 +927,57 @@ RULES
 
 ;;; Eliza-19690731-SCRIPTp1-11of21
 
-    ((0 you (nil belief)
-	you
+    ((0 YOU (NIL BELIEF)
+	YOU
 	0)
-        (nil)
-	(do you really think so)
-	(but you are not sure you 5)
-	(do you really doubt you 5))
-    ((0 you 0 (nil belief)
+        (NIL)
+	(DO YOU REALLY THINK SO)
+	(BUT YOU ARE NOT SURE YOU 5)
+	(DO YOU REALLY DOUBT YOU 5))
+    ((0 YOU 0 (NIL BELIEF)
 	0
-	i
+	I
 	0)
-     (nil)
-     (pre (6 7)
-	  you))
-    ((0 you are 0)
-     (nil)
-     (is it because you are 4 that you came to me)
-     (how long have you been 4)
-     (do you believe it normal to be 4)
-     (do you enjoy being 4))
-    ((0 you (can't cannot)
+     (NIL)
+     (PRE (6 7)
+	  YOU))
+    ((0 YOU ARE 0)
+     (NIL)
+     (IS IT BECAUSE YOU ARE 4 THAT YOU CAME TO ME)
+     (HOW LONG HAVE YOU BEEN 4)
+     (DO YOU BELIEVE IT NORMAL TO BE 4)
+     (DO YOU ENJOY BEING 4))
+    ((0 YOU (CAN'T CANNOT)
 	0)
-     (nil)
-     (how do you know you can't 4)
-     (have you tried)
-     (perhaps you could 4 now ".")
-     (do you really want to be able to 4))
-    ((0 you (don't won't)
+     (NIL)
+     (HOW DO YOU KNOW YOU CAN'T 4)
+     (HAVE YOU TRIED)
+     (PERHAPS YOU COULD 4 NOW ".")
+     (DO YOU REALLY WANT TO BE ABLE TO 4))
+    ((0 YOU (DON'T WON'T)
 	0)
-     (nil)
-     (don't you really 4)
-     (why don't you 4)
-     (do you wish you did 4)
-     (does that trouble you))
-    ((0 you feel 0)
-     (nil)
-     (tell me more about such feelings ".")
-     (do you often feel 4)
-     (do you enjoy feeling 4)
-     (of what does feeling 4 remind you))
-    ((you 0 i)
-     (nil)
-     (perhaps in your fantasies we 2 each other ".")
-     (do you wish to 2 me)
-     (you seem to need to 2 me ".")
-     (do you 2 anyone else))
-    ((0 you (nil emotion)
+     (NIL)
+     (DON'T YOU REALLY 4)
+     (WHY DON'T YOU 4)
+     (DO YOU WISH YOU DID 4)
+     (DOES THAT TROUBLE YOU))
+    ((0 YOU FEEL 0)
+     (NIL)
+     (TELL ME MORE ABOUT SUCH FEELINGS ".")
+     (DO YOU OFTEN FEEL 4)
+     (DO YOU ENJOY FEELING 4)
+     (OF WHAT DOES FEELING 4 REMIND YOU))
+    ((YOU 0 I)
+     (NIL)
+     (PERHAPS IN YOUR FANTASIES WE 2 EACH OTHER ".")
+     (DO YOU WISH TO 2 ME)
+     (YOU SEEM TO NEED TO 2 ME ".")
+     (DO YOU 2 ANYONE ELSE))
+    ((0 YOU (NIL EMOTION)
 	0)
-     (nil)
-     (what else do you 3)
-     
+     (NIL)
+     (WHAT ELSE DO YOU 3)
+
 
 ;;; Eliza-19690731-SCRIPTp1-12of21
 
@@ -1031,13 +1031,13 @@ RULES
          (SUPPOSE YOU 3 4 ".")
          (OH? I 3 4)
          (WHAT MAKES YOU THINK I 3 4)
-         (WHO ARE YOU REALLY TALKIN ABOUT))))
+         (WHO ARE YOU REALLY TALKING ABOUT))))
 
 ;;; Eliza-19690731-SCRIPTp1-13of21
 
 ;;; /SCRIPT/   31 JULY 1969  1008:27                             PAGE 1:13
 
-(RPLQQ XXYZZ
+(RPLQQ XXYYZZ
 RULES
    (((0)
          (NIL)
@@ -1080,7 +1080,7 @@ RULES
          (NIL)
          (YOU BELIEVE I CAN 3 DON'T YOU)
          XXWHAT
-         (WOU WANT ME TO BE ABLE TO 3 ".")
+         (YOU WANT ME TO BE ABLE TO 3 ".")
          (PERHAPS YOU WOULD LIKE TO BE ABLE TO 3 YOURSELF "."))
       ((CAN YOU 0)
          (NIL)
@@ -1306,9 +1306,12 @@ RULES
    (GIRLS))
 
 (RPLQQ BOY
-       PRIORITY 3
-       PERSON T
-       RULES (((0 (NIL PERSON)
+PRIORITY
+   3
+PERSON
+   T
+RULES
+   (((0 (NIL PERSON)
 		  FRIEND
 		  0)
 	       (NIL)
@@ -1328,7 +1331,7 @@ RULES
 	       (NIL)
 	       (WHAT GROUP OF 2 ARE YOU THINKING OF)
 	       (I EXPECTED THAT YOU WOULD WANT TO TALK ABOUT 2 ".")
-	       (DO YOU KNOW THAT MANY 2))))
+	       (DO YOU KNOW MANY 2))))
 
 
 ;;; Eliza-19690731-SCRIPTp1-19of21
@@ -1433,6 +1436,7 @@ RULES
          (REALLY 2)
          (WOULD YOU LIKE TO LAUGH)
          NEWKEY)))
+
 (RPLQQ LOVE
 EMOTION
    T)
@@ -1445,7 +1449,7 @@ EMOTION
 EMOTION
    NIL)
 STOP
-'L
+&L
 
 ;;; ===================================================================================
 ;;; |                                    1972 DOCTOR                                  |
@@ -1491,7 +1495,7 @@ STOP
           [COND
             ((EQUAL SENTENCE (QUOTE (GOODBYE)))
 
-          (* Rate computed at $6 aminute, or $1 per 10
+          (* Rate computed at $6 a minute, or $1 per 10
           seconds, CLOCK returns value in milliseconds.)
 
 ;;; doctorp1-01of06
@@ -1519,8 +1523,8 @@ STOP
 (MAKESENTENCE
   [LAMBDA NIL
     (PROG (FLAG WORD SENTENCE KEYSTACK)
-      A1  (SETQ KEYSTACK (CONS-CELL))
-          (SETQ SENTENCE (CONS-CELL))
+      A1  (SETQ KEYSTACK (CONS))
+          (SETQ SENTENCE (CONS))
       A   (SETQ WORD (RATOM))
           [COND
             ((NUMBERP WORD)
@@ -1557,11 +1561,11 @@ STOP
             ((SETQ FLAG (GETP WORD (QUOTE MEMR)))
              (SETQ MEMSTACK (APPEND FLAG MEMSTACK]
           (COND
-            [[AND (SETQ FLAG (GETP WORK (QUOTE PRIORITY)))
+            [[AND (SETQ FLAG (GETP WORD (QUOTE PRIORITY)))
                   (CDR KEYSTACK)
                   (IGREATERP FLAG (GET (CDR KEYSTACK)
                                        (QUOTE PRIORITY]
-             (REPLACD KEYSTACK (CONS (CDR KEYSTACK)
+             (RPLACD KEYSTACK (CONS (CDR KEYSTACK)
                                      (CDR WORD]
             (FLAG (BCONC (CDR WORD)
                          KEYSTACK)))
@@ -1824,13 +1828,13 @@ STOP
 
 ;;; Eliza-19720424-SCRIPTp1-00of11.lisp
 
-;  <SOURCES>SCRIPT.;1   MON 24-APRI-72 10:01AM
+;  <SOURCES>SCRIPT.;1   MON 24-APR-72 10:01AM
 
   (PROGN (LISPXPRIN1 (QUOTE "FILE CREATED ")
                      T)
          (LISPXPRIN1 (QUOTE "22-APR-72 23:26:05")
                      T)
-         (LISPXPRIN1 T))
+         (LISPXTERPRI T))
   (SETQQ WDLIST
          (SORRY DONT CANT WONT REMEMBER IF DREAMT DREAMED DREAM DREAMS
                 HOW WHEN ALIKE SAME CERTAINLY FEEL THINK BELIEVE WISH
@@ -1841,15 +1845,15 @@ STOP
                 CHILDREN I YOU XXYYZZ YES NO CAN IS WHERE WHAT XXWHAT
                 BECAUSE WHY EVERYONE EVERYBODY NOBODY NOONE ALWAYS LIKE
                 DIT OH EVERY DO GIRLS WOMEN BOY GIRL MAN WOMEN SEXY
-                SEXUAL SEX FRIENDLY FRIEND CRY LAUGH LOVE HATE DISLKIE))
+                SEXUAL SEX FRIENDLY FRIEND CRY LAUGH LOVE HATE DISLIKE))
   [RPLQQ SORRY PRIORITY 2 RULES
          (((0)
            (NIL)
-           (APOLOGIES AE NOT NECESSARY %,)
+           (APOLOGIES ARE NOT NECESSARY %,)
            (WHAT FEELINGS DO YOU HAVE WHEN YOU APOLOGIZE]
-  (RPLQQ DONT TRANSLATEION DON'T)
-  (RPLQQ CANT TRANSLATEION CAN'T)
-  (RPLQQ WONT TRANSLATEION WON'T)
+  (RPLQQ DONT TRANSLATION DON'T)
+  (RPLQQ CANT TRANSLATION CAN'T)
+  (RPLQQ WONT TRANSLATION WON'T)
   [RPLQQ REMEMBER PRIORITY 5 RULES
          (((REMEMBER 0)
            (NIL)
@@ -1860,10 +1864,10 @@ STOP
            (DO YOU OFTEN THINK OF 3)
            (WHAT ELSE DOES THINKING OF 3 BRING TO MIND)
            (WHAT ELSE DO YOU REMEMBER)
-           (WHAY DO YOU REMEMBER 3 JUST NOW)
+           (WHY DO YOU REMEMBER 3 JUST NOW)
            (WHAT IS THE PRESENT SITUATION REMINDS YOU OF 3)
-           (WHAT I^@THE CONNECTION BETWEEN ME AND 3))
-          ((DO I REMBMER 0)
+           (WHAT IS THE CONNECTION BETWEEN ME AND 3))
+          ((DO I REMEMBER 0)
            (NIL)
            (WHY DID YOU THINK I WOULD FORGET 4)
            (WHY DO YOU THINK I SHOULD RECALL 4 NOW)
@@ -1934,7 +1938,7 @@ STOP
            (I AM SORRY "," I SPEAK ONLY ENGLISH]
   (RPLQQ FRANCAIS PRIORITY 0 RULES (DEUTSCH))
   (RPLQQ SVENSKA PRIORITY 0 RULES (DEUTSCH))
-   
+
 ;;; Eliza-19720424-SCRIPTp1-03of11.txt
 
 ; Eliza-19720424-SCRIPTp1-03of11.TIF
@@ -2032,7 +2036,7 @@ STOP
 	   (DO YOU THINK YOU WERE 3)
 	   (WERE YOU 3)
 	   (WHAT WOULD IT MEAN IF YOU WERE 3)
-	   XXXWHAT)
+	   XXWHAT)
 	  ((YOU WAS 0)
 	   (NIL)
 	   (WERE YOU REALLY)
@@ -2281,12 +2285,12 @@ STOP
 ;;
 
 ;  <SOURCES>SCRIPT.;1  MON 24-APR-72 10:01 AM                PAGE 1:10
- 
+
   (RPLQQ EVERY PRIORITY 0 RULES (((0 EVERY (ONE BODY)
 				     0)
            (NIL)
 	   EVERYONE)
-          ((0 EVERY TIME 0)				
+          ((0 EVERY TIME 0)
 	   (NIL)
 	   ALWAYS)))
   (RPLQQ DO PRIORITY 0 RULES (((DO I 0)
@@ -2294,7 +2298,7 @@ STOP
 	   (PRE (I 3)
 		YOU)
 	   XXWHAT)
-          ((DO YOU 0)			     
+          ((DO YOU 0)
 	   (NIL)
 	   (PRE (YOU 3)
 		I)
@@ -2331,4 +2335,51 @@ STOP
   (RPLQQ SEXY PRIORITY 5 RULES (SEX))
   (RPLQQ SEXUAL PRIORITY 5 RULES (SEX))
 
-;;; ******************** MISSING 11 of 11 ???????????????????????
+;;; Eliza-19720424-SCRIPTp1-11of11.txt
+
+; Eliza-19720424-SCRIPTp1-11of11.TIF
+;  <SOURCES>SCRIPT.;1   MON 24-APR-72 10:01AM           PAGE 1:11
+
+
+  [RPLQQ SEX PRIORITY 5 RULES
+         (((0 YOU 0 SEX 0)
+           (NIL)
+           (ARE YOU SURE YOU REALLY 3 IT 5)
+           (DO YOU REALLY WANT TO DISCUSS SEX)
+           (PERHAPS YOU ARE WORRIED THAT YOU 3 IT 5)
+           NEWKEY)
+          ((0)
+           (NIL)
+           (WHAT ARE YOUR REAL FEELINGS ABOUT SEX)
+           (DO YOU EVER DREAM ABOUT SEX)
+           (WHY DO YOU MENTION SEX)
+           (COULD SEX BE PART OF YOUR PROBLEM)
+           NEWKEY))
+         MEMR
+         (((0 YOU 0 SEX 0)
+           (NIL)
+           (EARLIER YOU SAID YOU 3 4 5 %.)
+           (TELL ME AGAIN WHY YOU 3 4 5 %.)
+           (DO YOU SAY THAT BECAUSE YOU 3 4 5]
+  (RPLQQ FRIENDLY PRIORITY 0 RULES (FRIEND))
+  [RPLQQ FRIEND PRIORITY 1 RULES
+         (((0 YOUR FRIEND 0)
+           (NIL)
+           (WHAT ELSE CAN YOU TELL ME ABOUT YOUR FRIEND)
+           (WHAT MIGHT YOUR FRIENDS HAVE TO DO WITH YOUR PROBLEM))
+          ((0)
+           (NIL)
+           (DO YOU THINK FRIENDS ARE IMPORTANT)
+           (WHAT DO YOU THINK ABOUT YOUR FRIENDS]
+  (RPLQQ CRY PRIORITY 2 RULES (LAUGH))
+  (RPLQQ LAUGH PRIORITY 2 RULES (((0 (LAUGH CRY)
+                                     0)
+           (NIL)
+           (WHAT WOULD MAKE YOU 2)
+           (REALLY 2)
+           (WOULD YOU LIKE TO LAUGH)
+           NEWKEY)))
+  (RPLQQ LOVE EMOTION T)
+  (RPLQQ HATE EMOTION T)
+  (RPLQQ DISLIKE EMOTION NIL)
+STOP
