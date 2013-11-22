@@ -283,42 +283,16 @@
 	    (SETQ MEMSTACK (APPEND FLAG MEMSTACK))))
 	  ;; This is supposed to push the word's plist contents onto
 	  ;; the keystack in something like the right place by
-	  ;; priority. However, there's something f'ed up here with
-	  ;; the keystack. There keep being NILs on the front of what
-	  ;; are supposed to be PLISTS. See ??? notes below.
+	  ;; priority. 
           (COND
 	   ((AND (SETQ FLAG (GETP WORD (QUOTE PRIORITY)))
 		 (CDR KEYSTACK) 
-		 ;; ??? Looks like the following might want to be a
-		 ;; CDDR bcs (CDR KEYSTACK) has an errant NIL in its
-		 ;; CAR, making the result not PLISTP, crashing GETP
-		 ;; here as a result, but the problem could actually
-		 ;; be where that NIL gets entered, which is prior to
-		 ;; this, e.g., just below, where the keytack is
-		 ;; actually built up. Is it possible that those nils
-		 ;; are supposed to be there???
 		 (GREATERP FLAG (GETP (CDR KEYSTACK)
 				      (QUOTE PRIORITY))))
-	    ;; This, and the next, T, clause, are the only places that
-	    ;; the keystack is hacked (I think), so if the keystack is
-	    ;; getting screwed up, here's where it's happening. See notes
-	    ;; on BCONC, below -- might be the source of the problem.
 	    (RPLACD KEYSTACK (CONS (CDR KEYSTACK)
 				   (symbol-plist word) ;; was (CDR WORD)
 				   )))
 	   (FLAG 
-	    ;; ??? BCONC might be doing the wrong thing. If you do
-	    ;; (setq l (cons-cell)) and then
-	    ;; (bconc 'a l) you get
-	    ;; ((NIL . A) NIL . A) which looks wrong!
-	    ;; Similarly: 
-	    ;; (setq l (cons-cell))
-	    ;; (NIL)
-	    ;; (setq n '(a s d f))
-            ;; (A S D F)
-	    ;; (bconc n l)
-	    ;; (BCONC (A S D F) (NIL))
-	    ;; => ((NIL A S D F) NIL A S D F) which has the errant nils!
             (BCONC (symbol-plist word) ;; was (CDR WORD)
 		   KEYSTACK)))
           (GO A)
@@ -388,7 +362,8 @@
 	    ((NUMBERP CD)
 	      (TCONC S PARSELIST)
 	      (COND
-	        ((SETQ S (NTH S CD))
+;;	        ((SETQ S (NTH S CD)) -- BBN Lisp NTH is CL NTHCDR with reversed args
+	        ((SETQ S (NTHCDR CD S))
 		  (GO T3))
 	        (T (GO RN))))
             ((ATOM CD)
@@ -473,7 +448,8 @@
             (T (TCONC CR SENT)))
       T3  (SETQ RULE (CDR RULE))
           (GO LP)
-      T1  (SETQ V1 (CAR (SETQ CR (NTH PARSELIST CR))))
+;      T1  (SETQ V1 (CAR (SETQ CR (NTH PARSELIST CR))))  -- BBN Lisp NTH is CL NTHCDR with reversed args
+      T1  (SETQ V1 (CAR (SETQ CR (NTHCDR CR PARSELIST))))
           (SETQ V2 (CADR CR))
       T2  (COND
 
