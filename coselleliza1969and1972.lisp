@@ -12,7 +12,6 @@
 ;;; space, and it only takes either an ! or ?
 
 ;;; TODO:
-;;;   * The BCONC bug.
 ;;;   * Replace the I/O so that it's usable w/o havin to pu
 ;;;     spaces around punctuation, etc.
 
@@ -30,7 +29,8 @@
 ;;; from the original printouts, and then making it work: eMBee, Dave
 ;;; Cooper, Bob Felts, Saul Good, Ben Hyde, Simon Leinen, Patrick May,
 ;;; Charlie McMackin, Paul Nathan, Peter De Wachter, Thomas Russ,
-;;; Patrick Stein, and Jeff Shrager.
+;;; Patrick Stein, and Jeff Shrager. Made to work in modern CL by Jeff
+;;; Shrager and Peter De Wachter.
 
 ;;; For more information, please contact Jeff Shrager (jshrager@stanford.edu)
 
@@ -86,13 +86,19 @@
 (defmacro RPLQQ (sym &rest kvpairs)
   `(setf (symbol-plist ',sym) ',kvpairs))
 
-;;; This is InterLISP's GETPROP (I think). Special handling for the
-;;; weird old-fasioned case of passing in a symbol.
+;;; Approx. InterLISP's GETPROP -- by Peter De Wachter. The code wants
+;;; to have property lists that aren't attached to a symbol and it
+;;; achieves this by creating "fake symbols": property lists with a
+;;; NIL in front of them to maintain the CDR property.
 
-(defun getp (sym-or-plist prop)
-  (getf (if (listp sym-or-plist) sym-or-plist
-	  (symbol-plist sym-or-plist))
-	prop))
+(defun getp (sym prop)
+  (getf (bbn-cdr sym)prop))
+
+(defun bbn-cdr (x)
+  (cond ((consp x) (cdr x))
+	((symbolp x) (symbol-plist x))))
+
+;;;
 
 (defmacro put (sym prop val)
   `(setf (get ,sym ,prop) ,val))
