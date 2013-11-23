@@ -1879,7 +1879,63 @@ STOP
            (WHAT DO YOU THINK ABOUT 3)
            (REALLY "," IF 3]
 
-;;; ******************** MISSING 1 of 11 ???????????????????????
+;;; Eliza-19720424-SCRIPTp1-01of11.txt
+
+;  <SOURCES>SCRIPT.;1   MON 24-APR-72 10:01AM         PAGE 1:1
+
+
+  (RPLQQ DREAMT PRIORITY 4 RULES
+         (((0 YOU DREAMT 0)
+           (NIL)
+           (REALLY 4)
+           (HAVE YOU EVER FANTASIED 4 WHILE YOU WERE AWAKE)
+           (HAVE YOU DREAMT 4 BEFORE)
+           DREAM NEWKEY)))
+  (RPLQQ DREAMED TRANSLATION DREAMT PRIORITY 4 RULES (DREAMT))
+  (RPLQQ DREAM PRIORITY 3 RULES
+         (((0 YOU DREAM (OF ABOUT)
+              0)
+           (NIL)
+           (WHAT MIGHT 5 REPRESENT)
+           (WHAT DOES 5 SUGGEST TO YOU)
+           (HOW DOES THAT DREAM RELATE TO YOUR PROBLEM))
+          ((0)
+           (NIL)
+           (WHAT DO YOU DREAM ABOUT)
+           (WHAT PERSONS APPEAR IN YOUR DREAMS)
+           (WHAT MAY DREAMS HAVE TO DO WITH YOUR PROBLEM)
+           NEWKEY)))
+  (RPLQQ DREAMS TRANSLATION DREAM PRIORITY 3 RULES (DREAM))
+  (RPLQQ HOW RULES (WHAT)
+         PRIORITY 0)
+  [RPLQQ WHEN PRIORITY 0 RULES (((WHEN (DO DID DOES WILL)
+                                       0)
+           (NIL)
+           XXWHAT)
+          ((0)
+           (NIL)
+           (IS THERE ANY OTHER TIME)
+           (WHY THEN "," DO YOU SUPPOSE]
+  (RPLQQ ALIKE PRIORITY 10 RULES (DIT))
+  (RPLQQ SAME RULES (DIT)
+         PRIORITY 3)
+  (RPLQQ CERTAINLY PRIORITY 0 RULES (YES))
+  (RPLQQ FEEL BELIEF T)
+  (RPLQQ THINK BELIEF T)
+  (RPLQQ BELIEVE BELIEF T)
+  (RPLQQ WISH BELIEF T)
+  [RPLQQ MY MEMR
+         (((YOUR 2 0)
+           (NIL)
+           (LETS DISCUSS FURTHER WHY YOUR 2 3 %.)
+           (EARLIER YOU SAID YOUR 2 3 %.)
+           (BUT YOUR 2 3 %.)
+           (DOES THAT HAVE ANYTHING TO DO WITH THE FACT THAT YOUR 2 3))
+          ((0 YOUR 1)
+           (NIL)
+           (WOULD YOU LIKE TO DISCUSS YOUR 3)
+           (PERHAPS THAT CONCERNS YOUR 3 %.)
+           (TELL ME MORE ABOUT YOUR 3 %.)))
 
 ;;; Eliza-19720424-SCRIPTp1-02of11.txt
 
@@ -2052,7 +2108,61 @@ STOP
   (RPLQQ WERE PRIORITY 0 TRANSLATION WAS RULES (WAS))
   (RPLQQ ME TRANSLATION YOU)
 
-;;; ******************** MISSING 5 of 11 ???????????????????????
+; Eliza-19720424-SCRIPTp1-05of11
+
+;  <SOURCES>SCRIPT.;1   MON 24-APR-72 10:01AM         PAGE 1:5
+
+
+  [RPLQQ YOU'RE PRIORITY 0 TRANSLATION I'M RULES
+         (((0 I'M 0)
+           (NIL)
+           (PRE (I ARE 3)
+                YOU]
+  [RPLQQ I'M PRIORITY 0 TRANSLATION YOU'RE RULES
+         (((0 YOU'RE 0)
+           (NIL)
+           (PRE (YOU ARE 3)
+                I]
+  (RPLQQ MYSELF TRANSLATION YOURSELF)
+  (RPLQQ YOURSELF TRANSLATION MYSELF)
+  (RPLQQ MOTHER FAMILY T)
+  (RPLQQ MOM TRANSLATION MOTHER FAMILY T)
+  (RPLQQ DAD TRANSLATION FATHER FAMILY T)
+  (RPLQQ FATHER FAMILY T)
+  (RPLQQ SISTER FAMILY T)
+  (RPLQQ BROTHER FAMILY T)
+  (RPLQQ WIFE FAMILY T)
+  (RPLQQ CHILDREN FAMILY T)
+  [RPLQQ I PRIORITY 0 TRANSLATION YOU RULES
+         (((0 YOU (WANT NEED)
+              0)
+           (NIL)
+           (WHAT WOULD IT MEAN TO YOU IF YOU GOT 4)
+           (WHY DO YOU WANT 4)
+           (WHAT WOULD GETTING 4 MEAN TO YOU))
+          ((0 YOU ARE 0 (SAD UNHAPPY DEPRESSED SICK ILL)
+              0)
+           (NIL)
+           (I AM SORRY TO HEAR YOU ARE 5 %.)
+           (DO YOU THINK COMING HERE WILL HELP YOU NOT TO BE 5)
+           (CAN YOU EXPLAIN WHAT MADE YOU 5))
+          ((0 YOU ARE 0 (HAPPY ELATED GLAD BETTER)
+              0)
+           (NIL)
+           (HOW HAVE I HELPED YOU TO BE 5)
+           (HAS YOUR TREATMENT MADE YOU 5)
+           (WHAT MAKES YOU 5 JUST NOW))
+          ((0 YOU (NIL BELIEF)
+              YOU 0)
+           (NIL)
+           (DO YOU REALLY THINK SO)
+           (BUT YOU ARE NOT SURE YOU 5)
+           (DO YOU REALLY DOUBT YOU 5))
+          ((0 YOU 0 (NIL BELIEF)
+              0 I 0)
+           (NIL)
+           (PRE (6 7)
+                YOU))
 
 ; Eliza-19720424-SCRIPTp1-06of11
 
