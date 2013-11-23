@@ -156,6 +156,9 @@
 (defun cons-cell ()
   (cons nil nil))
 
+(defun bbn-nth (x n)
+  (nthcdr n (cons nil x)))
+
 ;;; Globals (transferred from the tail of the file)
 
 (defparameter TRMLIS '(|!| |?|)) ;; removed . Can't use a . bcs READ will fail on it.
@@ -362,8 +365,7 @@
 	    ((NUMBERP CD)
 	      (TCONC S PARSELIST)
 	      (COND
-;;	        ((SETQ S (NTH S CD)) -- BBN Lisp NTH is CL NTHCDR with reversed args
-	        ((SETQ S (NTHCDR CD S))
+	        ((SETQ S (BBN-NTH S CD))
 		  (GO T3))
 	        (T (GO RN))))
             ((ATOM CD)
@@ -448,8 +450,7 @@
             (T (TCONC CR SENT)))
       T3  (SETQ RULE (CDR RULE))
           (GO LP)
-;      T1  (SETQ V1 (CAR (SETQ CR (NTH PARSELIST CR))))  -- BBN Lisp NTH is CL NTHCDR with reversed args
-      T1  (SETQ V1 (CAR (SETQ CR (NTHCDR CR PARSELIST))))
+      T1  (SETQ V1 (CAR (SETQ CR (BBN-NTH PARSELIST CR))))
           (SETQ V2 (CADR CR))
       T2  (COND
 
