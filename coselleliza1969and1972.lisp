@@ -70,7 +70,7 @@
  (:compile-toplevel :load-toplevel :execute)
  (defpackage :bbn-lisp 
    (:nicknames :bl)
-   (:export :defineq :setqq :rplqq :tconc :clock :cons-cell :bbn-nth :put :getp
+   (:export :defineq :setqq :rplqq :tconc :clock :cons-cell :bbnth :put :getp
 	:quotient :spaces :remainder :plus :minus :pack :greaterp :ratom))
  (in-package :bl)
  )
@@ -114,8 +114,6 @@
 
 (defmacro put (sym prop val)
   `(setf (get ,sym ,prop) ,val))
-
-)
 
 ;;; Approx. InterLISP's GETPROP -- by Peter De Wachter. The code wants
 ;;; to have property lists that aren't attached to a symbol and it
@@ -168,8 +166,11 @@
 (defun cons-cell ()
   (cons nil nil))
 
-(defun bbn-nth (x n)
+(defun bbnth (x n)
   (nthcdr n (cons nil x)))
+
+)
+
 
 ;;; ===================================================================================
 ;;; |                            Eliza69-specific header                              |
@@ -197,6 +198,13 @@
 (defvar FLIPFLOP nil)
 (defvar PARSELIST nil)
 
+;;; Replace some of the lisp fns with the corrected versions.
+;;; THIS DOESN'T WORK IN CCL!
+
+;(eval-when
+; (:compile-toplevel)
+; (setf (symbol-function 'nth) (symbol-function 'bl::bbnth)))
+ 
 ;;; Whack the readtable so that quotes are allowed inside atoms. (Thanks to Matt Niemeir)
 
 (eval-when
@@ -395,7 +403,7 @@
 	    ((NUMBERP CD)
 	      (TCONC S PARSELIST)
 	      (COND
-	        ((SETQ S (BBN-NTH S CD))
+	        ((SETQ S (BBNTH S CD))
 		  (GO T3))
 	        (T (GO RN))))
             ((ATOM CD)
@@ -480,7 +488,7 @@
             (T (TCONC CR SENT)))
       T3  (SETQ RULE (CDR RULE))
           (GO LP)
-      T1  (SETQ V1 (CAR (SETQ CR (BBN-NTH PARSELIST CR))))
+      T1  (SETQ V1 (CAR (SETQ CR (BBNTH PARSELIST CR)))) 
           (SETQ V2 (CADR CR))
       T2  (COND
 
