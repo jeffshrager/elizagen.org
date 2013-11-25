@@ -177,7 +177,7 @@
   (nthcdr n (cons nil x)))
 
 ;;; ===================================================================================
-;;; |                                    1969 DOCFNS                                  |
+;;; |                            Eliza69-specific header                              |
 ;;; ===================================================================================
 
 (eval-when
@@ -201,6 +201,16 @@
 (defvar MEMSTACK nil)
 (defvar FLIPFLOP nil)
 (defvar PARSELIST nil)
+
+;;; Whack the readtable so that quotes are allowed inside atoms. (Thanks to Matt Niemeir)
+
+(eval-when
+ (:compile-toplevel :load-toplevel :execute)
+ (set-syntax-from-char #\' #\a *readtable*))
+
+;;; ===================================================================================
+;;; |                                    1969 DOCFNS                                  |
+;;; ===================================================================================
 
 ;;; Eliza-19690731-DOCFNSp1-00of06
 
@@ -245,8 +255,8 @@
           (SETQ SENTENCE (CAR SENTENCE))
           (COND
             ((EQUAL SENTENCE (QUOTE (GOODBYE)))
-              (RETURN (RECONSTRUCT (APPEND (QUOTE (IT&S BEEN
-                          MY PLEASURE "," THAT&S))
+              (RETURN (RECONSTRUCT (APPEND (QUOTE (IT'S BEEN
+                          MY PLEASURE "," THAT'S))
                     (CONS (PACK (LIST (QUOTE $)
                           (REMAINDER (PLUS (QUOTIENT
                                   (CLOCK)
@@ -603,7 +613,7 @@ macro in cl.
 	      DREAMS HOW WHEN ALIKE SAME CERTAINLY FEEL THINK BELIEVE WISH MY
 	      NONE PERHAPS MAYBE NAME DEUTSCH FRANCAIS SVENSKA ITALIANO ESPANOL
 	      HELLO COMPUTER MACHINE MACHINES COMPUTERS AM ARE YOUR WAS WERE ME
-	      YOU&RE I&M MYSELF YOURSELF MOTHER MOM DAD FATHER SISTER BROTHER
+	      YOU'RE I'M MYSELF YOURSELF MOTHER MOM DAD FATHER SISTER BROTHER
 	      WIFE CHILDREN I YOU XXYYZZ YES NO CAN IS WHERE WHAT XXWHAT BECAUSE
 	      WHY EVERYONE EVERYBODY NOBODY NOONE ALWAYS LIKE DIT OH EVERY DO
 	      GIRLS WOMEN BOY GIRL MAN WOMAN SEXY SEXUAL SEX FRIENDLY FRIEND CRY
@@ -617,13 +627,13 @@ macro in cl.
 	       (WHAT FEELINGS DO YOU HAVE WHEN YOU APOLOGIZE))))
 
 (RPLQQ DONT
-       TRANSLATION DON&T)
+       TRANSLATION DON'T)
 
 (RPLQQ CANT
-       TRANSLATION CAN&T)
+       TRANSLATION CAN'T)
 
 (RPLQQ WONT
-       TRANSLATION WON&T)
+       TRANSLATION WON'T)
 
 (RPLQQ REMEMBER
        PRIORITY 5
@@ -653,7 +663,7 @@ macro in cl.
        rules
        (((0 if 0
 	    (nil)
-	    (do you think it&s likely that 3)
+	    (do you think it's likely that 3)
 	    (do you wish that 3)
 	    (what do you think about 3)
 	    (really"," if 3)))))
@@ -788,9 +798,9 @@ rules
    ((your 2 0)
         (nil)
 	(is it important to you that your 2 3)
-	(do you suppose anyone else&s 2 3)
+	(do you suppose anyone else's 2 3)
 	(what makes you think your 2 3)
-	(suppose I didn&t believe that your 2 3 "."))
+	(suppose I didn't believe that your 2 3 "."))
    ((0 your 1)
         (nil)
 	(your 3)
@@ -821,11 +831,11 @@ PRIORITY
 RULES
    (((0)
          (NIL)
-         (YOU DON&T SEEM QUITE CERTAIN ".")
+         (YOU DON'T SEEM QUITE CERTAIN ".")
          (WHY THE UNCERTAIN TONE)
-         (CAN&T YOU BE MORE POSITIVE)
-         (YOU AREN&T SURE)
-         (DON&T YOU KNOW))))
+         (CAN'T YOU BE MORE POSITIVE)
+         (YOU AREN'T SURE)
+         (DON'T YOU KNOW))))
 
 (RPLQQ MAYBE
 PRIORITY
@@ -840,7 +850,7 @@ RULES
    (((0)
          (NIL)
          (I AM NOT INTERESTED IN NAMES ".")
-         (I&VE TOLD YOU BEFORE I DON&T CARE ABOUT NAMES - PLEASE
+         (I'VE TOLD YOU BEFORE I DON'T CARE ABOUT NAMES - PLEASE
 CONTINUE "."))))
 
 (RPLQQ DEUTSCH
@@ -896,7 +906,7 @@ RULES
          (DO COMPUTERS WORRY YOU)
          (WHY DO YOU MENTION COMPUTERS)
          (WHAT DO YOU THINK MACHINES HAVE TO DO WITH YOUR PROBLEMS)
-         (DO&T YOU THINK COMPUTERS CAN HELP PEOPLE))))
+         (DO'T YOU THINK COMPUTERS CAN HELP PEOPLE))))
 
 ;;; Eliza-19690731-SCRIPTp1-06of21
 
@@ -932,8 +942,8 @@ RULES
 	       (XXWHAT))
 	      ((0)
 	       (NIL)
-	       (WHY DO YOU SAY &AM&)
-	       (I DON&T UNDERSTAND THAT))))
+	       (WHY DO YOU SAY 'AM')
+	       (I DON'T UNDERSTAND THAT))))
 
 (RPLQQ ARE
        PRIORITY
@@ -961,7 +971,7 @@ RULES
 	((ARE I 0)
 	 (NIL)
 	 (WHY ARE YOU INTERESTED IN WHETHER I AM 3 OR NOT)
-	 (WOULD YOU PREFER IF I WEREN&T 3)
+	 (WOULD YOU PREFER IF I WEREN'T 3)
 	 (PERHAPS I AM 3 IN YOUR FANTASIES ".")
 	 (DO YOU SOMETIMES THINK I AM 3)
 	 XXWHAT)
@@ -1044,24 +1054,24 @@ rules
 TRANSLATION
    YOU)
 
-(RPLQQ YOU&RE
+(RPLQQ YOU'RE
 PRIORITY
    0
 TRANSLATION
-   I&M
+   I'M
 RULES
-   (((0 I&M 0)
+   (((0 I'M 0)
          (NIL)
          (PRE (I ARE 3)
             YOU))))
 
-(RPLQQ I&M
+(RPLQQ I'M
 PRIORITY
    0
 TRANSLATION
-   YOU&RE
+   YOU'RE
 RULES
-   (((0 YOU&RE 0)
+   (((0 YOU'RE 0)
          (NIL)
          (PRE (YOU ARE 3)
             I))))
@@ -1161,18 +1171,18 @@ RULES
      (how long have you been 4)
      (do you believe it normal to be 4)
      (do you enjoy being 4))
-    ((0 you (can&t cannot)
+    ((0 you (can't cannot)
 	0)
      (nil)
-     (how do you know you can&t 4)
+     (how do you know you can't 4)
      (have you tried)
      (perhaps you could 4 now ".")
      (do you really want to be able to 4))
-    ((0 you (don&t won&t)
+    ((0 you (don't won't)
 	0)
      (nil)
-     (don&t you really 4)
-     (why don&t you 4)
+     (don't you really 4)
+     (why don't you 4)
      (do you wish you did 4)
      (does that trouble you))
     ((0 you feel 0)
@@ -1207,7 +1217,7 @@ RULES
          (DO YOU SAY 2 3 4 FOR SOME SPECIAL REASON)
          (TELL ME MORE ABOUT YOURSELF)
          (OH? 2 3 4)
-         (THAT&S QUITE INTERESTING ".")))
+         (THAT'S QUITE INTERESTING ".")))
 MEMR
    (((0 YOU ARE 0)
          (NIL)
@@ -1234,7 +1244,7 @@ RULES
       ((0 I 0 YOU)
          (NIL)
          (WHY DO YOU THINK I 3 YOU)
-         (YOU LIKE TO THINK I 3 YOU - DON&T YOU)
+         (YOU LIKE TO THINK I 3 YOU - DON'T YOU)
          (WHAT MAKES YOU THINK I 3 YOU)
          (REALLY? I 3 YOU)
          (DO YOU WISH TO BELIEVE I 3 YOU)
@@ -1258,7 +1268,7 @@ RULES
          (NIL)
          (IS THERE SOMETHING BOTHERING YOU)
          (CAN YOU BE MORE INFORMATIVE)
-         (PERHAPS YOU&D RATHER TALK ABOUT SOMETHING ELSE ".")
+         (PERHAPS YOU'D RATHER TALK ABOUT SOMETHING ELSE ".")
          (PLEASE TELL ME MORE "."))))
 
 (RPLQQ YES
@@ -1285,7 +1295,7 @@ RULES
          XXYYZZ
          (VERY WELL ".")
          (WHY NOT)
-         (WHY &NO&))))
+         (WHY 'NO'))))
 
 (RPLQQ CAN
 PRIORITY
@@ -1293,7 +1303,7 @@ PRIORITY
 RULES
    (((CAN I 0)
          (NIL)
-         (YOU BELIEVE I CAN 3 DON&T YOU)
+         (YOU BELIEVE I CAN 3 DON'T YOU)
          XXWHAT
          (WOU WANT ME TO BE ABLE TO 3 ".")
          (PERHAPS YOU WOULD LIKE TO BE ABLE TO 3 YOURSELF "."))
@@ -1302,7 +1312,7 @@ RULES
          (WHETHER OR NOT YOU CAN 3 DEPENDS ON YOU MORE THAN ON ME
 ".")
          (DO YOU WANT TO BE ABLE TO 3)
-         (PERHAPS YOU DON&T WANT TO 3 ".")
+         (PERHAPS YOU DON'T WANT TO 3 ".")
          XXWHAT)))
 
 
@@ -1354,7 +1364,7 @@ RULES
          (NIL)
          (IS THAT THE REAL REASON)
          (I SEE ".")
-         (DON&T ANY OTHER REASONS COME TO MIND)
+         (DON'T ANY OTHER REASONS COME TO MIND)
          (DOES THAT REASON SEEM TO EXPLAIN ANYTHING ELSE)
          (AND WHAT DOES THAT SUGGEST)
          (WHAT OTHER REASONS MIGHT THERE BE))))
@@ -1367,21 +1377,21 @@ RULES
 PRIORITY
    0
 RULES
-   (((0 WHY (DON&T WON&T)
+   (((0 WHY (DON'T WON'T)
             I
             0)
          (NIL)
-         (DO YOU BELIEVE I DON&T 5)
+         (DO YOU BELIEVE I DON'T 5)
          (PERHAPS I WILL 5 IN GOOD TIME ".")
          (SHOULD YOU 5 YOURSELF)
          (YOU WANT ME TO 5 ".")
          WHAT)
-      ((0 WHY CAN&T YOU 0)
+      ((0 WHY CAN'T YOU 0)
          (NIL)
          (DO YOU THINK YOU SHOULD BE ABLE TO 5)
          (DO YOU WANT TO BE ABLE TO 5)
          (DO YOU BELIEVE THIS WILL HELP YOU TO 5)
-         (HAVE YOU ANY IDEA WHY YOU CAN&T 5)
+         (HAVE YOU ANY IDEA WHY YOU CAN'T 5)
          WHAT)
       WHAT))
 
@@ -1394,7 +1404,7 @@ RULES
          (CAN YOU THINK OF ANYONE IN PARTICULAR)
          (WHO"," FOR EXAMPLE)
          (YOU ARE THINKING OF A VERY SPECIAL PERSON ".")
-         (YOU HAVE A PARTICULAR PERSON IN MIND"," DON&T YOU))))
+         (YOU HAVE A PARTICULAR PERSON IN MIND"," DON'T YOU))))
 
 (RPLQQ EVERYBODY
 PRIORITY
@@ -1409,7 +1419,7 @@ RULES
    (((0)
          (NIL)
          (SURELY SOMEONE"...")
-         (PERHAPS YOU JUST DON&T KNOW OF ANYONE "."))))
+         (PERHAPS YOU JUST DON'T KNOW OF ANYONE "."))))
 
 ;;; Eliza-19690731-SCRIPTp1-16of21
 
@@ -1660,7 +1670,7 @@ EMOTION
 EMOTION
    NIL)
 ;;; STOP
-;;; &L
+;;; 'L
 
 #| ******************************* STOPPED EDITING HERE TEMPORARILY *******************************
    From here on this code is commented out until it has been checked 
@@ -1759,7 +1769,7 @@ EMOTION
 
 (RETURN
   (RECONSTRUCT
-   (APPEND (QUOTE (ITS BEEN MY PLEASURE, THAT&S))
+   (APPEND (QUOTE (ITS BEEN MY PLEASURE, THAT'S))
            (CONS (PACK (LIST (QUOTE S)
                              (QUOTIENT (SETQ TIMON
                                              (IDIFFERENCE
@@ -1813,7 +1823,7 @@ EMOTION
 
 (RETURN
   (RECONSTRUCT
-   (APPEND (QUOTE (ITS BEEN MY PLEASURE, THAT&S))
+   (APPEND (QUOTE (ITS BEEN MY PLEASURE, THAT'S))
            (CONS (PACK (LIST (QUOTE S)
                              (QUOTIENT (SETQ TIMON
                                              (IDIFFERENCE
@@ -1867,7 +1877,7 @@ EMOTION
 
              (RETURN
                (RECONSTRUCT
-                 [APPEND (QUOTE (IT&S BEEN MY PLEASURE, THAT&S))
+                 [APPEND (QUOTE (IT'S BEEN MY PLEASURE, THAT'S))
                          (CONS (PACK (LIST (QUOTE $)
                                            (QUOTIENT (SETQ TIMON
                                                        (IDIFFERENCE
@@ -1923,7 +1933,7 @@ EMOTION
 
               (RETURN
                 (RECONSTRUCT
-                  [APPEND (QUOTE (IT&S BEEN MY PLEASURE, THAT&S))
+                  [APPEND (QUOTE (IT'S BEEN MY PLEASURE, THAT'S))
                           (CONS (PACK (LIST (QUOTE $)
                                             (QUOTIENT (SETQ TIMON
                                                         (IDIFFERENCE
@@ -1978,7 +1988,7 @@ EMOTION
 
               (RETURN
                 (RECONSTRUCT
-                  [APPEND (QUOTE (IT&S BEEN MY PLEASURE, THAT&S))
+                  [APPEND (QUOTE (IT'S BEEN MY PLEASURE, THAT'S))
                           (CONS (PACK (LIST (QUOTE $)
                                             (QUOTIENT (SETQ TIMON
                                                         (IDIFFERENCE
@@ -2315,7 +2325,7 @@ EMOTION
                 HOW WHEN ALIKE SAME CERTAINLY FEEL THINK BELIEVE WISH
                 MY NONE PERHAPS MAYBE NAME DEUTSCH FRANCAIS SVENSKA
                 ITALIANO ESPANOL HELLO COMPUTER MACHINE MACHINES
-                COMPUTERS AM ARE YOUR WAS WERE ME YOUR&R I&M MYSELF
+                COMPUTERS AM ARE YOUR WAS WERE ME YOUR'R I'M MYSELF
                 YOURSELF MOTHER MOM DAD FATHER SISTER BROTHER WIFE
                 CHILDREN I YOU XXYYZZ YES NO CAN IS WHERE WHAT XXWHAT
                 BECAUSE WHY EVERYONE EVERYBODY NOBODY NOONE ALWAYS LIKE
@@ -2326,9 +2336,9 @@ EMOTION
            (NIL)
            (APOLOGIES AE NOT NECESSARY %,)
            (WHAT FEELINGS DO YOU HAVE WHEN YOU APOLOGIZE]
-  (RPLQQ DONT TRANSLATEION DON&T)
-  (RPLQQ CANT TRANSLATEION CAN&T)
-  (RPLQQ WONT TRANSLATEION WON&T)
+  (RPLQQ DONT TRANSLATEION DON'T)
+  (RPLQQ CANT TRANSLATEION CAN'T)
+  (RPLQQ WONT TRANSLATEION WON'T)
   [RPLQQ REMEMBER PRIORITY 5 RULES
          (((REMEMBER 0)
            (NIL)
@@ -2374,9 +2384,9 @@ EMOTION
           ((YOUR 2 0)
            (NIL)
            (IS IT IMPORTANT TO YOU THAT YOUR 2 3)
-           (DO YOU SUPPOSE ANYONE ELSE&S 2 3)
+           (DO YOU SUPPOSE ANYONE ELSE'S 2 3)
            (WHAT MAKES YOU THINK YOUR 2 3)
-           (SUPPOSE I DIDN&T BELIEVE THAT YOUR 2 3 %.))
+           (SUPPOSE I DIDN'T BELIEVE THAT YOUR 2 3 %.))
           ((0 YOUR 1)
            (NIL)
            (YOUR 3)
@@ -2395,17 +2405,17 @@ EMOTION
                   (WHY DO YOU SAY THAT JUST NOW]
   [RPLQQ PERHAPS PRIORITY 0 RULES (((0)
            (NIL)
-           (YOU DON&T SEEM QUITE CERTAIN %.)
+           (YOU DON'T SEEM QUITE CERTAIN %.)
            (WHY THE UNCERTAIN TONE)
-           (CAN&T YOU BE MORE POSITIVE)
-           (YOU AREN&T SURE)
-           (DON&T YOU KNOW]
+           (CAN'T YOU BE MORE POSITIVE)
+           (YOU AREN'T SURE)
+           (DON'T YOU KNOW]
   (RPLQQ MAYBE PRIORITY 0 RULES (PERHAPS))
   [RPLQQ NAME PRIORITY 15 RULES
          (((0)
            (NIL)
            (I AM NOT INTERESTED IN NAMES %.)
-           (I&VE TOLD YOU BEFORE I DON&T CARE ABOUT NAMES - PLEASE
+           (I'VE TOLD YOU BEFORE I DON'T CARE ABOUT NAMES - PLEASE
                  CONTINUE %.]
   [RPLQQ DEUTSCH PRIORITY 0 RULES
          (((0)
@@ -2431,7 +2441,7 @@ EMOTION
            (DO COMPUTERS WORRY YOU)
            (WHY DO YOU MENTION COMPUTERS)
            (WHAT DO YOU THINK MACHINES HAVE TO DO WITH YOUR PROBLEM)
-           (DON&T YOU THINK COMPUTERS CAN HELP PEOPLE]
+           (DON'T YOU THINK COMPUTERS CAN HELP PEOPLE]
   (RPLQQ MACHINE PRIORITY 0 RULES (COMPUTER))
   (RPLQQ MACHINES PRIORITY 0 RULES (COMPUTER))
   (RPLQQ COMPUTERS PRIORITY 0 RULES (COMPUTER))
@@ -2445,8 +2455,8 @@ EMOTION
            XXWHAT)
           ((0)
            (NIL)
-           (WHY DO YOU SAY &AM&)
-           (I DON&T UNDERSTAND THAT]
+           (WHY DO YOU SAY 'AM')
+           (I DON'T UNDERSTAND THAT]
   [RPLQQ ARE PRIORITY 0 RULES
          (((THERE (ARE IS)
                   (NO NOT)
@@ -2465,7 +2475,7 @@ EMOTION
           ((ARE I 0)
            (NIL)
            (WHY ARE YOU INTERESTED IN WHETHER I AM 3 OR NOT)
-           (WOULD YOU PREFER IF I WEREN&T 3)
+           (WOULD YOU PREFER IF I WEREN'T 3)
            (PERHAPS I AM 3 IN YOUR FANTASIES %.)
            (DO YOU SOMETIMES THINK I AM 3)
            XXWHAT)
@@ -2542,18 +2552,18 @@ EMOTION
            (HOW LONG HAVE YOU BEEN 4)
            (DO YOU BELIEVE IT NORMAL TO BE 4)
            (DO YOU ENJOY BEING 4))
-          ((0 YOU (CAN&T CANNOT)
+          ((0 YOU (CAN'T CANNOT)
               0)
            (NIL)
-           (HOW DO YOU KNOW YOU CAN&T 4)
+           (HOW DO YOU KNOW YOU CAN'T 4)
            (HAVE YOU TRIED)
            (PERHAPS YOU COULD 4 NOW %.)
            (DO YOU REALLY WANT TO BE ABLE TO 4))
-          ((0 YOU (DON&T WON&T)
+          ((0 YOU (DON'T WON'T)
               0)
            (NIL)
-           (DON&T YOU REALLY 4)
-           (WHY DON&T YOU 4)
+           (DON'T YOU REALLY 4)
+           (WHY DON'T YOU 4)
            (DO YOU WISH YOU DID 4)
            (DOES THAT TROUBLE YOU))
           ((0 YOU FEEL 0)
@@ -2582,7 +2592,7 @@ EMOTION
            (DO YOU SAY 2 3 4 FOR SOME SPECIAL REASON)
            (TELL ME MORE ABOUT YOURSELF)
            (OH? 2 3 4)
-           (THAT&S QUITE INTERESTING %.)))
+           (THAT'S QUITE INTERESTING %.)))
          MEMR
          (((0 YOU ARE 0)
            (NIL)
@@ -2650,7 +2660,7 @@ EMOTION
   (RPLQQ CAN PRIORITY 0 RULES
          (((CAN I 0)
            (NIL)
-           (YOU BELIEVE I CAN 3 DON&T YOU)
+           (YOU BELIEVE I CAN 3 DON'T YOU)
            XXWHAT
            (YOU WANT ME TO BE ABLE TO 3 %.)
            (PERHAPS YOU WOULD LIKE TO BE ABLE TO 3 YOURSELF %.))
@@ -2658,7 +2668,7 @@ EMOTION
            (NIL)
            (WHETHER OR NOT YOU CAN 3 DEPENDS ON YOU MORE THAN ON ME %.)
            (DO YOU WANT TO BE ABLE TO 3)
-           (PERHAPS YOU DON&T WANT TO 3 %.)
+           (PERHAPS YOU DON'T WANT TO 3 %.)
            XXWHAT)))
   (RPLQQ IS PRIORITY 0 RULES (((IS 0)
            (NIL)
@@ -2683,20 +2693,20 @@ EMOTION
            (NIL)
            (IS THAT THE REAL REASON)
            (I SEE %.)
-           (DON&T ANY OTHER REASONS COME TO MIND)
+           (DON'T ANY OTHER REASONS COME TO MIND)
            (DOES THAT REASON SEEM TO EXPLAIN ANYTHING ELSE)
            (AND WHAT DOES THAT SUGGEST)
            (WHAT OTHER REASONS MIGHT THERE BE]
   (RPLQQ WHY PRIORITY 0 RULES
-         (((0 WHY (DON&T WON&T)
+         (((0 WHY (DON'T WON'T)
               I 0)
            (NIL)
-           (DO YOU BELIEVE I DON&T 5)
+           (DO YOU BELIEVE I DON'T 5)
            (PERHAPS I WILL 5 IN GOOD TIME %.)
            (SHOULD YOU 5 YOURSELF)
            (YOU WANT ME TO 5 %.)
            WHAT)
-         ((0 WHY CAN&T YOU 0)
+         ((0 WHY CAN'T YOU 0)
 
 
 ;;; Eliza-19720424-SCRIPTp1-09of11.txt
@@ -2708,7 +2718,7 @@ EMOTION
          (DO YOU THINK YOU SHOULD BE ABLE TO 5)
          (DO YOU WANT TO BE ABLE TO 5)
          (DO YOU BELIEVE THIS WILL HELP YOU TO 5)
-         (HAVE YOU ANY IDEA WHY YOU CAN&T 5)
+         (HAVE YOU ANY IDEA WHY YOU CAN'T 5)
          WHAT)
         WHAT))
 [RPLQQ EVERYONE PRIORITY 2 RULES
@@ -2717,13 +2727,13 @@ EMOTION
          (CAN YOU THINK OF ANYONE IN PARTICULAR)
          (WHO "," FOR EXAMPLE)
          (YOU ARE THINKING OF A VERY SPECIAL PERSON %.)
-         (YOU HAVE A PARTICULAR PERSON IN MIND "," DON&T YOU]
+         (YOU HAVE A PARTICULAR PERSON IN MIND "," DON'T YOU]
 (RPLQQ EVERYBODY PRIORITY 2 RULES (EVERYONE))
 [RPLQQ NOBODY PRIORITY 2 RULES
        (((0)
          (NIL)
          (SURELY SOMEONE "...")
-         (PERHAPS YOU JUST DON&T KNOW OF ANYONE %.]
+         (PERHAPS YOU JUST DON'T KNOW OF ANYONE %.]
 (RPLQQ NOONE PRIORITY 2 RULES (NOBODY))
 [RPLQQ ALWAYS PRIORITY 1 RULES
        (((0)
