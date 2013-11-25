@@ -69,6 +69,7 @@
   (:shadow :cons :cdr :rplacd :rplaca :nth :prin1)
   (:export :defineq :setqq :rplqq :tconc :clock :put :getp
            :quotient :spaces :remainder :plus :minus :pack :greaterp :ratom :pctlis :trmlis
+           :nlambda
            ;; Also export Symbols named for CL symbols
            ;; Exports include e.g. BBN-LISP:CONS, and CL:DEFUN
            ;; but not CL:CONS. 
@@ -85,29 +86,32 @@
  (:compile-toplevel :load-toplevel :execute)
 
 ;;; Turns out that arguments are optional in BBN lisp and (I assume)
-;;; get filled in with NILs. Unfortunately, you can't use &optionals
-;;; in lambda lists, so we have to actually use EVAL here, which is
-;;; ugly.
+;;; get filled in with NILs.
 
 (defmacro defineq (&rest fns)
+  (labels ((build-lambda-list (args)
+             (cond ((null args) nil)
+                   ((consp args) `(&optional ,@args))
+                   (t `(&rest ,args))))
+
+           (build-defun (name args body)
+             `(defun ,name ,(build-lambda-list args) ,@body))
+
+           ;; TODO: simplify this quasiquote hell...
+           (build-defmacro (name args body)
+             (let ((tmp (gensym)))
+               `(defmacro ,name (&rest ,tmp)
+                  `(destructuring-bind ,',(build-lambda-list args) (quote ,,tmp)
+                     ,@',body)))))
+
   `(progn
-     ,@(loop for (name (nil args . body)) in fns ;; the nil is always = 'lambda (in theory)
-	     collect
-	     `(defun ,name
-		,(if args `(&optional ,@args) nil)
-		,@body)
-	     )))
+     ,@(loop for (name (lmbda args . body)) in fns
+          when (eq lmbda 'lambda) collect (build-defun name args body)
+          when (eq lmbda 'nlambda) collect (build-defmacro name args body)))))
 
 
-(defmacro SETQQ (sym val)
+(defmacro setqq (sym val)
   `(setf ,sym ',val))
-
-;;; RPLQQ sets an atom's plist. This is a slight cheat. Since this is
-;;; never used in the code, we can just smash the plist, instead of
-;;; key-by-key setting the entries.
-
-(defmacro RPLQQ (sym &rest kvpairs)
-  `(setf (symbol-plist ',sym) ',kvpairs))
 
 ;;;
 
@@ -580,17 +584,10 @@
 			       (RPLACA (CONS LIST WHAT)
 				       NIL))))))))
 
-#| 
-
-I don't think that this is used anyplace? If it was, it'd have to be a
-macro in cl.
-
 (RPLQQ
  (NLAMBDA RPLQ
           (RPLACD (CAR RPLQ)
             (CDR RPLQ))))
-
-|#
 
 ;;; Eliza-19690731-DOCFNSp1-06of06
 
