@@ -71,7 +71,7 @@
  (defpackage :bbn-lisp 
    (:nicknames :bl)
    (:export :defineq :setqq :rplqq :tconc :clock :cons-cell :bbnth :put :getp
-	:quotient :spaces :remainder :plus :minus :pack :greaterp :ratom))
+	:quotient :spaces :remainder :plus :minus :pack :greaterp :ratom :pctlis :trmlis))
  (in-package :bl)
  )
 
@@ -139,7 +139,42 @@
 (defun pack (l)
   (loop for i in l with r = "" do (setq r (format nil "~a~a" r i)) finally (return r)))
 (defun greaterp (a b) (> a b))
-(defun ratom () (read))
+
+;;; Read hack due to Matt Neimier. Conveniently, Eliza uses RATOM,
+;;; which isn't normally defined, so we make it do a read with a fancy
+;;; read table, that parses punctuation properly.
+
+(progn 
+  ;; These are defined here and in the main body bcs they are needed
+  ;; in both places, and the two places are in different packages.
+  (defparameter TRMLIS '(|.| |?| |!|))
+  (defparameter PCTLIS '(|,| |;| |(| |)| |:|))
+  
+  (defparameter *patient-readtable* (copy-readtable ())
+    "A readtable for reading patient input.
+    It will parse terminals and punctuation as 
+    their own symbol, and will allow quote as a 
+    character in symbol names.")
+ 
+  (defun symbolize-character-reader (stream char)
+    "Read the given character and return it as a symbol"
+    (declare (ignore stream))
+    (intern (string char)))
+ 
+  (mapcar (lambda (s)
+            (set-macro-character
+             (schar (symbol-name s) 0)
+             #'symbolize-character-reader
+             ()
+             *patient-readtable*))
+          (append TRMLIS PCTLIS))
+ 
+  ;; allow quote in symbols
+  (set-syntax-from-char #\' #\a *patient-readtable*)
+ 
+  (defun ratom ()
+    (let ((*readtable* *patient-readtable*))
+      (read))))
 
 ;;; From https://code.google.com/p/lsw2/source/browse/branches/bona/ext-asdf/snark-20080805r038/src/collectors.lisp?spec=svn196&r=196
 (defun tconc (x collector)
@@ -186,7 +221,7 @@
 
 ;;; Globals (transferred from the tail of the file)
 
-(defparameter TRMLIS '(|!| |?|)) ;; removed . Can't use a . bcs READ will fail on it.
+(defparameter TRMLIS '(|!| |?| |.|))
 (defparameter PCTLIS '(|,| |;| |(| |)| |:|))
 (defparameter RUBOUT '|#|)
 
