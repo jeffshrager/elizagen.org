@@ -185,6 +185,11 @@
 ;;; I'm sure that some fancy format can do this better:
 (defun spaces (n) (loop repeat n do (princ #\Space)))
 
+
+(defun sds940-code-char (n)
+  "Interpret SDS940 character codes, as used in SETSEPR and SETBRK."
+  (code-char (mod (+ n 32) 128)))
+
 ;;; Read hack due to Matt Niemeir. Conveniently, Eliza uses RATOM,
 ;;; which isn't normally defined, so we make it do a read with a fancy
 ;;; read table, that parses punctuation properly.
