@@ -249,6 +249,7 @@
 
 (eval-when
  (:compile-toplevel :load-toplevel :execute)
+ (setq *readtable* (copy-readtable ()))
  (set-syntax-from-char #\' #\a *readtable*))
 
 ;;; ===================================================================================
