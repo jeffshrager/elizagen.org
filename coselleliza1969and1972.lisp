@@ -14,8 +14,8 @@
 ;;; space, and it only takes either an ! or ?
 
 ;;; TODO:
-;;;   * Replace the I/O so that it's usable w/o having to put
-;;;     spaces around punctuation, and allow .'s
+;;;   * Fix RECONSTRUCT to clean up output. This is going to be hard
+;;;     to do and still maintain the raw code!
 
 ;;; GENERAL NOTES:
 
@@ -30,9 +30,9 @@
 ;;; Thanks to the following for assistance in transcribing this code
 ;;; from the original printouts, and then making it work: eMBee, Dave
 ;;; Cooper, Bob Felts, Saul Good, Ben Hyde, Simon Leinen, Patrick May,
-;;; Charlie McMackin, Paul Nathan, Peter De Wachter, Thomas Russ,
-;;; Patrick Stein, and Jeff Shrager. Made to work in modern CL by Jeff
-;;; Shrager and Peter De Wachter.
+;;; Charlie McMackin, Paul Nathan, Matt Niemeir, Peter De Wachter,
+;;; Thomas Russ, Patrick Stein, and Jeff Shrager. Made to work in
+;;; modern CL by Peter De Wachter, Matt Niemeir, and Jeff Shrager.
 
 ;;; For more information, please contact Jeff Shrager (jshrager@stanford.edu)
 
@@ -140,7 +140,7 @@
   (loop for i in l with r = "" do (setq r (format nil "~a~a" r i)) finally (return r)))
 (defun greaterp (a b) (> a b))
 
-;;; Read hack due to Matt Neimier. Conveniently, Eliza uses RATOM,
+;;; Read hack due to Matt Niemeir. Conveniently, Eliza uses RATOM,
 ;;; which isn't normally defined, so we make it do a read with a fancy
 ;;; read table, that parses punctuation properly.
 
@@ -275,12 +275,7 @@
           (SETQ TIMON (QUOTIENT (CLOCK)
               60))
           (RECONSTRUCT (QUOTE (TELL ME YOUR PROBLEMS "."
-				    ;; Can't use a period bcs READ
-				    ;; will barf on it. Someday
-				    ;; perhaps wrap this in a special
-				    ;; readtable
-                  PLEASE TERMINATE INPUT WITH ;; A PERIOD OR A
-		  AN EXCLAMATION POINT OR A ;; <- Added
+                  PLEASE TERMINATE INPUT WITH A PERIOD OR A
                   QUESTION MARK "."))
             T)
           (SETNONE)
