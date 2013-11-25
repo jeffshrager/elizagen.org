@@ -509,7 +509,7 @@
             (T (TCONC CR SENT)))
       T3  (SETQ RULE (CDR RULE))
           (GO LP)
-      T1  (SETQ V1 (CAR (SETQ CR (NTH PARSELIST CR)))) 
+      T1  (SETQ V1 (CAR (SETQ CR (NTH PARSELIST CR))))
           (SETQ V2 (CADR CR))
       T2  (COND
 
@@ -572,7 +572,7 @@
 I don't think that this is used anyplace? If it was, it'd have to be a
 macro in cl.
 
-(RPLOQ
+(RPLQQ
  (NLAMBDA RPLQ
           (RPLACD (CAR RPLQ)
             (CDR RPLQ))))
@@ -632,7 +632,7 @@ macro in cl.
 
 ;;; /SCRIPT/   31 JULY 1969  1008:27                            PAGE 1
 
-(SETQQ WDLIST 
+(SETQQ WDLIST
        (SORRY DONT CANT WONT REMEMBER IF DREAMT DREAMED DREAM
 	      DREAMS HOW WHEN ALIKE SAME CERTAINLY FEEL THINK BELIEVE WISH MY
 	      NONE PERHAPS MAYBE NAME DEUTSCH FRANCAIS SVENSKA ITALIANO ESPANOL
@@ -681,50 +681,50 @@ macro in cl.
 
 ;;; Eliza-19690731-SCRIPTp1-01of21
 
-(rplqq if
-       priority
+(RPLQQ IF
+       PRIORITY
        3
-       rules
-       (((0 if 0
-	    (nil)
-	    (do you think it's likely that 3)
-	    (do you wish that 3)
-	    (what do you think about 3)
-	    (really"," if 3)))))
+       RULES
+       (((0 IF 0)
+	    (NIL)
+	    (DO YOU THINK IT'S LIKELY THAT 3)
+	    (DO YOU WISH THAT 3)
+	    (WHAT DO YOU THINK ABOUT 3)
+	    (REALLY"," IF 3))))
 
-(rplqq dreamt
-       priority
+(RPLQQ DREAMT
+       PRIORITY
        4
-       rules
-       (((0 you dreamt 0)
-         (nil)
-	 (really 4)
-	 (have you ever fantasized 4 while you were awake)
-	 (have you dreamt 4 before)
-	 dream
-	 newkey)))
+       RULES
+       (((0 YOU DREAMT 0)
+         (NIL)
+	 (REALLY 4)
+	 (HAVE YOU EVER FANTASIED 4 WHILE YOU WERE AWAKE)
+	 (HAVE YOU DREAMT 4 BEFORE)
+	 DREAM
+	 NEWKEY)))
 
-(rplqq dreamed
-       translation
-       dreamt
-       priority
+(RPLQQ DREAMED
+       TRANSLATION
+       DREAMT
+       PRIORITY
        4
-       rules
-       (dreamt))
+       RULES
+       (DREAMT))
 
-(rplqq dream
-       priority 3
-       rules (((0 you dream (of about) 0)
-	       (nil)
-	       (what might 5 represent)
-	       (what does 5 suggest to you)
-	       (how does that dream relate to your problem))
+(RPLQQ DREAM
+       PRIORITY 3
+       RULES (((0 YOU DREAM (OF ABOUT) 0)
+	       (NIL)
+	       (WHAT MIGHT 5 REPRESENT)
+	       (WHAT DOES 5 SUGGEST TO YOU)
+	       (HOW DOES THAT DREAM RELATE TO YOUR PROBLEM))
 	      ((0)
-	       (nil)
-	       (what do you dream about)
-	       (what persons appear in your dreams)
-	       (what may dreams have to do with your problem)
-	       newkey)))
+	       (NIL)
+	       (WHAT DO YOU DREAM ABOUT)
+	       (WHAT PERSONS APPEAR IN YOUR DREAMS)
+	       (WHAT MAY DREAMS HAVE TO DO WITH YOUR PROBLEM)
+	       NEWKEY)))
 
 ;;; Eliza-19690731-SCRIPTp1-02of21
 
@@ -782,58 +782,57 @@ BELIEF
 
 ;;; Eliza-19690731-SCRIPTp1-03of21
 
-(rplqq think
-belief
-  t)
+(RPLQQ THINK
+BELIEF
+  T)
 
-(rplqq believe
-belief
-  t)
+(RPLQQ BELIEVE
+BELIEF
+  T)
 
-(rplqq wish
-belief
-  t)
+(RPLQQ WISH
+BELIEF
+  T)
 
-(rplqq my
-memr
-   (((your 2 0)
-        (nil)
-	(lets discuss further why your 2 3 ".")
-	(earlier you said your 2 3 ".")
-	(but your 2 3 ".")
-	(does that have anything to do with the fact that your 2 3))
-    ((0 your 1)
-        (nil)
-	(would you like to discuss your 3)
-	(perhaps that concerns your 3 ".")
-	(tell me more about your 3 ".")))
-priority
+(RPLQQ MY
+MEMR
+   (((YOUR 2 0)
+        (NIL)
+	(LETS DISCUSS FURTHER WHY YOUR 2 3 ".")
+	(EARLIER YOU SAID YOUR 2 3 ".")
+	(BUT YOUR 2 3 ".")
+	(DOES THAT HAVE ANYTHING TO DO WITH THE FACT THAT YOUR 2 3))
+    ((0 YOUR 1)
+        (NIL)
+	(WOULD YOU LIKE TO DISCUSS YOUR 3)
+	(PERHAPS THAT CONCERNS YOUR 3 ".")
+	(TELL ME MORE ABOUT YOUR 3 ".")))
+PRIORITY
   0
-translation
-  your
-rules
-  (((0 your 0 (nil family)
+TRANSLATION
+  YOUR
+RULES
+  (((0 YOUR 0 (NIL FAMILY)
            0)
-        (nil)
-	(tell me more about your family ".")
-	(who else in your family 5)
-	(your 4)
-	(what else comes to mind when you think of your 4))
-   ((your 2 0)
-        (nil)
-	(is it important to you that your 2 3)
-	(do you suppose anyone else's 2 3)
-	(what makes you think your 2 3)
-	(suppose I didn't believe that your 2 3 "."))
-   ((0 your 1)
-        (nil)
-	(your 3)
-	(why do you say that your 3)
-	(who else knows about your 3)
-	(why do you mention your 3 just now)
-	(why is your 3 important to you)
-	(do you often discuss your 3))))
-	
+        (NIL)
+	(TELL ME MORE ABOUT YOUR FAMILY ".")
+	(WHO ELSE IN YOUR FAMILY 5)
+	(YOUR 4)
+	(WHAT ELSE COMES TO MIND WHEN YOU THINK OF YOUR 4))
+   ((YOUR 2 0)
+        (NIL)
+	(IS IT IMPORTANT TO YOU THAT YOUR 2 3)
+	(DO YOU SUPPOSE ANYONE ELSE'S 2 3)
+	(WHAT MAKES YOU THINK YOUR 2 3)
+	(SUPPOSE I DIDN'T BELIEVE THAT YOUR 2 3 "."))
+   ((0 YOUR 1)
+        (NIL)
+	(YOUR 3)
+	(WHY DO YOU SAY THAT YOUR 3)
+	(WHO ELSE KNOWS ABOUT YOUR 3)
+	(WHY DO YOU MENTION YOUR 3 JUST NOW)
+	(WHY IS YOUR 3 IMPORTANT TO YOU)
+	(DO YOU OFTEN DISCUSS YOUR 3))))
 
 ;;; Eliza-19690731-SCRIPTp1-04of21
 
@@ -919,7 +918,7 @@ PRIORITY
 RULES
    (((0)
          (NIL)
-         (HOW DO YOU DO ","))))
+         (HOW DO YOU DO "."))))
 
 (RPLQQ COMPUTER
 PRIORITY
@@ -929,8 +928,8 @@ RULES
          (NIL)
          (DO COMPUTERS WORRY YOU)
          (WHY DO YOU MENTION COMPUTERS)
-         (WHAT DO YOU THINK MACHINES HAVE TO DO WITH YOUR PROBLEMS)
-         (DO'T YOU THINK COMPUTERS CAN HELP PEOPLE))))
+         (WHAT DO YOU THINK MACHINES HAVE TO DO WITH YOUR PROBLEM)
+         (DON'T YOU THINK COMPUTERS CAN HELP PEOPLE))))
 
 ;;; Eliza-19690731-SCRIPTp1-06of21
 
@@ -955,15 +954,18 @@ RULES
    (COMPUTER))
 
 (RPLQQ AM
-       PRIORITY 0
-       TRANSLATION ARE
-       RULES (((ARE YOU 0)
+PRIORITY
+   0
+TRANSLATION
+   ARE
+RULES
+   (((ARE YOU 0)
 	       (NIL)
 	       (DO YOU BELIEVE YOU ARE 3)
 	       (WOULD YOU WANT TO BE 3)
 	       (YOU WISH I WOULD TELL YOU YOU ARE 3 ".")
 	       (WHAT WOULD IT MEAN IF YOU WERE 3)
-	       (XXWHAT))
+	       XXWHAT)
 	      ((0)
 	       (NIL)
 	       (WHY DO YOU SAY 'AM')
@@ -1020,54 +1022,54 @@ RULES
 
 ;;; Eliza-19690731-SCRIPTp1-08of21
 
-(rplqq your
-priority
+(RPLQQ YOUR
+PRIORITY
    0
-translation 
-   my
-rules
-  (((0 my 1)
-       (nil)
-       (why are you concerned over my 3)
-       (what about your own 3)
-       (are you worried about someone elses 3)
-       (really"," my 3))
-   ((my 0)
-       (nil)
-       (perhaps your own 2 ".")
-       (are you worried that my 2))))
+TRANSLATION
+   MY
+RULES
+  (((0 MY 1)
+       (NIL)
+       (WHY ARE YOU CONCERNED OVER MY 3)
+       (WHAT ABOUT YOUR OWN 3)
+       (ARE YOU WORRIED ABOUT SOMEONE ELSES 3)
+       (REALLY"," MY 3))
+   ((MY 0)
+       (NIL)
+       (PERHAPS YOUR OWN 2 ".")
+       (ARE YOU WORRIED THAT MY 2))))
 
-(rplqq was
-priority
+(RPLQQ WAS
+PRIORITY
   2
-rules
-   (((was you 0)
-        (nil)
-	(what if you were 3)
-	(do you think you were 3)
-	(were you 3)
-	(what would it mean if you were 3)
-	xxwhat)
-    ((you was 0)
-        (nil)
-	(were you really)
-	(why do you tell me you were 3 now)
-	(perhaps I already knew you were 3 "."))
-    ((was i 0)
-       (nil)
-       (would you like to believe i was 3)
-       (what suggest that I was 3)
-       (what do you think)
-       (perhaps i was 3 ".")
-       (what if i had been 3))))
+RULES
+   (((WAS YOU 0)
+        (NIL)
+	(WHAT IF YOU WERE 3)
+	(DO YOU THINK YOU WERE 3)
+	(WERE YOU 3)
+	(WHAT WOULD IT MEAN IF YOU WERE 3)
+	XXWHAT)
+    ((YOU WAS 0)
+        (NIL)
+	(WERE YOU REALLY)
+	(WHY DO YOU TELL ME YOU WERE 3 NOW)
+	(PERHAPS I ALREADY KNEW YOU WERE 3 "."))
+    ((WAS I 0)
+       (NIL)
+       (WOULD YOU LIKE TO BELIEVE I WAS 3)
+       (WHAT SUGGESTS THAT I WAS 3)
+       (WHAT DO YOU THINK)
+       (PERHAPS I WAS 3 ".")
+       (WHAT IF I HAD BEEN 3))))
 
-(rplqq were
-priority
+(RPLQQ WERE
+PRIORITY
    0
-translation
-   was
-rules
-   (was))
+TRANSLATION
+   WAS
+RULES
+   (WAS))
        
 
 ;;; Eliza-19690731-SCRIPTp1-09of21
@@ -1175,56 +1177,56 @@ RULES
 
 ;;; Eliza-19690731-SCRIPTp1-11of21
 
-    ((0 you (nil belief)
-	you
+    ((0 YOU (NIL BELIEF)
+	YOU
 	0)
-        (nil)
-	(do you really think so)
-	(but you are not sure you 5)
-	(do you really doubt you 5))
-    ((0 you 0 (nil belief)
+        (NIL)
+	(DO YOU REALLY THINK SO)
+	(BUT YOU ARE NOT SURE YOU 5)
+	(DO YOU REALLY DOUBT YOU 5))
+    ((0 YOU 0 (NIL BELIEF)
 	0
-	i
+	I
 	0)
-     (nil)
-     (pre (6 7)
-	  you))
-    ((0 you are 0)
-     (nil)
-     (is it because you are 4 that you came to me)
-     (how long have you been 4)
-     (do you believe it normal to be 4)
-     (do you enjoy being 4))
-    ((0 you (can't cannot)
+     (NIL)
+     (PRE (6 7)
+	  YOU))
+    ((0 YOU ARE 0)
+     (NIL)
+     (IS IT BECAUSE YOU ARE 4 THAT YOU CAME TO ME)
+     (HOW LONG HAVE YOU BEEN 4)
+     (DO YOU BELIEVE IT NORMAL TO BE 4)
+     (DO YOU ENJOY BEING 4))
+    ((0 YOU (CAN'T CANNOT)
 	0)
-     (nil)
-     (how do you know you can't 4)
-     (have you tried)
-     (perhaps you could 4 now ".")
-     (do you really want to be able to 4))
-    ((0 you (don't won't)
+     (NIL)
+     (HOW DO YOU KNOW YOU CAN'T 4)
+     (HAVE YOU TRIED)
+     (PERHAPS YOU COULD 4 NOW ".")
+     (DO YOU REALLY WANT TO BE ABLE TO 4))
+    ((0 YOU (DON'T WON'T)
 	0)
-     (nil)
-     (don't you really 4)
-     (why don't you 4)
-     (do you wish you did 4)
-     (does that trouble you))
-    ((0 you feel 0)
-     (nil)
-     (tell me more about such feelings ".")
-     (do you often feel 4)
-     (do you enjoy feeling 4)
-     (of what does feeling 4 remind you))
-    ((you 0 i)
-     (nil)
-     (perhaps in your fantasies we 2 each other ".")
-     (do you wish to 2 me)
-     (you seem to need to 2 me ".")
-     (do you 2 anyone else))
-    ((0 you (nil emotion)
+     (NIL)
+     (DON'T YOU REALLY 4)
+     (WHY DON'T YOU 4)
+     (DO YOU WISH YOU DID 4)
+     (DOES THAT TROUBLE YOU))
+    ((0 YOU FEEL 0)
+     (NIL)
+     (TELL ME MORE ABOUT SUCH FEELINGS ".")
+     (DO YOU OFTEN FEEL 4)
+     (DO YOU ENJOY FEELING 4)
+     (OF WHAT DOES FEELING 4 REMIND YOU))
+    ((YOU 0 I)
+     (NIL)
+     (PERHAPS IN YOUR FANTASY WE 2 EACH OTHER ".")
+     (DO YOU WISH TO 2 ME)
+     (YOU SEEM TO NEED TO 2 ME ".")
+     (DO YOU 2 ANYONE ELSE))
+    ((0 YOU (NIL EMOTION)
 	0)
-     (nil)
-     (what else do you 3)
+     (NIL)
+     (WHAT ELSE DO YOU 3)
      
 
 ;;; Eliza-19690731-SCRIPTp1-12of21
@@ -1279,14 +1281,13 @@ RULES
          (SUPPOSE YOU 3 4 ".")
          (OH? I 3 4)
          (WHAT MAKES YOU THINK I 3 4)
-         (WHO ARE YOU REALLY TALKIN ABOUT))))
-
+         (WHO ARE YOU REALLY TALKING ABOUT))))
 
 ;;; Eliza-19690731-SCRIPTp1-13of21
 
 ;;; /SCRIPT/   31 JULY 1969  1008:27                             PAGE 1:13
 
-(RPLQQ XXYZZ
+(RPLQQ XXYYZZ
 RULES
    (((0)
          (NIL)
@@ -1329,7 +1330,7 @@ RULES
          (NIL)
          (YOU BELIEVE I CAN 3 DON'T YOU)
          XXWHAT
-         (WOU WANT ME TO BE ABLE TO 3 ".")
+         (YOU WANT ME TO BE ABLE TO 3 ".")
          (PERHAPS YOU WOULD LIKE TO BE ABLE TO 3 YOURSELF "."))
       ((CAN YOU 0)
          (NIL)
@@ -1468,12 +1469,12 @@ RULES
 
 (RPLQQ LIKE
 RULES
-   (((0) (AM IS ARE WAS)
+   (((0 (AM IS ARE WAS)
              0
              LIKE
              0)
           (NIL)
-         (DIT))
+         DIT))
 EMOTION
    T
 PRIORITY
@@ -1487,7 +1488,7 @@ RULES
          (WHAT RESEMBLANCE DO YOU SEE)
          (WHAT DOES THAT SIMILARITY SUGGEST TO YOU)
          (WHAT OTHER CONNECTIONS DO YOU SEE)
-         (WHAT OTHER CONNECTION"," DO YOU SUPPOSE)
+         (WHAT IS THE CONNECTION"," DO YOU SUPPOSE)
          (HOW))))
 
 ;;; Eliza-19690731-SCRIPTp1-17of21
@@ -1555,9 +1556,12 @@ RULES
    (GIRLS))
 
 (RPLQQ BOY
-       PRIORITY 3
-       PERSON T
-       RULES (((0 (NIL PERSON)
+PRIORITY
+   3
+PERSON
+   T
+RULES
+   (((0 (NIL PERSON)
 		  FRIEND
 		  0)
 	       (NIL)
@@ -1577,7 +1581,7 @@ RULES
 	       (NIL)
 	       (WHAT GROUP OF 2 ARE YOU THINKING OF)
 	       (I EXPECTED THAT YOU WOULD WANT TO TALK ABOUT 2 ".")
-	       (DO YOU KNOW THAT MANY 2))))
+	       (DO YOU KNOW MANY 2))))
 
 
 ;;; Eliza-19690731-SCRIPTp1-19of21
@@ -1609,6 +1613,12 @@ RULES
    (BOY))
 
 (RPLQQ SEXY
+PRIORITY
+   5
+RULES
+   (SEX))
+
+(RPLQQ SEXUAL
 PRIORITY
    5
 RULES
@@ -1682,6 +1692,7 @@ RULES
          (REALLY 2)
          (WOULD YOU LIKE TO LAUGH)
          NEWKEY)))
+
 (RPLQQ LOVE
 EMOTION
    T)
