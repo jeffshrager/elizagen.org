@@ -111,8 +111,8 @@
 
 ;;;
 
-(defmacro put (sym prop val)
-  `(setf (get ,sym ,prop) ,val))
+(defun put (sym prop val)
+  (setf (get sym prop) val))
 
 ;;; Approx. InterLISP's GETPROP -- by Peter De Wachter. The code wants
 ;;; to have property lists that aren't attached to a symbol and it
