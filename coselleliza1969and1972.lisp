@@ -381,10 +381,8 @@
 		 (GREATERP FLAG (GETP (CDR KEYSTACK)
 				      (QUOTE PRIORITY))))
 	    (RPLACD KEYSTACK (CONS (CDR KEYSTACK)
-				   (symbol-plist word) ;; was (CDR WORD)
-				   )))
-	   (FLAG 
-            (BCONC (symbol-plist word) ;; was (CDR WORD)
+                 (CDR WORD))))
+            (FLAG (BCONC (CDR WORD)
 		   KEYSTACK)))
           (GO A)
       )))
@@ -609,16 +607,11 @@
   (LAMBDA NIL
     (PROG (A)
           (SETQ A (GENSYM))
-	  ;; In old lisps that symbol's car is the value and the cdr
-	  ;; is the plist, so this is actually smashing the plist, but
-	  ;; had to be upgraded for modern lisps. Thanks to Barry
-	  ;; Margolin, Ben Hyde, and Pascal Bourguignon.
-          ;; (RPLACD A (GETP (QUOTE NONE)
-	  ;;                 (QUOTE LASTRESORT)))
-	  (setf (symbol-plist a) 
-		(GETP (QUOTE NONE)
-		      (QUOTE LASTRESORT)))
-	  ;;
+          ;; In old lisps that symbol's car is the value and the cdr
+          ;; is the plist, so this is actually smashing the plist.
+          ;; Thanks to Barry Margolin, Ben Hyde, and Pascal Bourguignon.
+          (RPLACD A (GETP (QUOTE NONE)
+                      (QUOTE LASTRESORT)))
           (PUT (QUOTE NONE)
             (QUOTE MEM)
             (LIST (QUOTE RULES)
