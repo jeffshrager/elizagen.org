@@ -130,7 +130,7 @@
 ;;; Various bbn fns missing in cl
 
 (defun clock () (get-universal-time))
-(defun quotient (a b) (/ a b))
+(defun quotient (a b) (float (/ a b)))
 ;;; I'm sure that some fancy format can do this better:
 (defun spaces (n) (loop for i below n do (princ #\space)))
 (defun remainder (a b) (mod a b))
