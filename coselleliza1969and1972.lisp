@@ -66,7 +66,7 @@
 (defpackage :bbn-lisp
   (:use :cl)
   (:nicknames :bl)
-  (:shadow :cons :nth :prin1 :cdr )
+  (:shadow :cons :cdr :rplacd :rplaca :nth :prin1)
   (:export :defineq :setqq :rplqq :tconc :clock :put :getp
            :quotient :spaces :remainder :plus :minus :pack :greaterp :ratom :pctlis :trmlis
            ;; Also export Symbols named for CL symbols
@@ -122,18 +122,31 @@
 (defun getp (sym prop)
   (getf (bl:cdr sym) prop))
 
-;;; BL:CDR of a symbol is (symbol-plist symbol),
-;;; and similarly in rplcd'ing symbols.
-
-(defun cdr (x)
-  (cond ((consp x) (cl:cdr x))
-	((symbolp x) (symbol-plist x))))
-
 ;;; BBN Lisp CONS creates a cons cell, like (list nil) or (cons nil
 ;;; nil), but (CL:CONS) is an error, so we define (BL:CONS)
 
 (defun cons (&optional car cdr)
   (cl:cons car cdr))
+
+;;; BL:CDR of a symbol is (symbol-plist symbol),
+;;; and similarly in rplcd'ing symbols.
+
+(defun cdr (x)
+  (cond ((consp x) (cl:cdr x))
+	((symbolp x) (symbol-plist x))
+        (t (error "CDR expected a cons or a symbol"))))
+
+;;; TODO: Should we have all C[AD]+R variations?
+
+(defun rplacd (x y)
+  (cond ((consp x) (cl:rplacd x y))
+        ((symbolp x) (setf (symbol-plist x) y))
+        (t (error "RPLACD expected a cons or a symbol"))))
+
+(defun rplaca (x y)
+  (cond ((consp x) (cl:rplaca x y))
+        ((symbolp x) (setf (symbol-value x) y))
+        (t (error "RPLACA expected a cons or a symbol"))))
 
 (defun nth (x n)
   (nthcdr n (cons nil x)))
