@@ -9,13 +9,9 @@
 ;;; To test w/o autostart, after loading, go to package :e69 and enter: 
 ;;;  (doctor) 
 ;;; then try: 
-;;;  I AM GOD !  
-;;; Note that, at the moment, you need to separate the punctuation by a
-;;; space, and it only takes either an ! or ?
+;;;  I AM GOD!
 
 ;;; TODO:
-;;;   * Fix RECONSTRUCT to clean up output. This is going to be hard
-;;;     to do and still maintain the raw code!
 
 ;;; GENERAL NOTES:
 
@@ -66,24 +62,27 @@
 ;;; |                       CL MACROS &C TO MAKE OLD BBN CODE WORK                    |
 ;;; ===================================================================================
 
-(eval-when
- (:compile-toplevel :load-toplevel :execute)
- (defpackage :bbn-lisp 
-   (:nicknames :bl)
-   (:export :defineq :setqq :rplqq :tconc :clock :cons-cell :bbnth :put :getp :bbn-prin1
-	:quotient :spaces :remainder :plus :minus :pack :greaterp :ratom :pctlis :trmlis))
- (in-package :bl)
- )
+
+(defpackage :bbn-lisp
+  (:use :cl)
+  (:nicknames :bl)
+  (:shadow :cons :nth :prin1 :cdr )
+  (:export :defineq :setqq :rplqq :tconc :clock :put :getp
+           :quotient :spaces :remainder :plus :minus :pack :greaterp :ratom :pctlis :trmlis
+           ;; Also export Symbols named for CL symbols
+           ;; Exports include e.g. BBN-LISP:CONS, and CL:DEFUN
+           ;; but not CL:CONS. 
+           . #.(loop for s being each external-symbol of :cl
+                     collect (symbol-name s))))
+
+(in-package :bl)
+
 
 ;;; The goal is to do as little damage as possible to the original
 ;;; code.
 
 (eval-when
  (:compile-toplevel :load-toplevel :execute)
-
-;;; Other things that had to be changed: 
-;;; CDR of a symbol is (symbol-plist symbol), and similarly in rplcd'ing symbols.
-;;; (CONS) is used like (CONS NIL NIL) and got changed to (CONS-CELL).
 
 ;;; Turns out that arguments are optional in BBN lisp and (I assume)
 ;;; get filled in with NILs. Unfortunately, you can't use &optionals
@@ -121,11 +120,28 @@
 ;;; NIL in front of them to maintain the CDR property.
 
 (defun getp (sym prop)
-  (getf (bbn-cdr sym)prop))
+  (getf (bl:cdr sym) prop))
 
-(defun bbn-cdr (x)
-  (cond ((consp x) (cdr x))
+;;; BL:CDR of a symbol is (symbol-plist symbol),
+;;; and similarly in rplcd'ing symbols.
+
+(defun cdr (x)
+  (cond ((consp x) (cl:cdr x))
 	((symbolp x) (symbol-plist x))))
+
+;;; BBN Lisp CONS creates a cons cell, like (list nil) or (cons nil
+;;; nil), but (CL:CONS) is an error, so we define (BL:CONS)
+
+(defun cons (&optional car cdr)
+  (cl:cons car cdr))
+
+(defun nth (x n)
+  (nthcdr n (cons nil x)))
+
+;;; BBN's prin1 is cl's princ (and probably v.v!!!)
+
+(defmacro prin1 (&rest what)
+  `(princ ,@what))
 
 ;;; Various bbn fns missing in cl
 
@@ -140,46 +156,37 @@
   (loop for i in l with r = "" do (setq r (format nil "~a~a" r i)) finally (return r)))
 (defun greaterp (a b) (> a b))
 
-
-;;; BBN's prin1 is cl's princ (and probably v.v!!!)
-(defmacro bbn-prin1 (&rest what)
-  `(princ ,@what))
-
 ;;; Read hack due to Matt Niemeir. Conveniently, Eliza uses RATOM,
 ;;; which isn't normally defined, so we make it do a read with a fancy
 ;;; read table, that parses punctuation properly.
 
-(progn 
-  ;; These are defined here and in the main body bcs they are needed
-  ;; in both places, and the two places are in different packages.
-  (defparameter TRMLIS '(|.| |?| |!|))
-  (defparameter PCTLIS '(|,| |;| |(| |)| |:|))
-  
-  (defparameter *patient-readtable* (copy-readtable ())
-    "A readtable for reading patient input.
-    It will parse terminals and punctuation as 
-    their own symbol, and will allow quote as a 
-    character in symbol names.")
- 
-  (defun symbolize-character-reader (stream char)
-    "Read the given character and return it as a symbol"
-    (declare (ignore stream))
-    (intern (string char)))
- 
-  (mapcar (lambda (s)
-            (set-macro-character
-             (schar (symbol-name s) 0)
-             #'symbolize-character-reader
-             ()
-             *patient-readtable*))
-          (append TRMLIS PCTLIS))
- 
-  ;; allow quote in symbols
-  (set-syntax-from-char #\' #\a *patient-readtable*)
- 
-  (defun ratom ()
-    (let ((*readtable* *patient-readtable*))
-      (read))))
+(defparameter *patient-readtable* (copy-readtable ())
+  "A readtable for reading patient input.
+  It will parse terminals and punctuation as 
+  their own symbol, and will allow quote as a 
+  character in symbol names.")
+
+(defun symbolize-character-reader (stream char)
+  "Read the given character and return it as a symbol"
+  (declare (ignore stream))
+  (nth-value 0 (intern (string char))))
+
+(mapcar (lambda (s)
+          (set-macro-character
+           (schar (symbol-name s) 0)
+           #'symbolize-character-reader
+           ()
+           *patient-readtable*))
+        ;; punctuation and terminals copied from 
+        ;; 1969 code's TRMLIS and PCTLIS
+        '(|.| |?| |!| |,| |;| |(| |)| |:|))
+
+;; allow quote in symbols
+(set-syntax-from-char #\' #\a *patient-readtable*)
+
+(defun ratom ()
+  (let ((*readtable* *patient-readtable*))
+    (read)))
 
 ;;; From https://code.google.com/p/lsw2/source/browse/branches/bona/ext-asdf/snark-20080805r038/src/collectors.lisp?spec=svn196&r=196
 (defun tconc (x collector)
@@ -195,20 +202,6 @@
     (t
      (rplacd collector (setf (cddr collector) x)))))
 
-;;; BBN Lisp CONS creates a cons cell, like (list nil) or (cons nil
-;;; nil), but (CONS) is an error in CL, or at least in CCL. To do this
-;;; cleanly we would have to replace cons, but it's such a core
-;;; function that it bascially can't be replaced. The simplest thing
-;;; to do would just be to replace (cons) with (cons nil nil) [or
-;;; (list nil)], but in order to make this clear, I've done it in a
-;;; slightly more apparent way.
-
-(defun cons-cell ()
-  (cons nil nil))
-
-(defun bbnth (x n)
-  (nthcdr n (cons nil x)))
-
 )
 
 
@@ -216,13 +209,12 @@
 ;;; |                            Eliza69-specific header                              |
 ;;; ===================================================================================
 
-(eval-when
- (:compile-toplevel :load-toplevel :execute)
- (defpackage :eliza69 
-   (:nicknames :e69)
-   (:export :doctor)
-   (:use :bl :cl))
- (in-package :e69))
+(defpackage :eliza69 
+  (:nicknames :e69)
+  (:export :doctor)
+  (:use :bl))
+
+(in-package :e69)
 
 ;;; Globals (transferred from the tail of the file)
 
@@ -238,13 +230,6 @@
 (defvar FLIPFLOP nil)
 (defvar PARSELIST nil)
 
-;;; Replace some of the lisp fns with the corrected versions.
-;;; THIS DOESN'T WORK IN CCL!
-
-;(eval-when
-; (:compile-toplevel)
-; (setf (symbol-function 'nth) (symbol-function 'bl::bbnth)))
- 
 ;;; Whack the readtable so that quotes are allowed inside atoms. (Thanks to Matt Niemeir)
 
 (eval-when
@@ -284,7 +269,7 @@
                   QUESTION MARK "."))
             T)
           (SETNONE)
-      A   (BBN-PRIN1 (QUOTE "
+      A   (PRIN1 (QUOTE "
 *"))
           (COND
             ((NULL (SETQ SENTENCE (MAKESENTENCE)))
@@ -316,8 +301,8 @@
 (MAKESENTENCE
   (LAMBDA NIL
     (PROG (FLAG WORD SENTENCE KEYSTACK)
-      A1  (SETQ KEYSTACK (CONS-CELL))
-          (SETQ SENTENCE (CONS-CELL))
+      A1  (SETQ KEYSTACK (CONS))
+          (SETQ SENTENCE (CONS))
       A   (SETQ WORD (RATOM))
           (COND
             ((NUMBERP WORD)
@@ -438,7 +423,7 @@
 	    ((NUMBERP CD)
 	      (TCONC S PARSELIST)
 	      (COND
-	        ((SETQ S (BBNTH S CD))
+	        ((SETQ S (NTH S CD))
 		  (GO T3))
 	        (T (GO RN))))
             ((ATOM CD)
@@ -500,30 +485,30 @@
     (PROG (SENT CR V1 V2 TPF QMF)
           (COND
             ((NULL PF)
-             (SETQ SENT (CONS-CELL))))
+             (SETQ SENT (CONS))))
       LP  (COND
             ((NULL RULE)
               (COND
                 (PF (COND
                     ((NULL QMF)
-                      (BBN-PRIN1 (QUOTE ?))))
+                      (PRIN1 (QUOTE ?))))
                   (TERPRI)))
               (RETURN (CAR SENT)))
             ((NUMBERP (SETQ CR (CAR RULE)))
               (GO T1))
             (PF (COND
                 ((MEMBER CR TRMLIS :test #'string-equal) ;;; !!!!!!!!!!!
-                  (BBN-PRIN1 CR)
+                  (PRIN1 CR)
                   (SETQ QMF T))
                 (T (COND
                     (TPF (SPACES 1))
                     (T (TERPRI)
                       (SETQ TPF T)))
-                  (BBN-PRIN1 CR))))
+                  (PRIN1 CR))))
             (T (TCONC CR SENT)))
       T3  (SETQ RULE (CDR RULE))
           (GO LP)
-      T1  (SETQ V1 (CAR (SETQ CR (BBNTH PARSELIST CR)))) 
+      T1  (SETQ V1 (CAR (SETQ CR (NTH PARSELIST CR)))) 
           (SETQ V2 (CADR CR))
       T2  (COND
 
@@ -537,7 +522,7 @@
               (TPF (SPACES 1))
               (T (TERPRI)
                 (SETQ TPF T)))
-              (BBN-PRIN1 (CAR V1)))
+              (PRIN1 (CAR V1)))
           (T (TCONC (CAR V1)
               SENT)))
        (SETQ V1 (CDR V1))
@@ -1721,9 +1706,9 @@ EMOTION
 
 ;;; <source8>doctor.;2    TUE 13-JUN-72 10:16AM                 PAGE 1:1
 
-(PROGN (LISPXBBN-PRIN1 (QUOTE "FILE CREATED ")
+(PROGN (LISPXPRIN1 (QUOTE "FILE CREATED ")
                    T)
-       (LISPXBBN-PRIN1 (QUOTE "13-JUN-72 4:20:07")
+       (LISPXPRIN1 (QUOTE "13-JUN-72 4:20:07")
                    T)
        (LISPXTERPRI T))
 
@@ -1747,7 +1732,7 @@ EMOTION
                                   %.))
                         T)
            (SETNONE)
-      A    (BBN-PRIN1 (QUOTE "
+      A    (PRIN1 (QUOTE "
 *"))
            (COND
              (NULL (SETQ SENTENCE (MAKESENTENCE)))
@@ -1762,9 +1747,9 @@ EMOTION
 
 ;;;  <SOURCES>DOCTOR.;2   TUE 13-JUN-72 10:16AM    PAGE 1
 
-  (PROGN (LISPXBBN-PRIN1 (QUOTE "FILE CREATED ")
+  (PROGN (LISPXPRIN1 (QUOTE "FILE CREATED ")
                      T)
-         (LISPXBBN-PRIN1 (QUOTE "13-JUN-72 4:20:07")
+         (LISPXPRIN1 (QUOTE "13-JUN-72 4:20:07")
                      T)
          (LISPXTERPRI T))
 (DEFINEQ
@@ -1788,7 +1773,7 @@ EMOTION
                                 %.))
                        T)
           (SETNONE)
-       A  (BBN-PRIN1 (QUOTE "
+       A  (PRIN1 (QUOTE "
 *"))
           (COND
             ((NULL (SETQ SENTENCE (MAKESENTENCE)))
@@ -1826,8 +1811,8 @@ EMOTION
 (MAKESENTENCE
  (LAMBDA NIL
    (PROG (FLAG WORD SENTENCE KEYSTACK)
-      A1 (SETQ KEYSTACK (CONS-CELL))  ; A1 IS A LABEL
-      (SETQ SENTENCE (CONS-CELL))
+      A1 (SETQ KEYSTACK (CONS))  ; A1 IS A LABEL
+      (SETQ SENTENCE (CONS))
       A (SETQ WORD (RATOM))             ; A LABEL
       [COND
       ((NUMBERP WORD)
@@ -1880,8 +1865,8 @@ EMOTION
 (MAKESENTENCE
  (LAMBDA NIL
    (PROG (FLAG WORD SENTENCE KEYSTACK)
-      A1 (SETQ KEYSTACK (CONS-CELL))  ; A1 IS A LABEL
-      (SETQ SENTENCE (CONS-CELL))
+      A1 (SETQ KEYSTACK (CONS))  ; A1 IS A LABEL
+      (SETQ SENTENCE (CONS))
       A (SETQ WORD (RATOM))             ; A LABEL
       [COND
       ((NUMBERP WORD)
@@ -1934,8 +1919,8 @@ EMOTION
 (MAKESENTENCE
   [LAMBDA NIL
     (PROG (FLAG WORD SENTENCE KEYSTACK)
-      A1  (SETQ KEYSTACK (CONS-CELL))
-          (SETQ SENTENCE (CONS-CELL))
+      A1  (SETQ KEYSTACK (CONS))
+          (SETQ SENTENCE (CONS))
       A   (SETQ WORD (RATOM))
           [COND
             ((NUMBERP WORD)
@@ -1990,8 +1975,8 @@ EMOTION
 (MAKESENTENCE
   [LAMBDA NIL
     (PROG (FLAG WORD SENTENCE KEYSTACK)
-      A1  (SETQ KEYSTACK (CONS-CELL))
-          (SETQ SENTENCE (CONS-CELL))
+      A1  (SETQ KEYSTACK (CONS))
+          (SETQ SENTENCE (CONS))
       A   (SETQ WORD (RATOM))
           [COND
             ((NUMBERP WORD)
@@ -2045,8 +2030,8 @@ EMOTION
 (MAKESENTENCE
   [LAMBDA NIL
     (PROG (FLAG WORD SENTENCE KEYSTACK)
-      A1  (SETQ KEYSTACK (CONS-CELL))
-          (SETQ SENTENCE (CONS-CELL))
+      A1  (SETQ KEYSTACK (CONS))
+          (SETQ SENTENCE (CONS))
       A   (SETQ WORD (RATOM))
           [COND
             ((NUMBERP WORD)
@@ -2216,20 +2201,20 @@ EMOTION
               (COND
                 (PF [COND
                       ((NULL QMF)
-                       (BBN-PRIN1 (QUOTE ?]
+                       (PRIN1 (QUOTE ?]
                     (TERPRI)))
               (RETURN (CAR SENT)))
              ((NUMBERP (SETQ CR (CAR RULE)))
               (GO T1))
              [PF (COND
                    ((MEMBER CR TRMLIS)
-                    (BBN-PRIN1 CR)
+                    (PRIN1 CR)
                     (SETQ QMF T))
                    (T (COND
                         (TPF (SPACES 1))
                         (T (TERPRI)
                            (SETQ TPF T)))
-                      (BBN-PRIN1 CR]
+                      (PRIN1 CR]
              (T (TCONC SENT CR)))
        T3  (SETQ RULE (CDR RULE))
            (GO LP)
@@ -2247,7 +2232,7 @@ EMOTION
                   (TPF (SPACES 1))
                   (T (TERPRI)
                      (SETQ TPF T)))
-                (BBN-PRIN1 (CAR V1)))
+                (PRIN1 (CAR V1)))
             (T (TCONC SENT (CAR V1]
           (SETQ V1 (CDR V1))
           (GO T2])
@@ -2322,7 +2307,7 @@ EMOTION
   (RPAQQ RUBOUT #)
   [RPAQQ DOCARM (COND
            ((EQ INTYPE 3)
-            (BBN-PRIN1 (QUOTE "
+            (PRIN1 (QUOTE "
 
 ...EXCUSE ME FOR JUST A MINUTE.
 ")
@@ -2330,11 +2315,11 @@ EMOTION
             (RECLAIM)
             (COND
               ((STKPOS (QUOTE MAKESENTENCE))
-               (BBN-PRIN1 (QUOTE
+               (PRIN1 (QUOTE
               "SORRY TO HAVE INTERRUPTED YOU, PLEASE CONTINUE...
 ")
                       T))
-              (T (BBN-PRIN1 (QUOTE "NOW, WHERE WERE WE...OH YES,
+              (T (PRIN1 (QUOTE "NOW, WHERE WERE WE...OH YES,
 ")
                          T)))
             (SETQ INTYPE -1]
@@ -2353,11 +2338,11 @@ EMOTION
 
 ;  <SOURCES>SCRIPT.;1   MON 24-APRI-72 10:01AM
 
-  (PROGN (LISPXBBN-PRIN1 (QUOTE "FILE CREATED ")
+  (PROGN (LISPXPRIN1 (QUOTE "FILE CREATED ")
                      T)
-         (LISPXBBN-PRIN1 (QUOTE "22-APR-72 23:26:05")
+         (LISPXPRIN1 (QUOTE "22-APR-72 23:26:05")
                      T)
-         (LISPXBBN-PRIN1 T))
+         (LISPXPRIN1 T))
   (SETQQ WDLIST
          (SORRY DONT CANT WONT REMEMBER IF DREAMT DREAMED DREAM DREAMS
                 HOW WHEN ALIKE SAME CERTAINLY FEEL THINK BELIEVE WISH
