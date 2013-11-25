@@ -64,13 +64,14 @@
 ;;; |                       CL MACROS &C TO MAKE OLD BBN CODE WORK                    |
 ;;; ===================================================================================
 
-(eval-when  (:compile-toplevel :load-toplevel :execute)
-	    (defpackage :bbn-lisp 
-	      (:nicknames :bl)
-	      (:export :defineq :setqq :rplqq :tconc :clock :cons-cell :bbn-nth :put :getp
-	 	:quotient :spaces :remainder :plus :minus :pack :greaterp :ratom))
-	    (in-package :bl)
-	    )
+(eval-when
+ (:compile-toplevel :load-toplevel :execute)
+ (defpackage :bbn-lisp 
+   (:nicknames :bl)
+   (:export :defineq :setqq :rplqq :tconc :clock :cons-cell :bbn-nth :put :getp
+	:quotient :spaces :remainder :plus :minus :pack :greaterp :ratom))
+ (in-package :bl)
+ )
 
 ;;; The goal is to do as little damage as possible to the original
 ;;; code. The main thing that had to be edited in the body of the code is
@@ -80,7 +81,8 @@
 ;;; I've xlated all ' to & (which I checked is otherwise unused), and
 ;;; there's code in the I/O that xlates it in the right direction(s).
 
-(eval-when  (:compile-toplevel :load-toplevel :execute)
+(eval-when
+ (:compile-toplevel :load-toplevel :execute)
 
 ;;; Other things that had to be changed: 
 ;;; CDR of a symbol is (symbol-plist symbol), and similarly in rplcd'ing symbols.
@@ -176,11 +178,12 @@
 ;;; |                                    1969 DOCFNS                                  |
 ;;; ===================================================================================
 
-(eval-when  (:compile-toplevel :load-toplevel :execute)
-	    (defpackage :eliza69 
-	      (:nicknames :e69)
-	      (:use :bl :cl))
-	    (in-package :e69))
+(eval-when
+ (:compile-toplevel :load-toplevel :execute)
+ (defpackage :eliza69 
+   (:nicknames :e69)
+   (:use :bl :cl))
+ (in-package :e69))
 
 ;;; Globals (transferred from the tail of the file)
 
@@ -2855,3 +2858,9 @@ EMOTION
 STOP
 
 |#
+
+(eval-when
+ (:compile-toplevel :load-toplevel :execute)
+ (in-package :cl-user)
+ (import 'e69::doctor)
+ )
