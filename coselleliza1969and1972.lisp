@@ -182,6 +182,7 @@
  (:compile-toplevel :load-toplevel :execute)
  (defpackage :eliza69 
    (:nicknames :e69)
+   (:export :doctor)
    (:use :bl :cl))
  (in-package :e69))
 
@@ -2860,7 +2861,5 @@ STOP
 |#
 
 (eval-when
- (:compile-toplevel :load-toplevel :execute)
- (in-package :cl-user)
- (import 'e69::doctor)
- )
+ (:load-toplevel :execute)
+ (doctor))
