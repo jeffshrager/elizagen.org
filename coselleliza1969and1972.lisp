@@ -163,15 +163,18 @@
 ;;; Various bbn fns missing in cl
 
 (defun clock () (get-universal-time))
-(defun quotient (a b) (float (/ a b)))
-;;; I'm sure that some fancy format can do this better:
-(defun spaces (n) (loop for i below n do (princ #\space)))
+(defun quotient (a b) (floor a b))
 (defun remainder (a b) (mod a b))
 (defun plus (&rest l) (apply #'+ l))
-(defun minus (&rest l) (apply #'- l))
-(defun pack (l)
-  (loop for i in l with r = "" do (setq r (format nil "~a~a" r i)) finally (return r)))
+(defun minus (x) (- x))
 (defun greaterp (a b) (> a b))
+
+(defun pack (l)
+  ;; TODO: should this return a string or a symbol?
+  (format nil "~{~A~}" l))
+
+;;; I'm sure that some fancy format can do this better:
+(defun spaces (n) (loop repeat n do (princ #\Space)))
 
 ;;; Read hack due to Matt Niemeir. Conveniently, Eliza uses RATOM,
 ;;; which isn't normally defined, so we make it do a read with a fancy
