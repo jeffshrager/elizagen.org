@@ -15,7 +15,7 @@
 
 ;;; TODO:
 ;;;   * Replace the I/O so that it's usable w/o having to put
-;;;     spaces around punctuation, use &s, etc.
+;;;     spaces around punctuation, and allow .'s
 
 ;;; GENERAL NOTES:
 
@@ -76,12 +76,7 @@
  )
 
 ;;; The goal is to do as little damage as possible to the original
-;;; code. The main thing that had to be edited in the body of the code is
-;;; the embedded single quotes ('), as in: DON'T. Since the old
-;;; BBN-LISP (apparently) didn't have the quote reader macro, ' was
-;;; just an alpha char. Well, that totally won't fly these days, so
-;;; I've xlated all ' to & (which I checked is otherwise unused), and
-;;; there's code in the I/O that xlates it in the right direction(s).
+;;; code.
 
 (eval-when
  (:compile-toplevel :load-toplevel :execute)
