@@ -162,12 +162,21 @@
 
 ;;; Various bbn fns missing in cl
 
-(defun clock () (get-universal-time))
 (defun quotient (a b) (floor a b))
 (defun remainder (a b) (mod a b))
 (defun plus (&rest l) (apply #'+ l))
 (defun minus (x) (- x))
 (defun greaterp (a b) (> a b))
+
+(defvar *clock-version* 1969)
+
+(defun clock ()
+  (ccase *clock-version*
+    (1969 ;; Seconds since midnight
+     (mod (get-universal-time) 86400))
+    (1972 ;; Some millisecond counter??
+     (floor (* (get-internal-real-time) 1000)
+            internal-time-units-per-second))))
 
 (defun pack (l)
   ;; TODO: should this return a string or a symbol?
