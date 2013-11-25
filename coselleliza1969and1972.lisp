@@ -3,8 +3,10 @@
 ;;; ELIZA in Lisp by Bernie Cosell
 ;;; For more information see http://elizagen.org or http://shrager.org/eliza
 
-;;; TESTING:
-;;; To test, after loading, enter: 
+;;; To suppress autostart on load change this to nil:
+(defparameter *autostart* t)
+
+;;; To test w/o autostart, after loading, go to package :e69 and enter: 
 ;;;  (doctor) 
 ;;; then try: 
 ;;;  I AM GOD !  
@@ -2862,4 +2864,4 @@ STOP
 
 (eval-when
  (:load-toplevel :execute)
- (doctor))
+ (when cl-user::*autostart* (doctor)))
