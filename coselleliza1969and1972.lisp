@@ -70,7 +70,7 @@
  (:compile-toplevel :load-toplevel :execute)
  (defpackage :bbn-lisp 
    (:nicknames :bl)
-   (:export :defineq :setqq :rplqq :tconc :clock :cons-cell :bbnth :put :getp
+   (:export :defineq :setqq :rplqq :tconc :clock :cons-cell :bbnth :put :getp :bbn-prin1
 	:quotient :spaces :remainder :plus :minus :pack :greaterp :ratom :pctlis :trmlis))
  (in-package :bl)
  )
@@ -139,6 +139,11 @@
 (defun pack (l)
   (loop for i in l with r = "" do (setq r (format nil "~a~a" r i)) finally (return r)))
 (defun greaterp (a b) (> a b))
+
+
+;;; BBN's prin1 is cl's princ (and probably v.v!!!)
+(defmacro bbn-prin1 (&rest what)
+  `(princ ,@what))
 
 ;;; Read hack due to Matt Niemeir. Conveniently, Eliza uses RATOM,
 ;;; which isn't normally defined, so we make it do a read with a fancy
@@ -279,7 +284,7 @@
                   QUESTION MARK "."))
             T)
           (SETNONE)
-      A   (PRIN1 (QUOTE "
+      A   (BBN-PRIN1 (QUOTE "
 *"))
           (COND
             ((NULL (SETQ SENTENCE (MAKESENTENCE)))
@@ -501,20 +506,20 @@
               (COND
                 (PF (COND
                     ((NULL QMF)
-                      (PRIN1 (QUOTE ?))))
+                      (BBN-PRIN1 (QUOTE ?))))
                   (TERPRI)))
               (RETURN (CAR SENT)))
             ((NUMBERP (SETQ CR (CAR RULE)))
               (GO T1))
             (PF (COND
-                ((MEMBER CR TRMLIS) 
-                  (PRIN1 CR)
+                ((MEMBER CR TRMLIS :test #'string-equal) ;;; !!!!!!!!!!!
+                  (BBN-PRIN1 CR)
                   (SETQ QMF T))
                 (T (COND
                     (TPF (SPACES 1))
                     (T (TERPRI)
                       (SETQ TPF T)))
-                  (PRIN1 CR))))
+                  (BBN-PRIN1 CR))))
             (T (TCONC CR SENT)))
       T3  (SETQ RULE (CDR RULE))
           (GO LP)
@@ -532,7 +537,7 @@
               (TPF (SPACES 1))
               (T (TERPRI)
                 (SETQ TPF T)))
-              (PRIN1 (CAR V1)))
+              (BBN-PRIN1 (CAR V1)))
           (T (TCONC (CAR V1)
               SENT)))
        (SETQ V1 (CDR V1))
@@ -1716,9 +1721,9 @@ EMOTION
 
 ;;; <source8>doctor.;2    TUE 13-JUN-72 10:16AM                 PAGE 1:1
 
-(PROGN (LISPXPRIN1 (QUOTE "FILE CREATED ")
+(PROGN (LISPXBBN-PRIN1 (QUOTE "FILE CREATED ")
                    T)
-       (LISPXPRIN1 (QUOTE "13-JUN-72 4:20:07")
+       (LISPXBBN-PRIN1 (QUOTE "13-JUN-72 4:20:07")
                    T)
        (LISPXTERPRI T))
 
@@ -1742,7 +1747,7 @@ EMOTION
                                   %.))
                         T)
            (SETNONE)
-      A    (PRIN1 (QUOTE "
+      A    (BBN-PRIN1 (QUOTE "
 *"))
            (COND
              (NULL (SETQ SENTENCE (MAKESENTENCE)))
@@ -1757,9 +1762,9 @@ EMOTION
 
 ;;;  <SOURCES>DOCTOR.;2   TUE 13-JUN-72 10:16AM    PAGE 1
 
-  (PROGN (LISPXPRIN1 (QUOTE "FILE CREATED ")
+  (PROGN (LISPXBBN-PRIN1 (QUOTE "FILE CREATED ")
                      T)
-         (LISPXPRIN1 (QUOTE "13-JUN-72 4:20:07")
+         (LISPXBBN-PRIN1 (QUOTE "13-JUN-72 4:20:07")
                      T)
          (LISPXTERPRI T))
 (DEFINEQ
@@ -1783,7 +1788,7 @@ EMOTION
                                 %.))
                        T)
           (SETNONE)
-       A  (PRIN1 (QUOTE "
+       A  (BBN-PRIN1 (QUOTE "
 *"))
           (COND
             ((NULL (SETQ SENTENCE (MAKESENTENCE)))
@@ -2211,20 +2216,20 @@ EMOTION
               (COND
                 (PF [COND
                       ((NULL QMF)
-                       (PRIN1 (QUOTE ?]
+                       (BBN-PRIN1 (QUOTE ?]
                     (TERPRI)))
               (RETURN (CAR SENT)))
              ((NUMBERP (SETQ CR (CAR RULE)))
               (GO T1))
              [PF (COND
                    ((MEMBER CR TRMLIS)
-                    (PRIN1 CR)
+                    (BBN-PRIN1 CR)
                     (SETQ QMF T))
                    (T (COND
                         (TPF (SPACES 1))
                         (T (TERPRI)
                            (SETQ TPF T)))
-                      (PRIN1 CR]
+                      (BBN-PRIN1 CR]
              (T (TCONC SENT CR)))
        T3  (SETQ RULE (CDR RULE))
            (GO LP)
@@ -2242,7 +2247,7 @@ EMOTION
                   (TPF (SPACES 1))
                   (T (TERPRI)
                      (SETQ TPF T)))
-                (PRIN1 (CAR V1)))
+                (BBN-PRIN1 (CAR V1)))
             (T (TCONC SENT (CAR V1]
           (SETQ V1 (CDR V1))
           (GO T2])
@@ -2317,7 +2322,7 @@ EMOTION
   (RPAQQ RUBOUT #)
   [RPAQQ DOCARM (COND
            ((EQ INTYPE 3)
-            (PRIN1 (QUOTE "
+            (BBN-PRIN1 (QUOTE "
 
 ...EXCUSE ME FOR JUST A MINUTE.
 ")
@@ -2325,11 +2330,11 @@ EMOTION
             (RECLAIM)
             (COND
               ((STKPOS (QUOTE MAKESENTENCE))
-               (PRIN1 (QUOTE
+               (BBN-PRIN1 (QUOTE
               "SORRY TO HAVE INTERRUPTED YOU, PLEASE CONTINUE...
 ")
                       T))
-              (T (PRIN1 (QUOTE "NOW, WHERE WERE WE...OH YES,
+              (T (BBN-PRIN1 (QUOTE "NOW, WHERE WERE WE...OH YES,
 ")
                          T)))
             (SETQ INTYPE -1]
@@ -2348,11 +2353,11 @@ EMOTION
 
 ;  <SOURCES>SCRIPT.;1   MON 24-APRI-72 10:01AM
 
-  (PROGN (LISPXPRIN1 (QUOTE "FILE CREATED ")
+  (PROGN (LISPXBBN-PRIN1 (QUOTE "FILE CREATED ")
                      T)
-         (LISPXPRIN1 (QUOTE "22-APR-72 23:26:05")
+         (LISPXBBN-PRIN1 (QUOTE "22-APR-72 23:26:05")
                      T)
-         (LISPXPRIN1 T))
+         (LISPXBBN-PRIN1 T))
   (SETQQ WDLIST
          (SORRY DONT CANT WONT REMEMBER IF DREAMT DREAMED DREAM DREAMS
                 HOW WHEN ALIKE SAME CERTAINLY FEEL THINK BELIEVE WISH
