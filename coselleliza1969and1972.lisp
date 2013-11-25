@@ -1,4 +1,4 @@
-; (load "coselleliza1969and1972.lisp")
+; (load (compile-file "coselleliza1969and1972.lisp"))
 
 ;;; ELIZA in Lisp by Bernie Cosell
 ;;; For more information see http://elizagen.org or http://shrager.org/eliza
@@ -64,6 +64,14 @@
 ;;; |                       CL MACROS &C TO MAKE OLD BBN CODE WORK                    |
 ;;; ===================================================================================
 
+(eval-when  (:compile-toplevel :load-toplevel :execute)
+	    (defpackage :bbn-lisp 
+	      (:nicknames :bl)
+	      (:export :defineq :setqq :rplqq :tconc :clock :cons-cell :bbn-nth :put :getp
+	 	:quotient :spaces :remainder :plus :minus :pack :greaterp :ratom))
+	    (in-package :bl)
+	    )
+
 ;;; The goal is to do as little damage as possible to the original
 ;;; code. The main thing that had to be edited in the body of the code is
 ;;; the embedded single quotes ('), as in: DON'T. Since the old
@@ -72,36 +80,11 @@
 ;;; I've xlated all ' to & (which I checked is otherwise unused), and
 ;;; there's code in the I/O that xlates it in the right direction(s).
 
+(eval-when  (:compile-toplevel :load-toplevel :execute)
+
 ;;; Other things that had to be changed: 
 ;;; CDR of a symbol is (symbol-plist symbol), and similarly in rplcd'ing symbols.
 ;;; (CONS) is used like (CONS NIL NIL) and got changed to (CONS-CELL).
-
-(defmacro SETQQ (sym val)
-  `(setf ,sym ',val))
-
-;;; RPLQQ sets an atom's plist. This is a slight cheat. Since this is
-;;; never used in the code, we can just smash the plist, instead of
-;;; key-by-key setting the entries.
-
-(defmacro RPLQQ (sym &rest kvpairs)
-  `(setf (symbol-plist ',sym) ',kvpairs))
-
-;;; Approx. InterLISP's GETPROP -- by Peter De Wachter. The code wants
-;;; to have property lists that aren't attached to a symbol and it
-;;; achieves this by creating "fake symbols": property lists with a
-;;; NIL in front of them to maintain the CDR property.
-
-(defun getp (sym prop)
-  (getf (bbn-cdr sym)prop))
-
-(defun bbn-cdr (x)
-  (cond ((consp x) (cdr x))
-	((symbolp x) (symbol-plist x))))
-
-;;;
-
-(defmacro put (sym prop val)
-  `(setf (get ,sym ,prop) ,val))
 
 ;;; Turns out that arguments are optional in BBN lisp and (I assume)
 ;;; get filled in with NILs. Unfortunately, you can't use &optionals
@@ -116,6 +99,36 @@
 		,(if args `(&optional ,@args) nil)
 		,@body)
 	     )))
+
+
+(defmacro SETQQ (sym val)
+  `(setf ,sym ',val))
+
+;;; RPLQQ sets an atom's plist. This is a slight cheat. Since this is
+;;; never used in the code, we can just smash the plist, instead of
+;;; key-by-key setting the entries.
+
+(defmacro RPLQQ (sym &rest kvpairs)
+  `(setf (symbol-plist ',sym) ',kvpairs))
+
+;;;
+
+(defmacro put (sym prop val)
+  `(setf (get ,sym ,prop) ,val))
+
+)
+
+;;; Approx. InterLISP's GETPROP -- by Peter De Wachter. The code wants
+;;; to have property lists that aren't attached to a symbol and it
+;;; achieves this by creating "fake symbols": property lists with a
+;;; NIL in front of them to maintain the CDR property.
+
+(defun getp (sym prop)
+  (getf (bbn-cdr sym)prop))
+
+(defun bbn-cdr (x)
+  (cond ((consp x) (cdr x))
+	((symbolp x) (symbol-plist x))))
 
 ;;; Various bbn fns missing in cl
 
@@ -159,6 +172,16 @@
 (defun bbn-nth (x n)
   (nthcdr n (cons nil x)))
 
+;;; ===================================================================================
+;;; |                                    1969 DOCFNS                                  |
+;;; ===================================================================================
+
+(eval-when  (:compile-toplevel :load-toplevel :execute)
+	    (defpackage :eliza69 
+	      (:nicknames :e69)
+	      (:use :bl :cl))
+	    (in-package :e69))
+
 ;;; Globals (transferred from the tail of the file)
 
 (defparameter TRMLIS '(|!| |?|)) ;; removed . Can't use a . bcs READ will fail on it.
@@ -172,10 +195,6 @@
 (defvar MEMSTACK nil)
 (defvar FLIPFLOP nil)
 (defvar PARSELIST nil)
-
-;;; ===================================================================================
-;;; |                                    1969 DOCFNS                                  |
-;;; ===================================================================================
 
 ;;; Eliza-19690731-DOCFNSp1-00of06
 
