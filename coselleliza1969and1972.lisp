@@ -270,6 +270,7 @@
 (eval-when
  (:compile-toplevel :load-toplevel :execute)
  (setq *readtable* (copy-readtable ()))
+ (set-syntax-from-char #\" #\| *readtable*)
  (set-syntax-from-char #\' #\a *readtable*))
 
 ;;; ===================================================================================
@@ -280,14 +281,11 @@
 
 ;;; /DOCFNS/   31 JULY 1969  1007:42                             PAGE 1
 
-#|
-  (PROGN (PRIN1 (QUOTE FILE" CREATED ")
-      T)
-    (PRIN1 (QUOTE 08/22/68" 1522:26")
-      T)
-    (TERPRI T))
-|#
-
+(PROGN (PRIN1 (QUOTE FILE" CREATED ")
+              T)
+       (PRIN1 (QUOTE 08/22/68" 1522:26")
+              T)
+       (TERPRI T))
 (DEFINEQ
 
 (DOCTOR
