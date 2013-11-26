@@ -180,8 +180,7 @@
             internal-time-units-per-second))))
 
 (defun pack (l)
-  ;; TODO: should this return a string or a symbol?
-  (format nil "~{~A~}" l))
+  (intern (format nil "~{~A~}" l)))
 
 ;;; I'm sure that some fancy format can do this better:
 (defun spaces (n) (loop repeat n do (princ #\Space)))
