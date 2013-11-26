@@ -136,21 +136,22 @@
 ;;; and similarly in rplcd'ing symbols.
 
 (defun cdr (x)
-  (cond ((consp x) (cl:cdr x))
+  (cond ((listp x) (cl:cdr x))
 	((symbolp x) (symbol-plist x))
-        (t (error "CDR expected a cons or a symbol"))))
+        ((numberp x) nil)
+        (t (error "CDR expected a list, a symbol or a number: ~W" x))))
 
 ;;; TODO: Should we have all C[AD]+R variations?
 
 (defun rplacd (x y)
   (cond ((consp x) (cl:rplacd x y))
         ((symbolp x) (setf (symbol-plist x) y))
-        (t (error "RPLACD expected a cons or a symbol"))))
+        (t (error "RPLACD expected a cons or a symbol: ~W" x))))
 
 (defun rplaca (x y)
   (cond ((consp x) (cl:rplaca x y))
         ((symbolp x) (setf (symbol-value x) y))
-        (t (error "RPLACA expected a cons or a symbol"))))
+        (t (error "RPLACA expected a cons or a symbol: ~W" x))))
 
 (defun nth (x n)
   (nthcdr n (cons nil x)))
