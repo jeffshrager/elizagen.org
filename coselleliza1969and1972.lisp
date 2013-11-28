@@ -105,6 +105,8 @@
                      ,@',body)))))
 
   `(progn
+     (declaim (ftype function ,@(loop for (name (lmbda &rest nil)) in fns
+                                   when (eq lmbda 'lambda) collect name)))
      ,@(loop for (name (lmbda args . body)) in fns
           when (eq lmbda 'lambda) collect (build-defun name args body)
           when (eq lmbda 'nlambda) collect (build-defmacro name args body)))))
