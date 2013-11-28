@@ -69,7 +69,7 @@
   (:shadow :cons :cdr :rplacd :rplaca :nth :prin1)
   (:export :defineq :setqq :rplqq :tconc :clock :put :getp
            :quotient :spaces :remainder :plus :minus :pack :greaterp :ratom :pctlis :trmlis
-           :nlambda
+           :nlambda :*bbn-readtable*
            ;; Also export Symbols named for CL symbols
            ;; Exports include e.g. BBN-LISP:CONS, and CL:DEFUN
            ;; but not CL:CONS. 
@@ -224,6 +224,86 @@
   (let ((*readtable* *patient-readtable*))
     (read)))
 
+;;; Read Table for reading BBN Code.
+
+(let ((open-paren '#:open)
+      (close-paren '#:close)
+      ;;cache a single readtable as (list original superparenified)
+      rt-cache)
+
+  (defun superparenify (readtable)
+    (if (member *readtable* rt-cache)
+        (second rt-cache)
+      (let ((new-rt (copy-readtable readtable)))
+        (set-syntax-from-char #\] #\) new-rt readtable)
+        (set-macro-character #\( (constantly open-paren) () new-rt)
+        (set-macro-character #\) (constantly close-paren) () new-rt)
+        (second (setf rt-cache
+                      (list *readtable*
+                            new-rt))))))
+
+;;; This is only functional enough to load the Eliza transcript.
+  (defun bbn-[-reader (stream char)
+    (declare (ignore char))
+    (let* ((*readtable* (superparenify *readtable*)))
+      (reintroduce-lists (read-delimited-list #\] stream))))
+
+  (defun  reintroduce-lists (form)
+    "Takes a form like (lambda #:open x #:close #:open print #:open baz x)
+     and returns a form like (lambda (x) (print (baz x)))"
+    (do ((tail form)
+         result)
+        ((null tail) (reverse result))
+      (multiple-value-bind (collected rest) (next-form tail)
+        (push  collected result)
+        (setf tail rest))))
+
+  (defun next-form (list)
+    (cond ((eq (car list) close-paren)
+           (error "Unexpected close paren."))
+          ((eq (car list) open-paren)
+           (let* ((close-pos (match-pos list))
+                  (open-pos (position open-paren list :start 1)))
+             (cond (close-pos
+                    (values (reintroduce-lists
+                             (subseq list 1 close-pos))
+                            (cdr (nthcdr close-pos list))))
+                   (open-pos
+                    (values
+                     (append (subseq list 1 open-pos)
+                             (reintroduce-lists (subseq list open-pos)))
+                     ()))
+                   (t (values (cdr list) ())))))
+          (t (values (car list) (cdr list)))))
+
+  (defun match-pos (list)
+    "Position in list of the matching close paren."
+    (assert (eq (car list) open-paren))
+    (loop for atom in (cdr list)
+          for position from 1
+          with opened = 1
+          if (eq atom open-paren)
+          do (incf opened)
+          else if (eq atom close-paren)
+          do (decf opened)
+          when (= opened 0)
+          return position))
+
+  )
+
+(defparameter *bbn-readtable* (copy-readtable ())
+  "A readtable for reading BBN lisp code.
+
+   1. #\' is a constituent character
+
+   2. #\" is the multiple escape character (CL's #\|)
+
+   3. backets are superparen -- #\[ starts reading a list
+      and #\] terminates it, and closes parenthesis opened after the #\[.")
+(set-syntax-from-char #\' #\a *bbn-readtable*)
+(set-syntax-from-char #\" #\| *bbn-readtable*)
+(set-macro-character #\[ #'bbn-[-reader () *bbn-readtable*)
+
 ;;; From https://code.google.com/p/lsw2/source/browse/branches/bona/ext-asdf/snark-20080805r038/src/collectors.lisp?spec=svn196&r=196
 (defun tconc (x collector)
   ;; as in Interlisp TCONC, add single element x to the end of the
@@ -271,9 +351,7 @@
 
 (eval-when
  (:compile-toplevel :load-toplevel :execute)
- (setq *readtable* (copy-readtable ()))
- (set-syntax-from-char #\" #\| *readtable*)
- (set-syntax-from-char #\' #\a *readtable*))
+ (setq *readtable* *bbn-readtable*))
 
 ;;; ===================================================================================
 ;;; |                                    1969 DOCFNS                                  |
