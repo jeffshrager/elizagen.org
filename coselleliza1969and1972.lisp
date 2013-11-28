@@ -263,6 +263,7 @@
 (defvar MEMSTACK nil)
 (defvar FLIPFLOP nil)
 (defvar PARSELIST nil)
+(defvar WDLIST nil)
 
 ;;; Whack the readtable so that quotes are allowed inside atoms. (Thanks to Matt Niemeir)
 
