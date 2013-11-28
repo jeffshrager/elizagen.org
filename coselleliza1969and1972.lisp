@@ -118,14 +118,6 @@
 (defun put (sym prop val)
   (setf (get sym prop) val))
 
-;;; Approx. InterLISP's GETPROP -- by Peter De Wachter. The code wants
-;;; to have property lists that aren't attached to a symbol and it
-;;; achieves this by creating "fake symbols": property lists with a
-;;; NIL in front of them to maintain the CDR property.
-
-(defun getp (sym prop)
-  (getf (bl:cdr sym) prop))
-
 ;;; BBN Lisp CONS creates a cons cell, like (list nil) or (cons nil
 ;;; nil), but (CL:CONS) is an error, so we define (BL:CONS)
 
@@ -152,6 +144,14 @@
   (cond ((consp x) (cl:rplaca x y))
         ((symbolp x) (setf (symbol-value x) y))
         (t (error "RPLACA expected a cons or a symbol: ~W" x))))
+
+;;; Approx. InterLISP's GETPROP -- by Peter De Wachter. The code wants
+;;; to have property lists that aren't attached to a symbol and it
+;;; achieves this by creating "fake symbols": property lists with a
+;;; NIL in front of them to maintain the CDR property.
+
+(defun getp (sym prop)
+  (getf (bl:cdr sym) prop))
 
 (defun nth (x n)
   (nthcdr n (cons nil x)))
