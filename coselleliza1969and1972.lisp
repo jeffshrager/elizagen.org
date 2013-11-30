@@ -6,20 +6,24 @@
 ;;; To suppress autostart on load change this to nil:
 (defparameter *autostart* t)
 
-;;; To test w/o autostart, after loading, go to package :e69 and enter: 
-;;;  (doctor) 
+;;; To test w/o autostart, after loading, enter:
+;;;  (e69:doctor)
+;;; or, for the new version use (e72:doctor)
 ;;; then try: 
 ;;;  I AM GOD!
 
 ;;; TODO:
-
+;;;   Get Clock working in 1972
+;;;   Check nlistp and bl:get definitions
+;;;   MEMB in 1972 code was replaced with member -- what's the right thing?
+;;;   Double check the 1972 globals/specials.
 ;;; GENERAL NOTES:
 
 ;;; This file contains two separate, complete Elizas: one from 1969
-;;; and one from 1972. Each has a function part and a script part.  So
-;;; far only the 1969 version has been worked on. (Part of the point
-;;; is to get the oldest working Eliza, but also, presumably once one
-;;; is figured out, the other is easy.)
+;;; and one from 1972. Each has a function part and a script part.
+;;; Both are loaded when this file is loaded, but both their functionality
+;;; and script are fully separate. (e69:doctor) and (e72:doctor) use the
+;;; respective versions.
 
 ;;; ACKNOWLEDGEMENTS:
 
@@ -66,10 +70,12 @@
 (defpackage :bbn-lisp
   (:use :cl)
   (:nicknames :bl)
-  (:shadow :cons :cdr :rplacd :rplaca :nth :prin1)
+  (:shadow :cons :cdr :rplacd :rplaca :nth :prin1 :get)
   (:export :defineq :setqq :rplqq :tconc :clock :put :getp
-           :quotient :spaces :remainder :plus :minus :pack :greaterp :ratom :pctlis :trmlis
-           :nlambda
+           :quotient :spaces :remainder :plus :minus :pack
+           :greaterp :igreaterp :iminus :idifference :iplus :nlistp
+           :nlambda :*bbn-readtable* :*patient-readtable*
+           :lispxprin1 :lispxprint :lispxterpri
            ;; Also export Symbols named for CL symbols
            ;; Exports include e.g. BBN-LISP:CONS, and CL:DEFUN
            ;; but not CL:CONS. 
@@ -118,7 +124,7 @@
 ;;;
 
 (defun put (sym prop val)
-  (setf (get sym prop) val))
+  (setf (cl:get sym prop) val))
 
 ;;; BBN Lisp CONS creates a cons cell, like (list nil) or (cons nil
 ;;; nil), but (CL:CONS) is an error, so we define (BL:CONS)
@@ -155,6 +161,9 @@
 (defun getp (sym prop)
   (getf (bl:cdr sym) prop))
 
+(defun get (list prop)
+  (getf (cdr list) prop))
+
 (defun nth (x n)
   (nthcdr n (cons nil x)))
 
@@ -163,6 +172,15 @@
 (defmacro prin1 (&rest what)
   `(princ ,@what))
 
+(defmacro lispxprin1 (&rest what)
+  `(prin1 ,@what))
+
+(defun lispxterpri (s) (terpri s))
+
+(defun lispxprint (o s)
+  (terpri s)
+  (prin1 o s))
+
 ;;; Various bbn fns missing in cl
 
 (defun quotient (a b) (floor a b))
@@ -170,6 +188,11 @@
 (defun plus (&rest l) (apply #'+ l))
 (defun minus (x) (- x))
 (defun greaterp (a b) (> a b))
+(defun igreaterp (a b) (> a b))
+(defun iminus (a) (- a))
+(defun idifference (a b) (- a b))
+(defun iplus (a b) (+ a b))
+(defun nlistp (l) (not (listp l))) ;; needs checked
 
 (defvar *clock-version* 1969)
 
@@ -220,9 +243,87 @@
 ;; allow quote in symbols
 (set-syntax-from-char #\' #\a *patient-readtable*)
 
-(defun ratom ()
-  (let ((*readtable* *patient-readtable*))
-    (read)))
+;;; Read Table for reading BBN Code.
+
+(let ((open-paren '#:open)
+      (close-paren '#:close)
+      ;;cache a single readtable as (list original superparenified)
+      rt-cache)
+
+  (defun superparenify (readtable)
+    (if (member *readtable* rt-cache)
+        (second rt-cache)
+      (let ((new-rt (copy-readtable readtable)))
+        (set-syntax-from-char #\] #\) new-rt readtable)
+        (set-macro-character #\( (constantly open-paren) () new-rt)
+        (set-macro-character #\) (constantly close-paren) () new-rt)
+        (second (setf rt-cache
+                      (list *readtable*
+                            new-rt))))))
+
+;;; This is only functional enough to load the Eliza transcript.
+  (defun bbn-[-reader (stream char)
+    (declare (ignore char))
+    (let* ((*readtable* (superparenify *readtable*)))
+      (reintroduce-lists (read-delimited-list #\] stream))))
+
+  (defun  reintroduce-lists (form)
+    "Takes a form like (lambda #:open x #:close #:open print #:open baz x)
+     and returns a form like (lambda (x) (print (baz x)))"
+    (do ((tail form)
+         result)
+        ((null tail) (reverse result))
+      (multiple-value-bind (collected rest) (next-form tail)
+        (push  collected result)
+        (setf tail rest))))
+
+  (defun next-form (list)
+    (cond ((eq (car list) close-paren)
+           (error "Unexpected close paren."))
+          ((eq (car list) open-paren)
+           (let* ((close-pos (match-pos list))
+                  (open-pos (position open-paren list :start 1)))
+             (cond (close-pos
+                    (values (reintroduce-lists
+                             (subseq list 1 close-pos))
+                            (cdr (nthcdr close-pos list))))
+                   (open-pos
+                    (values
+                     (append (subseq list 1 open-pos)
+                             (reintroduce-lists (subseq list open-pos)))
+                     ()))
+                   (t (values (cdr list) ())))))
+          (t (values (car list) (cdr list)))))
+
+  (defun match-pos (list)
+    "Position in list of the matching close paren."
+    (assert (eq (car list) open-paren))
+    (loop for atom in (cdr list)
+          for position from 1
+          with opened = 1
+          if (eq atom open-paren)
+          do (incf opened)
+          else if (eq atom close-paren)
+          do (decf opened)
+          when (= opened 0)
+          return position))
+
+  )
+
+(defparameter *bbn-readtable* (copy-readtable ())
+  "A readtable for reading BBN lisp code.
+
+   1. #\' is a constituent character
+   2. #\" is the multiple escape character (CL's #\|)
+   3. #\% is the single escape character (CL's #\\)
+   4. #\, reads as the symbol |,|
+   5. backets are superparen -- #\[ starts reading a list
+      and #\] terminates it, and closes parenthesis opened after the #\[.")
+(set-syntax-from-char #\' #\a *bbn-readtable*)
+(set-syntax-from-char #\" #\| *bbn-readtable*)
+(set-syntax-from-char #\% #\\ *bbn-readtable*)
+(set-macro-character #\[ #'bbn-[-reader () *bbn-readtable*)
+(set-macro-character #\, #'symbolize-character-reader t *bbn-readtable*)
 
 ;;; From https://code.google.com/p/lsw2/source/browse/branches/bona/ext-asdf/snark-20080805r038/src/collectors.lisp?spec=svn196&r=196
 (defun tconc (x collector)
@@ -252,6 +353,11 @@
 
 (in-package :e69)
 
+(defun ratom ()
+  (let ((*readtable* *patient-readtable*)
+        (*package* (find-package :e69)))
+    (read)))
+
 ;;; Globals (transferred from the tail of the file)
 
 (defparameter TRMLIS '(|!| |?| |.|))
@@ -271,9 +377,7 @@
 
 (eval-when
  (:compile-toplevel :load-toplevel :execute)
- (setq *readtable* (copy-readtable ()))
- (set-syntax-from-char #\" #\| *readtable*)
- (set-syntax-from-char #\' #\a *readtable*))
+ (setq *readtable* *bbn-readtable*))
 
 ;;; ===================================================================================
 ;;; |                                    1969 DOCFNS                                  |
@@ -1728,8 +1832,41 @@ EMOTION
 ;;; STOP
 ;;; 'L
 
-#| ******************************* STOPPED EDITING HERE TEMPORARILY *******************************
-   From here on this code is commented out until it has been checked 
+;;; ===================================================================================
+;;; |                            Eliza72-specific header                              |
+;;; ===================================================================================
+;;; already in bbn readtable
+(defpackage :eliza72
+  (:nicknames :e72)
+  (:shadow :tconc)
+  (:export :doctor)
+  (:use :bl))
+
+(in-package :e72)
+
+(defun ratom ()
+  (let ((*readtable* *patient-readtable*)
+        (*package* (find-package :e72)))
+    (read)))
+
+(defun tconc (a b) (bl:tconc b a))
+
+;;; Globals (transferred from the tail of the file)
+
+;; We repeat these to duplicate the symbols,
+;; e69 versions and e72 versions, to make equality work.
+(defparameter TRMLIS (quote (|!| |?| |.|)))
+(defparameter PCTLIS (quote (|,| |;| |(| |)| |:|)))
+(defparameter RUBOUT (quote |#|))
+
+;;; Specials:
+
+(defvar SENTENCE nil)
+(defvar KEYSTACK nil)
+(defvar MEMSTACK nil)
+(defvar FLIPFLOP nil)
+(defvar PARSELIST nil)
+(defvar WDLIST nil)
 
 ;;; ===================================================================================
 ;;; |                                    1972 DOCTOR                                  |
@@ -1738,47 +1875,6 @@ EMOTION
 ;;; eliza-19720424-doctorp1-00-06
 
 ;;; <source8>doctor.;2    TUE 13-JUN-72 10:16AM                 PAGE 1:1
-
-(PROGN (LISPXPRIN1 (QUOTE "FILE CREATED ")
-                   T)
-       (LISPXPRIN1 (QUOTE "13-JUN-72 4:20:07")
-                   T)
-       (LISPXTERPRI T))
-
-(DEFINEQ
-
-(DOCTOR [LAMBDA (FLG)
-          (COND
-            ((NULL FLG)
-             (SETQ MEMSTACK NIL)))
-        (PROG (KEYSTACK SENTENCE TIMON)
-           (SETSPR (QUOTE (%  %
-%
- )))
-           (SETBRK (QUOTE (%. , ? ! - %( %) ; : #))   )
-           (CONTROL T)
-           (SETQ FLIPFLIP 0)
-           (SETQ TIMON (CLOCK))
-           (RECONSTRUCT (QUOTE (TELL ME YOUR PROBLEMS. PLEASE TERMINATE
-                                     INPUT WITH A PERIOD OR A QUESTION
-                                                            MARK
-                                  %.))
-                        T)
-           (SETNONE)
-      A    (PRIN1 (QUOTE "
-*"))
-           (COND
-             (NULL (SETQ SENTENCE (MAKESENTENCE)))
-             (GO A)))
-           (SETQ KEYSTACK (CDR SENTENCE))
-           (SETQ SENTENCE (CAR SENTENCE))
-           ([COND (EQUAL SENTENCE (QUOTE GOODBYE)))
-           (* Rate computed at $6 a minute, or $1 per 10
-           seconds. CLOCK returns value in milliseconds. )
-
-;;; doctorp1-00of06.slip
-
-;;;  <SOURCES>DOCTOR.;2   TUE 13-JUN-72 10:16AM    PAGE 1
 
   (PROGN (LISPXPRIN1 (QUOTE "FILE CREATED ")
                      T)
@@ -1793,11 +1889,11 @@ EMOTION
       ((NULL FLG)
        (SETQ MEMSTACK NIL)))
     (PROG (KEYSTACK SENTENCE TIMON)
-          (SETSEPR (QUOTE (%  %
-%
- )))
-          (SETBRK (QUOTE (%. , ? ! = %( %) ; : #)))
-          (CONTROL T)
+;;           (SETSEPR (QUOTE (%  %
+;; %
+;;  )))
+;;           (SETBRK (QUOTE (%. , ? ! = %( %) %; %: %#)))
+;;           (CONTROL T)
           (SETQ FLIPFLOP 0)
           (SETQ TIMON (CLOCK))
           (RECONSTRUCT (QUOTE (TELL ME YOUR PROBLEMS, PLEASE TERMINATE
@@ -1816,120 +1912,14 @@ EMOTION
           [COND
             ((EQUAL SENTENCE (QUOTE (GOODBYE)))
 
-          (* Rate computed at $6 aminute, or $1 per 10
-          seconds, CLOCK returns value in milliseconds.)
+         #| (* Rate computed at $6 aminute, or $1 per 10
+          seconds, CLOCK returns value in milliseconds.) |#
+
+;;; doctorp1-01of06
 
 ;;; eliza-page-19720424-doctorp1-01of-06
 
 ;;; <source8>doctor.;2    TUE 13-JUN-72 10:16AM                 PAGE 1:1
-
-(RETURN
-  (RECONSTRUCT
-   (APPEND (QUOTE (ITS BEEN MY PLEASURE, THAT'S))
-           (CONS (PACK (LIST (QUOTE S)
-                             (QUOTIENT (SETQ TIMON
-                                             (IDIFFERENCE
-                                              (CLOCK)
-                                              TIMON))
-                                       10000)
-                             (QUOTE %.)
-                             (QUOTIENT (REMAINDER TIMON
-                                                  10000)
-                                       100)))
-                 (QUOTE (PLEASE %.]     ; not sure if this is a . or ,
-                                T]      ; this terminates a prior file
-(ANALYZE)
-(GO A])
-
-(MAKESENTENCE
- (LAMBDA NIL
-   (PROG (FLAG WORD SENTENCE KEYSTACK)
-      A1 (SETQ KEYSTACK (CONS))  ; A1 IS A LABEL
-      (SETQ SENTENCE (CONS))
-      A (SETQ WORD (RATOM))             ; A LABEL
-      [COND
-      ((NUMBERP WORD)
-       (SETQ WORD (PACK (LIST (QUOTE *)
-                              WORD]
-      [COND
-        ((EQ WORD RUBOUT)
-         (RETURN (TERPRI)))
-        ((MEMB WORD TRMLI8)
-         (TERPRI)
-         (RETURN (RPLACD SENTENCE KEYSTACK)))
-        ((MEMB WORD PCTLI8)
-         (COND
-           ((NULL (CDR KEYSTACK))
-            (GO A1))                      ; A1 IS A LABEL
-           ((NULL (SETQ FLAG (MAKESENTENCE)))
-            (RETURN))
-           ([AND (CDDR FLAG)
-                 (NOT IGREATERP (GET (CDR KEYSTACK)
-                                     (QUOTE PRIORITY)]
-            (RETURN FLAG))
-         (T (RETURN  (REPLACD SENTENCE KEYSTACK]
-      ;; tconc appears to be at the right place
-      (TCONC SENTENCE (COND
-               ((GETP WORD (QUOTE TRANSLATION)))
-               (WORD)))
-
-;;; eliza-19720424-doctorp1-01of-06
-
-;;; <source8>doctor.;2    TUE 13-JUN-72 10:16AM                 PAGE 1:1
-
-(RETURN
-  (RECONSTRUCT
-   (APPEND (QUOTE (ITS BEEN MY PLEASURE, THAT'S))
-           (CONS (PACK (LIST (QUOTE S)
-                             (QUOTIENT (SETQ TIMON
-                                             (IDIFFERENCE
-                                              (CLOCK)
-                                              TIMON))
-                                       10000)
-                             (QUOTE %.)
-                             (QUOTIENT (REMAINDER TIMON
-                                                  10000)
-                                       100)))
-                 (QUOTE (PLEASE %.]     ; not sure if this is a . or , ????????????????
-                                T]      ; this terminates a prior file
-(ANALYZE)
-(GO A])
-
-(MAKESENTENCE
- (LAMBDA NIL
-   (PROG (FLAG WORD SENTENCE KEYSTACK)
-      A1 (SETQ KEYSTACK (CONS))  ; A1 IS A LABEL
-      (SETQ SENTENCE (CONS))
-      A (SETQ WORD (RATOM))             ; A LABEL
-      [COND
-      ((NUMBERP WORD)
-       (SETQ WORD (PACK (LIST (QUOTE *)
-                              WORD]
-      [COND
-        ((EQ WORD RUBOUT)
-         (RETURN (TERPRI)))
-        ((MEMB WORD TRMLI8)
-         (TERPRI)
-         (RETURN (RPLACD SENTENCE KEYSTACK)))
-        ((MEMB WORD PCTLI8)
-         (COND
-           ((NULL (CDR KEYSTACK))
-            (GO A1))                      ; A1 IS A LABEL
-           ((NULL (SETQ FLAG (MAKESENTENCE)))
-            (RETURN))
-           ([AND (CDDR FLAG)
-                 (NOT IGREATERP (GET (CDR KEYSTACK)
-                                     (QUOTE PRIORITY)]
-            (RETURN FLAG))
-         (T (RETURN  (REPLACD SENTENCE KEYSTACK]
-      ;; tconc appears to be at the right place
-      (TCONC SENTENCE (COND
-               ((GETP WORD (QUOTE TRANSLATION)))
-               (WORD)))
-
-;;; doctorp1-01of06
-
-;;; <SOURCES>DOCTOR.;2   TUE 13-JUN-72 10:16AM    PAGE 1:1
 
              (RETURN
                (RECONSTRUCT
@@ -1962,10 +1952,10 @@ EMOTION
           [COND
             ((EQ WORD RUBOUT)
              (RETURN (TERPRI)))
-            ((MEMB WORD TRMLIS)
+            ((MEMBER WORD TRMLIS) ;; was MEMB non MEMBER
              (TERPRI)
              (RETURN (RPLACD SENTENCE KEYSTACK)))
-            ((MEMB WORD PCTLIS)
+            ((MEMBER WORD PCTLIS) ;; was MEMB
              (COND
                ((NULL (CDR KEYSTACK))
                 (GO A1))
@@ -1982,117 +1972,6 @@ EMOTION
                    ((GETP WORD (QUOTE TRANSLATION)))
                    (WORD)))
 
-
-;;; Eliza-19720424-DOCTORp1-01of06.lisp
-
-;;;   <SOURCES>DOCTOR.;2   TUE 13-JUN-72 10:16AM
-
-              (RETURN
-                (RECONSTRUCT
-                  [APPEND (QUOTE (IT'S BEEN MY PLEASURE, THAT'S))
-                          (CONS (PACK (LIST (QUOTE $)
-                                            (QUOTIENT (SETQ TIMON
-                                                        (IDIFFERENCE
-                                                          (CLOCK)
-                                                          TIMON))
-                                                      10000)
-                                            (QUOTE %,)
-                                            (QUOTIENT (REMAINDER TIMON
-                                                               10000)
-                                                      100)))
-                                (QUOTE (PLEASE %,)))
-                  T]
-           (ANALYZE)
-           (GO A])
-
-(MAKESENTENCE
-  [LAMBDA NIL
-    (PROG (FLAG WORD SENTENCE KEYSTACK)
-      A1  (SETQ KEYSTACK (CONS))
-          (SETQ SENTENCE (CONS))
-      A   (SETQ WORD (RATOM))
-          [COND
-            ((NUMBERP WORD)
-             (SETQ WORD (PACK (LIST (QUOTE *)
-                                    WORD]
-          [COND
-            ((EQ WORD RUBOUT)
-             (RETURN (TERPRI)))
-            ((MEMB WORD TRMLIS)
-             (TERPRI)
-             (RETURN (RPLACD SENTENCE KEYSTACK)))
-            ((MEMB WORD PCTLIS)
-             (COND
-               ((NULL (CDR KEYSTACK))
-                (GO A1))
-               ((NULL (SETQ FLAG (MAKESENTENCE)))
-                (RETURN))
-               ([AND (CDDR FLAG)
-                     (NOT (IGREATERP (GET (CDR KEYSTACK)
-                                          (QUOTE PRIORITY))
-                                     (GET (CDR FLAG)
-                                          (QUOTE PRIORITY]
-                (RETURN FLAG))
-               (T (RETURN (RPLACD SENTENCE KEYSTACK]
-          (TCONC SENTENCE (COND
-                   ((GETP WORD (QUOTE TRANSLATION)))
-                   (WORD)))
-
-
-;;; Eliza-19720424-DOCTORp1-01of06 xscribed 20131115 by Ben Hyde (bhyde@pobox.com)
-;;; <SOURCES>DOCTOR.;2   TUE 13-JUN-72 10:16AM
-
-              (RETURN
-                (RECONSTRUCT
-                  [APPEND (QUOTE (IT'S BEEN MY PLEASURE, THAT'S))
-                          (CONS (PACK (LIST (QUOTE $)
-                                            (QUOTIENT (SETQ TIMON
-                                                        (IDIFFERENCE
-                                                          (CLOCK)
-                                                          TIMON))
-                                                      10000)
-                                            (QUOTE %,)
-                                            (QUOTIENT (REMAINDER TIMON
-                                                               10000)
-                                                      100)))
-                                (QUOTE (PLEASE %,)))
-                  T]
-           (ANALYZE)
-           (GO A])
-
-(MAKESENTENCE
-  [LAMBDA NIL
-    (PROG (FLAG WORD SENTENCE KEYSTACK)
-      A1  (SETQ KEYSTACK (CONS))
-          (SETQ SENTENCE (CONS))
-      A   (SETQ WORD (RATOM))
-          [COND
-            ((NUMBERP WORD)
-             (SETQ WORD (PACK (LIST (QUOTE *)
-                                    WORD]
-          [COND
-            ((EQ WORD RUBOUT)
-             (RETURN (TERPRI)))
-            ((MEMB WORD TRMLIS)
-             (TERPRI)
-             (RETURN (RPLACD SENTENCE KEYSTACK)))
-            ((MEMB WORD PCTLIS)
-             (COND
-               ((NULL (CDR KEYSTACK))
-                (GO A1))
-               ((NULL (SETQ FLAG (MAKESENTENCE)))
-                (RETURN))
-               ([AND (CDDR FLAG)
-                     (NOT (IGREATERP (GET (CDR KEYSTACK)
-                                          (QUOTE PRIORITY))
-                                     (GET (CDR FLAG)
-                                          (QUOTE PRIORITY]
-                (RETURN FLAG))
-               (T (RETURN (RPLACD SENTENCE KEYSTACK]
-          (TCONC SENTENCE (COND
-                   ((GETP WORD (QUOTE TRANSLATION)))
-                   (WORD)))
-
 ;;; doctorp1-02of06
 
 ;;;  <SOURCES>DOCTOR.;2   TUE 13-JUN-72 10:16AM    PAGE 1:2
@@ -2101,11 +1980,11 @@ EMOTION
             ((SETQ FLAG (GETP WORD (QUOTE MEMR)))
              (SETQ MEMSTACK (APPEND FLAG MEMSTACK]
           (COND
-            [[AND (SETQ FLAG (GETP WORK (QUOTE PRIORITY)))
+            [[AND (SETQ FLAG (GETP WORD (QUOTE PRIORITY)))
                   (CDR KEYSTACK)
                   (IGREATERP FLAG (GET (CDR KEYSTACK)
                                        (QUOTE PRIORITY]
-             (REPLACD KEYSTACK (CONS (CDR KEYSTACK)
+             (RPLACD KEYSTACK (CONS (CDR KEYSTACK)
                                      (CDR WORD]
             (FLAG (BCONC (CDR WORD)
                          KEYSTACK)))
@@ -2147,7 +2026,7 @@ EMOTION
                    (RETURN)))
           (GO B])
 
-;;; Eliza-19720424-DOCTORp1-03of06.txt
+;;; Eliza-19720424-DOCTORp1-03of06
 
 ;;;  <SOURCES>DOCTOR.;2   TUE 13-JUN-72 10:16AM           PAGE 1:3
 
@@ -2168,7 +2047,7 @@ EMOTION
             [(NUMBERP CD)
              (TCONC PARSELIST S)
              (COND
-               ((SETQ S (NTH S CD)))
+               ((SETQ S (NTH S CD))
                 (GO T3))
                (T (GO RN]
             [(NLISTP CD)
@@ -2323,6 +2202,7 @@ EMOTION
                                  A])
 )
 
+#| Moved to 1972 header or removed
   (LISPXPRINT (QUOTE DOCTORFNS)
               T)
   (RPAQQ DOCTORFNS
@@ -2359,7 +2239,7 @@ EMOTION
   (ADVISE (QUOTE INTERRUPT)
           DOCARM)
   (GCTRP 100)
-  (GCGAG)
+  (GCGAG)|#
 ;;;STOP
 
 
@@ -2369,32 +2249,32 @@ EMOTION
 
 ;;; Eliza-19720424-SCRIPTp1-00of11.lisp
 
-;  <SOURCES>SCRIPT.;1   MON 24-APRI-72 10:01AM
+;  <SOURCES>SCRIPT.;1   MON 24-APR-72 10:01AM
 
   (PROGN (LISPXPRIN1 (QUOTE "FILE CREATED ")
                      T)
          (LISPXPRIN1 (QUOTE "22-APR-72 23:26:05")
                      T)
-         (LISPXPRIN1 T))
+         (LISPXTERPRI T))
   (SETQQ WDLIST
          (SORRY DONT CANT WONT REMEMBER IF DREAMT DREAMED DREAM DREAMS
                 HOW WHEN ALIKE SAME CERTAINLY FEEL THINK BELIEVE WISH
                 MY NONE PERHAPS MAYBE NAME DEUTSCH FRANCAIS SVENSKA
                 ITALIANO ESPANOL HELLO COMPUTER MACHINE MACHINES
-                COMPUTERS AM ARE YOUR WAS WERE ME YOUR'R I'M MYSELF
+                COMPUTERS AM ARE YOUR WAS WERE ME YOU'RE I'M MYSELF
                 YOURSELF MOTHER MOM DAD FATHER SISTER BROTHER WIFE
                 CHILDREN I YOU XXYYZZ YES NO CAN IS WHERE WHAT XXWHAT
                 BECAUSE WHY EVERYONE EVERYBODY NOBODY NOONE ALWAYS LIKE
-                DIT OH EVERY DO GIRLS WOMEN BOY GIRL MAN WOMEN SEXY
-                SEXUAL SEX FRIENDLY FRIEND CRY LAUGH LOVE HATE DISLKIE))
+                DIT OH EVERY DO GIRLS WOMEN BOY GIRL MAN WOMAN SEXY
+                SEXUAL SEX FRIENDLY FRIEND CRY LAUGH LOVE HATE DISLIKE))
   [RPLQQ SORRY PRIORITY 2 RULES
          (((0)
            (NIL)
-           (APOLOGIES AE NOT NECESSARY %,)
+           (APOLOGIES ARE NOT NECESSARY %.)
            (WHAT FEELINGS DO YOU HAVE WHEN YOU APOLOGIZE]
-  (RPLQQ DONT TRANSLATEION DON'T)
-  (RPLQQ CANT TRANSLATEION CAN'T)
-  (RPLQQ WONT TRANSLATEION WON'T)
+  (RPLQQ DONT TRANSLATION DON'T)
+  (RPLQQ CANT TRANSLATION CAN'T)
+  (RPLQQ WONT TRANSLATION WON'T)
   [RPLQQ REMEMBER PRIORITY 5 RULES
          (((REMEMBER 0)
            (NIL)
@@ -2405,10 +2285,10 @@ EMOTION
            (DO YOU OFTEN THINK OF 3)
            (WHAT ELSE DOES THINKING OF 3 BRING TO MIND)
            (WHAT ELSE DO YOU REMEMBER)
-           (WHAY DO YOU REMEMBER 3 JUST NOW)
-           (WHAT IS THE PRESENT SITUATION REMINDS YOU OF 3)
-           (WHAT I^@THE CONNECTION BETWEEN ME AND 3))
-          ((DO I REMBMER 0)
+           (WHY DO YOU REMEMBER 3 JUST NOW)
+           (WHAT IN THE PRESENT SITUATION REMINDS YOU OF 3)
+           (WHAT IS THE CONNECTION BETWEEN ME AND 3))
+          ((DO I REMEMBER 0)
            (NIL)
            (WHY DID YOU THINK I WOULD FORGET 4)
            (WHY DO YOU THINK I SHOULD RECALL 4 NOW)
@@ -2420,7 +2300,63 @@ EMOTION
            (WHAT DO YOU THINK ABOUT 3)
            (REALLY "," IF 3]
 
-;;; ******************** MISSING 1 of 11 ???????????????????????
+;;; Eliza-19720424-SCRIPTp1-01of11.txt
+
+;  <SOURCES>SCRIPT.;1   MON 24-APR-72 10:01AM         PAGE 1:1
+
+
+  (RPLQQ DREAMT PRIORITY 4 RULES
+         (((0 YOU DREAMT 0)
+           (NIL)
+           (REALLY 4)
+           (HAVE YOU EVER FANTASIED 4 WHILE YOU WERE AWAKE)
+           (HAVE YOU DREAMT 4 BEFORE)
+           DREAM NEWKEY)))
+  (RPLQQ DREAMED TRANSLATION DREAMT PRIORITY 4 RULES (DREAMT))
+  (RPLQQ DREAM PRIORITY 3 RULES
+         (((0 YOU DREAM (OF ABOUT)
+              0)
+           (NIL)
+           (WHAT MIGHT 5 REPRESENT)
+           (WHAT DOES 5 SUGGEST TO YOU)
+           (HOW DOES THAT DREAM RELATE TO YOUR PROBLEM))
+          ((0)
+           (NIL)
+           (WHAT DO YOU DREAM ABOUT)
+           (WHAT PERSONS APPEAR IN YOUR DREAMS)
+           (WHAT MAY DREAMS HAVE TO DO WITH YOUR PROBLEM)
+           NEWKEY)))
+  (RPLQQ DREAMS TRANSLATION DREAM PRIORITY 3 RULES (DREAM))
+  (RPLQQ HOW RULES (WHAT)
+         PRIORITY 0)
+  [RPLQQ WHEN PRIORITY 0 RULES (((WHEN (DO DID DOES WILL)
+                                       0)
+           (NIL)
+           XXWHAT)
+          ((0)
+           (NIL)
+           (IS THERE ANY OTHER TIME)
+           (WHY THEN "," DO YOU SUPPOSE]
+  (RPLQQ ALIKE PRIORITY 10 RULES (DIT))
+  (RPLQQ SAME RULES (DIT)
+         PRIORITY 3)
+  (RPLQQ CERTAINLY PRIORITY 0 RULES (YES))
+  (RPLQQ FEEL BELIEF T)
+  (RPLQQ THINK BELIEF T)
+  (RPLQQ BELIEVE BELIEF T)
+  (RPLQQ WISH BELIEF T)
+  [RPLQQ MY MEMR
+         (((YOUR 2 0)
+           (NIL)
+           (LETS DISCUSS FURTHER WHY YOUR 2 3 %.)
+           (EARLIER YOU SAID YOUR 2 3 %.)
+           (BUT YOUR 2 3 %.)
+           (DOES THAT HAVE ANYTHING TO DO WITH THE FACT THAT YOUR 2 3))
+          ((0 YOUR 1)
+           (NIL)
+           (WOULD YOU LIKE TO DISCUSS YOUR 3)
+           (PERHAPS THAT CONCERNS YOUR 3 %.)
+           (TELL ME MORE ABOUT YOUR 3 %.)))]
 
 ;;; Eliza-19720424-SCRIPTp1-02of11.txt
 
@@ -2429,7 +2365,7 @@ EMOTION
 
 ;  <SOURCES>SCRIPT.;1   MON 24-APR-72 10:10AM                 PAGE 1:2
 
-         PRIORITY 0 TRANSLATION YOUR RULES
+  [RPLQQ MY PRIORITY 0 TRANSLATION YOUR RULES ;; There was a gap in the transcription here.
          (((0 YOUR 0 (NIL FAMILY)
               0)
            (NIL)
@@ -2450,7 +2386,7 @@ EMOTION
            (WHO ELSE KNOWS ABOUT YOUR 3)
            (WHY DO YOU MENTION YOUR 3 JUST NOW)
            (WHY IS YOUR 3 IMPORTANT TO YOU)
-           (DO YOU OFTEN DISCUSS YOUR 3)
+           (DO YOU OFTEN DISCUSS YOUR 3]
   [RPLQQ NONE LASTRESORT
          (RULES (((0)
                   (NIL)
@@ -2540,7 +2476,7 @@ EMOTION
 
 ;;; Eliza-19720424-SCRIPTp1-04of11.txt
 
-;;; transcribed from Eliza-19720424-SCRIPTp1-04of11.TIF
+;;; transcribed from Eliza-19720424-SCRIPTp1-04of11
 ;  <SOURCES>SCRIPT.;1   MON 24-APR-72 10:01AM            PAGE 1:4
 
            (NIL)
@@ -2577,7 +2513,7 @@ EMOTION
 	   (DO YOU THINK YOU WERE 3)
 	   (WERE YOU 3)
 	   (WHAT WOULD IT MEAN IF YOU WERE 3)
-	   XXXWHAT)
+	   XXWHAT)
 	  ((YOU WAS 0)
 	   (NIL)
 	   (WERE YOU REALLY)
@@ -2593,14 +2529,67 @@ EMOTION
   (RPLQQ WERE PRIORITY 0 TRANSLATION WAS RULES (WAS))
   (RPLQQ ME TRANSLATION YOU)
 
-;;; ******************** MISSING 5 of 11 ???????????????????????
+; Eliza-19720424-SCRIPTp1-05of11
 
-;;; Eliza-19720424-SCRIPTp1-06of11.txt
+;  <SOURCES>SCRIPT.;1   MON 24-APR-72 10:01AM         PAGE 1:5
 
-; Eliza-19720424-SCRIPTp1-06of11.TIF
-; Note: oddly, the "0 YOU 1 O" from the 1969 version is still here...
+
+  [RPLQQ YOU'RE PRIORITY 0 TRANSLATION I'M RULES
+         (((0 I'M 0)
+           (NIL)
+           (PRE (I ARE 3)
+                YOU]
+  [RPLQQ I'M PRIORITY 0 TRANSLATION YOU'RE RULES
+         (((0 YOU'RE 0)
+           (NIL)
+           (PRE (YOU ARE 3)
+                I]
+  (RPLQQ MYSELF TRANSLATION YOURSELF)
+  (RPLQQ YOURSELF TRANSLATION MYSELF)
+  (RPLQQ MOTHER FAMILY T)
+  (RPLQQ MOM TRANSLATION MOTHER FAMILY T)
+  (RPLQQ DAD TRANSLATION FATHER FAMILY T)
+  (RPLQQ FATHER FAMILY T)
+  (RPLQQ SISTER FAMILY T)
+  (RPLQQ BROTHER FAMILY T)
+  (RPLQQ WIFE FAMILY T)
+  (RPLQQ CHILDREN FAMILY T)
+  [RPLQQ I PRIORITY 0 TRANSLATION YOU RULES
+         (((0 YOU (WANT NEED)
+              0)
+           (NIL)
+           (WHAT WOULD IT MEAN TO YOU IF YOU GOT 4)
+           (WHY DO YOU WANT 4)
+           (WHAT WOULD GETTING 4 MEAN TO YOU))
+          ((0 YOU ARE 0 (SAD UNHAPPY DEPRESSED SICK ILL)
+              0)
+           (NIL)
+           (I AM SORRY TO HEAR YOU ARE 5 %.)
+           (DO YOU THINK COMING HERE WILL HELP YOU NOT TO BE 5)
+           (CAN YOU EXPLAIN WHAT MADE YOU 5))
+          ((0 YOU ARE 0 (HAPPY ELATED GLAD BETTER)
+              0)
+           (NIL)
+           (HOW HAVE I HELPED YOU TO BE 5)
+           (HAS YOUR TREATMENT MADE YOU 5)
+           (WHAT MAKES YOU 5 JUST NOW))
+          ((0 YOU (NIL BELIEF)
+              YOU 0)
+           (NIL)
+           (DO YOU REALLY THINK SO)
+           (BUT YOU ARE NOT SURE YOU 5)
+           (DO YOU REALLY DOUBT YOU 5))
+          ((0 YOU 0 (NIL BELIEF)
+              0 I 0)
+           (NIL)
+           (PRE (6 7)
+                YOU))
+
+; Eliza-19720424-SCRIPTp1-06of11
+
 ;  <SOURCES>SCRIPT.;1   MON 24-APR-72 10:01AM                   PAGE 1:6
 
+; Note: oddly, the "0 YOU 1 O" from the 1969 version is still here...
 
           ((0 YOU ARE 0)
            (NIL)
@@ -2827,12 +2816,12 @@ EMOTION
 ;;
 
 ;  <SOURCES>SCRIPT.;1  MON 24-APR-72 10:01 AM                PAGE 1:10
- 
+
   (RPLQQ EVERY PRIORITY 0 RULES (((0 EVERY (ONE BODY)
 				     0)
            (NIL)
 	   EVERYONE)
-          ((0 EVERY TIME 0)				
+          ((0 EVERY TIME 0)
 	   (NIL)
 	   ALWAYS)))
   (RPLQQ DO PRIORITY 0 RULES (((DO I 0)
@@ -2840,7 +2829,7 @@ EMOTION
 	   (PRE (I 3)
 		YOU)
 	   XXWHAT)
-          ((DO YOU 0)			     
+          ((DO YOU 0)
 	   (NIL)
 	   (PRE (YOU 3)
 		I)
@@ -2905,7 +2894,7 @@ EMOTION
            (DO YOU SAY THAT BECAUSE YOU 3 4 5]
   (RPLQQ FRIENDLY PRIORITY 0 RULES (FRIEND))
   [RPLQQ FRIEND PRIORITY 1 RULES
-         (((0 YOUR RIEND 0)
+         (((0 YOUR FRIEND 0)
            (NIL)
            (WHAT ELSE CAN YOU TELL ME ABOUT YOUR FRIEND)
            (WHAT MIGHT YOUR FRIENDS HAVE TO DO WITH YOUR PROBLEM))
@@ -2924,10 +2913,11 @@ EMOTION
   (RPLQQ LOVE EMOTION T)
   (RPLQQ HATE EMOTION T)
   (RPLQQ DISLIKE EMOTION NIL)
-STOP
+;; STOP
 
-|#
+
 
 (eval-when
  (:load-toplevel :execute)
- (when cl-user::*autostart* (doctor)))
+ (when cl-user::*autostart*
+   (e69:doctor)))
