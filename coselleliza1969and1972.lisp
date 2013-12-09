@@ -230,15 +230,14 @@
   (declare (ignore stream))
   (nth-value 0 (intern (string char))))
 
-(mapcar (lambda (s)
+(mapcar (lambda (ch)
           (set-macro-character
-           (schar (symbol-name s) 0)
+           ch
            #'symbolize-character-reader
            ()
            *patient-readtable*))
-        ;; punctuation and terminals copied from 
-        ;; 1969 code's TRMLIS and PCTLIS
-        '(|.| |?| |!| |,| |;| |(| |)| |:|))
+        ;; break characters copied from the SETBRK call
+        '(#\. #\, #\? #\! #\- #\( #\) #\; #\: #\#))
 
 ;; allow quote in symbols
 (set-syntax-from-char #\' #\a *patient-readtable*)
