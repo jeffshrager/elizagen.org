@@ -1892,7 +1892,7 @@ EMOTION
 ;;           (SETSEPR (QUOTE (%  %
 ;; %
 ;;  )))
-;;           (SETBRK (QUOTE (%. , ? ! = %( %) %; %: %#)))
+;;           (SETBRK (QUOTE (%. , ? ! - %( %) %; %: %#)))
 ;;           (CONTROL T)
           (SETQ FLIPFLOP 0)
           (SETQ TIMON (CLOCK))
