@@ -5,6 +5,8 @@ doctor.ptape	Paper tape labeled "DOCTOR  10 JULY"
 doctor.ascii	doctor.ptape converted from FIO-DEC to ASCII
 scrip.ptape	Paper tape labeled "SCRIP 4.1  2 July 1966"
 scrip.ascii	scrip.ptape converted from FIO-DEC to ASCII
+bbnlisp.pl	BBN-LISP emulator written in Perl
+bbnlib66.lisp	Function library for BBN-LISP
 session		Transcript of a run on a BBN LISP emulator
 
 The paper tapes are encoded in a (modified?) FIO-DEC encoding for the
@@ -25,6 +27,12 @@ Lower case octal 40 (dot)	@	Same representation used by simh
 Octal 75 (back space)		BS
 Lower case octal 14		L14
 Lower case octal 32		L32
+
+The program can be run under the emulator using the following command line:
+
+   bbnlisp.pl -doctor66 -load bbnlib66.lisp -load doctor.ascii -load scrip.ascii
+
+Then type (doctor) at the prompt.
 
 James Markevitch
 December, 2014
