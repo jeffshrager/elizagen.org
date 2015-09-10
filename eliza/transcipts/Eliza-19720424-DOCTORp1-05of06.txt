@@ -1,0 +1,45 @@
+; Eliza-19720424-DOCTORp1-05of06.TIF
+;  <SOURCES>DOCTOR.;2   TUE 13-JUN-72 10:16AM           PAGE 1:5
+
+
+      T2  [COND
+            ((EQ Y1 Y2)
+             (GO T3))
+            (PF (COND
+                  (TPF (SPACES 1))
+                  (T (TERPRI)
+                     (SETQ TPF T)))
+                (PRIN1 (CAR V1)))
+            (T (TCONC SENT (CAR V1]
+          (SETQ V1 (CDR V1))
+          (GO T2])
+
+(MEMORY
+  [LAMBDA NIL
+    (PROG (PARSELIST X)
+      LP  (COND
+            ((NULL MEMSTACK)
+             (RETURN)))
+          (SETQ PARSELIST (CONS NIL NIL))
+          [COND
+            ((TEST (CAAR MEMSTACK)
+                   SENTENCE)
+             (RPLACA [SETQ X (CDAADR (GETP (QUOTE NONE)
+                                           (QUOTE MEM]
+                     (CONS (CAR X)
+                           (CONS (RECONSTRUCT (CAAR (ADVANCE MEMSTACK)))
+                                 (CDAR X]
+          (SETQ MEMSTACK (CDR MEMSTACK))
+          (GO LP])
+
+(BCONC
+  [LAMBDA (WHAT LIST)
+    (COND
+      ((NULL LIST)
+       (CONS (SETQ LIST (CONS NIL WHAT))
+             LIST))
+      [(NULL (CAR LIST))
+       (RPLACA LIST (CDR (RPLACD LIST (CONS NIL WHAT]
+      ((RPLACA LIST (CAR (RPLACA (CAR LIST)
+                                 (RPLACA (CONS LIST WHAT)
+                                         NIL])

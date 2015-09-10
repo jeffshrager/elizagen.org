@@ -1,0 +1,54 @@
+;;; transcribed from Eliza-19720424-SCRIPTp1-04of11.TIF
+;;; by Simon Leinen  <simon.leinen@gmail.com>
+;;; ------------------------------ snip ------------------------------
+;  <SOURCES>SCRIPT.;1   MON 24-APR-72 10:01AM            PAGE 1:4
+
+           (NIL)
+	   XXWHAT)
+	  ((0 1 (ARE IS)
+	      NOT 0)
+           (NIL)
+	   (POSSIBLY THAT IS FOR THE BETTER %.)
+	   (WHAT IF 2 WERE 5)
+	   (WHAT DO YOU REALLY KNOW ABOUT 2))
+          ((0 (ARE IS)
+	      0)
+	   (NIL)
+	   (SUPPOSE 1 WERE NOT 3 %.)
+	   (POSSIBLY 1 REALLY 2 NOT 3 %.)
+	   (TELL ME MORE ABOUT 1 %.)
+	   (DID YOU THINK 1 MIGHT NOT BE 3)
+	   (1 PERHAPS 2 3 %.]
+  [RPLQQ YOUR PRIORITY 0 TRANSLATION MY RULES
+         (((0 MY 1)
+	   (NIL)
+	   (WHY ARE YOU CONCERNED OVER MY 3)
+	   (WHAT ABOUT YOUR OWN 3)
+	   (ARE YOU WORRIED ABOUT SOMEONE ELSES 3)
+	   (REALLY "," MY 3))
+	  ((MY 0)
+	   (NIL)
+	   (PERHAPS YOUR OWN 2 %.)
+	   (ARE YOU WORRIED THAT MY 2]
+  [RPLQQ WAS PRIORITY 2 RULES
+         (((WAS YOU 0)
+	   (NIL)
+	   (WHAT IF YOU WERE 3)
+	   (DO YOU THINK YOU WERE 3)
+	   (WERE YOU 3)
+	   (WHAT WOULD IT MEAN IF YOU WERE 3)
+	   XXXWHAT)
+	  ((YOU WAS 0)
+	   (NIL)
+	   (WERE YOU REALLY)
+	   (WHY DO YOU TELL ME YOU WERE 3 NOW)
+	   (PERHAPS I ALREADY KNEW YOU WERE 3 %.))
+	  ((WAS I 0)
+	   (NIL)
+	   (WOULD YOU LIKE TO BELIEVE I WAS 3)
+	   (WHAT SUGGESTS THAT I WAS 3)
+	   (WHAT DO YOU THINK)
+	   (PERHAPS I WAS 3 %.)
+	   (WHAT IF I HAD BEEN 3]
+  (RPLQQ WERE PRIORITY 0 TRANSLATION WAS RULES (WAS))
+  (RPLQQ ME TRANSLATION YOU)

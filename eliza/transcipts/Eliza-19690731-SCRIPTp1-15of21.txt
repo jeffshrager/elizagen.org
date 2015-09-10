@@ -1,0 +1,51 @@
+; Eliza-19690731-SCRIPTp1-15of21.TIF
+*  /SCRIPT/   31 JULY 1969  1008:27                     PAGE 1:15
+
+
+(RPLQQ WHY
+PRIORITY
+   0
+RULES
+   (((0 WHY (DON'T WON'T)
+            I
+            0)
+         (NIL)
+         (DO YOU BELIEVE I DON'T 5)
+         (PERHAPS I WILL 5 IN GOOD TIME ".")
+         (SHOULD YOU 5 YOURSELF)
+         (YOU WANT ME TO 5 ".")
+         WHAT)
+      ((0 WHY CAN'T YOU 0)
+         (NIL)
+         (DO YOU THINK YOU SHOULD BE ABLE TO 5)
+         (DO YOU WANT TO BE ABLE TO 5)
+         (DO YOU BELIEVE THIS WILL HELP YOU TO 5)
+         (HAVE YOU ANY IDEA WHY YOU CAN'T 5)
+         WHAT)
+      WHAT))
+
+(RPLQQ EVERYONE
+PRIORITY
+   2
+RULES
+   (((0)
+         (NIL)
+         (CAN YOU THINK OF ANYONE IN PARTICULAR)
+         (WHO"," FOR EXAMPLE)
+         (YOU ARE THINKING OF A VERY SPECIAL PERSON ".")
+         (YOU HAVE A PARTICULAR PERSON IN MIND"," DON'T YOU))))
+
+(RPLQQ EVERYBODY
+PRIORITY
+   2
+RULES
+   (EVERYONE))
+
+(RPLQQ NOBODY
+PRIORITY
+   2
+RULES
+   (((0)
+         (NIL)
+         (SURELY SOMEONE"...")
+         (PERHAPS YOU JUST DON'T KNOW OF ANYONE "."))))

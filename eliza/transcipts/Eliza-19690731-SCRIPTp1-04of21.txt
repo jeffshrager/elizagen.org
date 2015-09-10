@@ -1,0 +1,49 @@
+; Eliza-19690731-SCRIPTp1-04of21.TIF
+*  /SCRIPT/   31 JULY 1969  1008:27                     PAGE 1:4
+
+
+(RPLQQ NONE
+LASTRESORT
+   (RULES (((0)
+            (NIL)
+            (I AM NOT SURE I UNDERSTAND YOU FULLY ".")
+            (PLEASE GO ON ".")
+            (WHAT DOES THAT SUGGEST TO YOU)
+            (WHAT ELSE WOULD YOU LIKE TO DISCUSS)
+            (WHY DO YOU SAY THAT JUST NOW)))))
+
+(RPLQQ PERHAPS
+PRIORITY
+   0
+RULES
+   (((0)
+         (NIL)
+         (YOU DON'T SEEM QUITE CERTAIN ".")
+         (WHY THE UNCERTAIN TONE)
+         (CAN'T YOU BE MORE POSITIVE)
+         (YOU AREN'T SURE)
+         (DON'T YOU KNOW))))
+
+(RPLQQ MAYBE
+PRIORITY
+   0
+RULES
+   (PERHAPS))
+
+(RPLQQ NAME
+PRIORITY
+   15
+RULES
+   (((0)
+         (NIL)
+         (I AM NOT INTERESTED IN NAMES ".")
+         (I'VE TOLD YOU BEFORE I DON'T CARE ABOUT NAMES - PLEASE
+CONTINUE "."))))
+
+(RPLQQ DEUTSCH
+PRIORITY
+   0
+RULES
+   (((0)
+         (NIL)
+         (I AM SORRY"," I SPEAK ONLY ENGLISH))))

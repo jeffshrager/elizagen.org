@@ -1,0 +1,47 @@
+; Eliza-19690731-SCRIPTp1-09of21.TIF
+*  /SCRIPT/   31 JULY 1969  1008:27                                   PAGE 1:9
+
+
+(RPLQQ ME
+TRANSLATION
+   YOU)
+
+(RPLQQ YOU'RE
+PRIORITY
+   0
+TRANSLATION
+   I'M
+RULES
+   (((0 I'M 0)
+         (NIL)
+         (PRE (I ARE 3)
+            YOU))))
+
+(RPLQQ I'M
+PRIORITY
+   0
+TRANSLATION
+   YOU'RE
+RULES
+   (((0 YOU'RE 0)
+         (NIL)
+         (PRE (YOU ARE 3)
+            I))))
+
+(RPLQQ MYSELF
+TRANSLATION
+   YOURSELF)
+
+(RPLQQ YOURSELF
+TRANSLATION
+   MYSELF)
+
+(RPLQQ MOTHER
+FAMILY
+   T)
+
+(RPLQQ MOM
+TRANSLATION
+   MOTHER
+FAMILY
+   T)

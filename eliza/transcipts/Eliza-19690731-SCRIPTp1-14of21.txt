@@ -1,0 +1,52 @@
+; Eliza-19690731-SCRIPTp1-14of21.TIF
+*  /SCRIPT/   31 JULY 1969  1008:27                     PAGE 1:14
+
+
+(RPLQQ IS
+PRIORITY
+   0
+RULES
+   (((IS 0)
+         (NIL)
+         XXWHAT)
+      ARE))
+
+(RPLQQ WHERE
+PRIORITY
+   0
+RULES
+   (WHAT))
+
+(RPLQQ WHAT
+PRIORITY
+   0
+RULES
+   ((((HOW WHERE WHAT WHY)
+            0)
+         (NIL)
+         XXWHAT)))
+
+(RPLQQ XXWHAT
+RULES
+   (((0)
+         (NIL)
+         (WHY DO YOU ASK)
+         (WHY DOES THAT QUESTION INTEREST YOU)
+         (WHY ARE SUCH QUESTIONS ON YOUR MIND)
+         (WHAT ANSWER WOULD PLEASE YOU MOST)
+         (WHAT DO YOU THINK)
+         (WHEN HAVE YOU ASKED SUCH QUESTIONS BEFORE)
+         (WHO ELSE HAVE YOU ASKED))))
+
+(RPLQQ BECAUSE
+PRIORITY
+   0
+RULES
+   (((0)
+         (NIL)
+         (IS THAT THE REAL REASON)
+         (I SEE ".")
+         (DON'T ANY OTHER REASONS COME TO MIND)
+         (DOES THAT REASON SEEM TO EXPLAIN ANYTHING ELSE)
+         (AND WHAT DOES THAT SUGGEST)
+         (WHAT OTHER REASONS MIGHT THERE BE))))

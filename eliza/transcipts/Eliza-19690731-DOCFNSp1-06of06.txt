@@ -1,0 +1,27 @@
+; Eliza-19690731-DOCFNSp1-06of06.TIF
+*  /DOCFNS/   31 JULY 1969  1007:42                     PAGE 1:6
+
+
+(SETNONE
+  (LAMBDA NIL
+    (PROG (A)
+          (SETQ A (GENSYM))
+          (RPLACD A (GETP (QUOTE NONE)
+              (QUOTE LASTRESORT)))
+          (PUT (QUOTE NONE)
+            (QUOTE MEM)
+            (LIST (QUOTE RULES)
+              (LIST (LIST (LIST 0)
+                  (LIST NIL)
+                  A))))
+      )))
+)
+   (PRINT (QUOTE DOCFNS))
+   (RPAQQ DOCFNS (DOCTOR MAKESENTENCE ANALYZE TEST TEST4
+         ADVANCE RECONSTRUCT MEMORY BCONC RPLQQ SETNONE))
+   (PRINT (QUOTE DOCVARS))
+   (RPAQQ DOCVARS (TRMLIS PCTLIS RUBOUT STOP))
+   (RPAQQ TRMLIS ("." ! ?))
+   (RPAQQ PCTLIS ("," ; "(" ")" :))
+   (RPAQQ RUBOUT #)
+STOP

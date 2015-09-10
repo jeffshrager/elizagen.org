@@ -1,0 +1,54 @@
+; Eliza-19720424-SCRIPTp1-03of11.TIF
+;  <SOURCES>SCRIPT.;1    MON 24-APR-72 10:01AM          PAGE 1:3
+
+
+  (RPLQQ ITALIANO PRIORITY 0 RULES (DEUTSCH))
+  (RPLQQ ESPANOL PRIORITY 0 RULES (DEUTSCH))
+  [RPLQQ HELLO PRIORITY 0 RULES (((0)
+           (NIL)
+           (HOW DO YOU DO %.]
+  [RPLQQ COMPUTER PRIORITY 0 RULES
+         (((0)
+           (NIL)
+           (DO COMPUTERS WORRY YOU)
+           (WHY DO YOU MENTION COMPUTERS)
+           (WHAT DO YOU THINK MACHINES HAVE TO DO WITH YOUR PROBLEM)
+           (DON'T YOU THINK COMPUTERS CAN HELP PEOPLE]
+  (RPLQQ MACHINE PRIORITY 0 RULES (COMPUTER))
+  (RPLQQ MACHINES PRIORITY 0 RULES (COMPUTER))
+  (RPLQQ COMPUTERS PRIORITY 0 RULES (COMPUTER))
+  [RPLQQ AM PRIORITY 0 TRANSLATION ARE RULES
+         (((ARE YOU 0)
+           (NIL)
+           (DO YOU BELIEVE YOU ARE 3)
+           (WOULD YOU WANT TO BE 3)
+           (YOU WISH I WOULD TELL YOU YOU ARE 3 %.)
+           (WHAT WOULD IT MEAN IF YOU WERE 3)
+           XXWHAT)
+          ((0)
+           (NIL)
+           (WHY DO YOU SAY 'AM')
+           (I DON'T UNDERSTAND THAT]
+  [RPLQQ ARE PRIORITY 0 RULES
+         (((THERE (ARE IS)
+                  (NO NOT)
+                  0)
+           (NIL)
+           (WHAT IF THERE WERE 4)
+           (DID YOU THINK THERE MIGHT BE 4)
+           (PRE (THERE 2 4)
+                ARE))
+          ((THERE (ARE IS)
+                  0)
+           (NIL)
+           (2 THERE REALLY 3)
+           (WHY 2 THERE 3)
+           (HOW 3 THE 4 RELATED TO YOU))
+          ((ARE I 0)
+           (NIL)
+           (WHY ARE YOU INTERESTED IN WHETHER I AM 3 OR NOT)
+           (WOULD YOU PREFER IF I WEREN'T 3)
+           (PERHAPS I AM 3 IN YOUR FANTASIES %.)
+           (DO YOU SOMETIMES THINK I AM 3)
+           XXWHAT)
+          ((ARE 0)

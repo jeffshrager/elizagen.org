@@ -1,0 +1,37 @@
+; Eliza-19690731-SCRIPTp1-19of21.TIF
+*  /SCRIPT/   31 JULY 1969  1008:27                             PAGE 1:19
+
+
+(RPLQQ GIRL
+PRIORITY
+   3
+PERSON
+   T
+RULES
+   (BOY))
+
+(RPLQQ MAN
+PRIORITY
+   3
+PERSON
+   T
+RULES
+   (BOY))
+
+(RPLQQ WOMAN
+PRIORITY
+   3
+PERSON
+   T
+RULES
+   (BOY))
+
+(RPLQQ SEXY
+PRIORITY
+   5
+RULES
+   (SEX))
+
+(RPLQQ SEX
+PRIORITY
+   5

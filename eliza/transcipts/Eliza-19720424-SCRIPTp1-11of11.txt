@@ -1,0 +1,46 @@
+; Eliza-19720424-SCRIPTp1-11of11.TIF
+;  <SOURCES>SCRIPT.;1   MON 24-APR-72 10:01AM           PAGE 1:11
+
+
+  [RPLQQ SEX PRIORITY 5 RULES
+         (((0 YOU 0 SEX 0)
+           (NIL)
+           (ARE YOU SURE YOU REALLY 3 IT 5)
+           (DO YOU REALLY WANT TO DISCUSS SEX)
+           (PERHAPS YOU ARE WORRIED THAT YOU 3 IT 5)
+           NEWKEY)
+          ((0)
+           (NIL)
+           (WHAT ARE YOUR REAL FEELINGS ABOUT SEX)
+           (DO YOU EVER DREAM ABOUT SEX)
+           (WHY DO YOU MENTION SEX)
+           (COULD SEX BE PART OF YOUR PROBLEM)
+           NEWKEY))
+         MEMR
+         (((0 YOU 0 SEX 0)
+           (NIL)
+           (EARLIER YOU SAID YOU 3 4 5 %.)
+           (TELL ME AGAIN WHY YOU 3 4 5 %.)
+           (DO YOU SAY THAT BECAUSE YOU 3 4 5]
+  (RPLQQ FRIENDLY PRIORITY 0 RULES (FRIEND))
+  [RPLQQ FRIEND PRIORITY 1 RULES
+         (((0 YOUR RIEND 0)
+           (NIL)
+           (WHAT ELSE CAN YOU TELL ME ABOUT YOUR FRIEND)
+           (WHAT MIGHT YOUR FRIENDS HAVE TO DO WITH YOUR PROBLEM))
+          ((0)
+           (NIL)
+           (DO YOU THINK FRIENDS ARE IMPORTANT)
+           (WHAT DO YOU THINK ABOUT YOUR FRIENDS]
+  (RPLQQ CRY PRIORITY 2 RULES (LAUGH))
+  (RPLQQ LAUGH PRIORITY 2 RULES (((0 (LAUGH CRY)
+                                     0)
+           (NIL)
+           (WHAT WOULD MAKE YOU 2)
+           (REALLY 2)
+           (WOULD YOU LIKE TO LAUGH)
+           NEWKEY)))
+  (RPLQQ LOVE EMOTION T)
+  (RPLQQ HATE EMOTION T)
+  (RPLQQ DISLIKE EMOTION NIL)
+STOP

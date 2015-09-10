@@ -1,0 +1,44 @@
+; Eliza-19720424-DOCTORp1-00of06.TIF
+; Note: the SETBRK line has a character I'm unsure of. I transcribed it
+; as a "-".
+;  <SOURCES>DOCTOR.;2    TUE 13-JUN-72 10:16 AM         PAGE 1
+
+
+  (PROGN (LISPXPRIN1 (QUOTE "FILE CREATED ")
+                     T)
+         (LISPXPRIN1 (QUOTE "13-JUN-72 4:20:07")
+                     T)
+         (LISPXTERPRI T))
+(DEFINEQ
+
+(DOCTOR
+  [LAMBDA (FLG)
+    (COND
+      ((NULL FLG)
+       (SETQ MEMSTACK NIL)))
+    (PROG (KEYSTACK SENTENCE TIMON)
+          (SETSEPR (QUOTE (%  %
+%
+ )))
+          (SETBRK (QUOTE (%. , ? ! - %( %) ; : #)))
+          (CONTROL T)
+          (SETQ FLIPFLOP 0)
+          (SETQ TIMON (CLOCK))
+          (RECONSTRUCT (QUOTE (TELL ME YOUR PROBLEMS. PLEASE TERMINATE
+                                    INPUT WITH A PERIOD OR A QUESTION
+                                                           MARK
+                                 %.))
+                       T)
+          (SETNONE)
+      A   (PRIN1 (QUOTE "
+*"))
+          (COND
+            ((NULL (SETQ SENTENCE (MAKESENTENCE)))
+             (GO A)))
+          (SETQ KEYSTACK (CDR SENTENCE))
+          (SETQ SENTENCE (CAR SENTENCE))
+          [COND
+            ((EQUAL SENTENCE (QUOTE (GOOBYE)))
+
+          (* Rate computed at $6 a minute, or $1 per 10
+          seconds, CLOCK returns value in milliseconds.)

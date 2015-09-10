@@ -1,0 +1,370 @@
+<body>
+<title>The Genealogy of Eliza</title>
+<center><h2>The  Genealogy of <a href=https://en.wikipedia.org/wiki/ELIZA target=_blank>Eliza</a></h2></centeR>
+<font size=1>(Maintained by <a href=mailto:jshrager@stanford.edu>Jeff Shrager (jshrager@stanford.edu)</a>)</font>
+
+<hr>
+<h2>News</h2> 
+
+<h3>2015-01-05: James Markevitch has updated his 1966 version with a slightly cleaned up transcript, and his amazing PERL BBN Lisp Interepreter!
+I've uploaded everything to <a target=_blank
+href=http://github.com/jeffshrager/elizagen>the github site</a>, and
+it is all also <a href=doctor_bbn_lisp_1966.tar>available for download
+as a tarball here. 
+
+<p>
+<hr>
+<h3><a target=_blank href=https://en.wikipedia.org/wiki/Joseph_Weizenbaum>Joseph Weizenbaum</a>'s original article:</h3>
+
+<p>
+
+<a href=http://dl.acm.org/citation.cfm?id=365168>Weizenbaum, J. (1966)
+ELIZA - A computer program for the study of natural language
+communication between man and machine. CACM 9(1) 36-45.
+<p>
+
+&nbsp;&nbsp;&nbsp;&nbsp;[1966 Weizenbaum's original Eliza article in the CACM]</a> 
+
+<p>
+
+The paper remains under ACM copyright, and so is inaccessible except
+to those with special privileges. However, <a target=_blank
+href=http://scholar.google.com/scholar?hl=en&q=weizenbaum+eliza>Google
+Scholar</a> lists numerous version of the PDF online. (Use keywords:
+weisenbaum eliza, and click on the "All ... versions" link below the
+extract. Then just pick your favorite PDF source.) I have confirmed
+that there are at least 15 copies that can be accessed by this route.
+
+<p>
+
+<hr>
+
+<h3>Bernie Cosell's <a href=https://en.wikipedia.org/wiki/Lisp target=_blank>Lisp</a> Eliza @ <a href=https://en.wikipedia.org/wiki/BBN_Technologies target=_blank>BBN</a> c. 1966-1972</h3>
+
+This is the original <a href=https://en.wikipedia.org/wiki/Lisp target=_blank>Lisp</a> <a href=https://en.wikipedia.org/wiki/ELIZA target=_blank>Eliza</a> (aka. Doctor) program, written by
+Bernie Cosell based upon <a target=_blank href=https://en.wikipedia.org/wiki/Joseph_Weizenbaum>Joseph Weizenbaum</a>'s original work. Weizenbaum's
+wrote his program in <a href=https://en.wikipedia.org/wiki/SLIP_(programming_language) target=_blank>SLIP</a>, a long-dead Fortran-based symbolic
+computing package. Cosell, working at <a href=https://en.wikipedia.org/wiki/BBN_Technologies target=_blank>BBN</a>, created this <a href=https://en.wikipedia.org/wiki/BBN_LISP target=_blank>BBN Lisp</a>
+version from Weizenbaum's paper (see above), <i>not</i> from the SLIP
+code. Nevertheless, as SLIP never saw the popularity of Lisp, this is
+the version of Eliza that most folks have used, and from which most
+lisp-based Elizas derive. (A separate BASIC fork, not based upon
+either the Lisp or SLIP versions, was popular on early PCs. See below.)
+
+<p>
+
+Bernie writes: "I *never* saw any of the SLIP code and knew nothing
+about it. I wrote Doctor *completely* working just from the <a href=https://en.wikipedia.org/wiki/Communications_of_the_ACM target=_blank>CACM</a>
+article!  In fact, if the SLIP code actually surfaced, it'd be
+interesting to see how different/similar ours were, since I [really]
+never saw any of Weizenbaum's code. Truth is that I did Doctor as a
+learning hack. Dan Murphy was [and still is] a good friend of mine
+from MIT and he was working on bringing up Lisp on the PDP-1b in the
+other building at BBN while I was system-czar for the Hospital
+Timesharing system on our PDP-1d.  I knew a little Lisp from a course
+at MIT, but I figured that the best way to really "get" Lisp was to
+write something real.  I had just joined the ACM [I started at BBN in
+the fall of '65] and I think Weizenbaum's Eliza article just happened
+to be in the very first copy of Communications that I received."
+
+<p>
+
+This release include high resolution TIFF scans of printouts of
+Bernie's code, including the Lisp code and scripts. from 1969 and
+1972. He also provided a paper tape version from 1966, which I am in
+the process of reading, and will make public soon. The release also
+includes combined OCRed PDFs of each program and script. The OCR is
+not very accurate. I intend to release perfect transcripts as well as
+Modern Lisp macros that make this work.
+
+<p>
+
+<center>
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Eliza/Doctor in Lisp</span> by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Bernie Cosell</span><br>Licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
+<p />
+</center>
+
+<a target=_blank href=20131112-CombinedRaw600dpiScanstoPDF/index.html>[20131112] 600dpi scans of 1969 and 1972 printouts combined into PDFs and (roughly) OCR'ed</a>
+<br />
+<a target=_blank href=20131112-Eliza600dpiRawScansRenamed/index.html>[20131112] 600dpi raw scans of the printouts of BBN Lisp Eliza code and scripts from 1969 and 1972</a>
+<br />
+
+<p>
+
+<center><h3>IT WORKS!</h3></center>
+<p>
+
+We have made the 1969 version of Eliza (aka. Doctor) work on modern
+Common Lisp, having to change almost nothing in the raw code
+transcripts! <a target=_blank
+href=http://github.com/jeffshrager/elizagen>Here is the GitHub repo
+containing the code.</a> Thanks to the following folks who helped
+transcribe the code from the original printouts: eMBee, Dave Cooper,
+Bob Felts, Saul Good, Ben Hyde, Simon Leinen, Patrick May, Charlie
+McMackin, Paul Nathan, Matt Niemeir, Peter De Wachter, Thomas Russ,
+Patrick Stein, and Jeff Shrager. And these folks made it work in
+modern CL Peter De Wachter, Matt Niemeir, and Jeff Shrager. If you
+want to become a github collaborator and work hands-on this project,
+write <a href=mailto:jshrager@stanford.edu>Jeff Shrager
+(jshrager@stanford.edu)</a>
+
+<p>
+
+Thanks to <a href=http://www.gigamonkeys.com/ target=_blank>Peter Seibel</a> for making the original connection to Bernie.
+
+<p><hr><p>
+
+James Markevitch has read and translated the 1966 version of Eliza in
+BBN lisp, and has created an emulator (in PERL!) for it that results
+in a working version! It's all available on <a target=_blank
+href=http://github.com/jeffshrager/elizagen>the github site</a>, and
+also <a href=doctor_bbn_lisp_1966.tar>as a tarball here.</a> <br> <center><img src=doctor_bbn_lisp_1966.JPG
+width="500px"></center> <br>
+
+<p><hr><p>
+
+2014-12-20: Jeff Barnett writes:
+<p>
+The original Eliza was moved to the ANFS Q32 at SDC (one of the
+(D)ARPA block grant sites) in the mid 1960's. The programmer
+responsible was John Burger who was involved with many early AI
+efforts. Somehow, John talked to one of the Playboy writers and the
+next thing we knew, there was an article in Playboy much to
+Weizenbaum's and everybody else's horror. We got all sorts of calls
+from therapists who read the article and wanted to contribute their
+"expertise" to make the program better.  Eventually we prepared a
+stock letter and phone script to put off all of this free consulting.
+<p>
+The crisis passed when the unstoppable John Burger invited a husband
+and wife, both psychology profs at UCLA, to visit SDC and see the
+Doctor in action. I was assigned damage control and about lost it when
+both visitors laughed and kept saying the program was perfect!
+Finally, one of them caught their breath and finished the sentence:
+"This program is perfect to show our students just exactly how NOT to
+do Rogerian* therapy.  *I think Rogerian was the term used but it's
+been a while.
+<p>
+A little latter we were involved in the (D)ARPA Speech Understanding
+Research (SUR) Program and some of the group was there all hours of
+day and night. Spouses and significant others tended to visit
+particularly in the crazy night hours and kept getting in our way. We
+would amuse them by letting them use Eliza on the Q32 Time Sharing
+System. One day, the Q32 became unavailable in those off hours for a
+long period of time. We had a Raytheon 704 computer in the speech lab
+that I thought we could use to keep visitors happy some of the
+time. So one weekend I wrote an interpretive Lisp system for the 704
+and debugged it the next Monday. The sole purpose of this Lisp was to
+support Eliza. Someone else adopted the Q32 version to run on the new
+704 Lisp. So in less than a week, while doing our normal work, we had
+a new Lisp system running Eliza and keeping visitors happy while we
+did our research.
+<p>
+The 704 Eliza system, with quite a different script, was used to
+generate a conversation with a user about the status of a
+computer. The dialogue was very similar to one with a human playing
+the part of a voice recognition and response system where the lines
+are noisy. The human and Eliza dialogues were included/discussed in
+A. Newell, et al., "Speech Understanding Systems; Final Report of a
+Study Group," Published for Artificial Intelligence by North-Holland/
+American Elsevier (1973). The content of that report was all generated
+in the late 1960s but not published immediately.
+<p>
+The web site, <a target=_blank
+href=http://www.softwarepreservation.org/projects/LISP/>http://www.softwarepreservation.org/projects/LISP/</a>,
+has a little more information about the Raytheon 704 Lisp. The SUR
+program was partially funded and on-going by 1970.
+
+<p>
+<hr>
+<h3><a href=http://shrager.org target=_blank>Jeff Shrager</a>'s BASIC Eliza c. 1973 &amp; 1977</h3>
+
+<p>
+
+<a href=http://shrager.org target=_blank>Jeff Shrager</a> created a <a target=_blank
+href=https://en.wikipedia.org/wiki/BASIC>BASIC</a> version of Eliza in
+1973 that appeared in Creative Computing in the July/August issue of
+1977:
+<p>
+&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="http://shrager.org/vita/pubs/1977ElizaCreativeComputing.pdf">[1977 BASIC Eliza in Creative Computing]</a>
+<p>
+
+Shrager actually wrote it in 1973. Although he recalls having seen a
+copy of the Lisp code much later, his <a target=_blank
+href=https://en.wikipedia.org/wiki/BASIC>BASIC</a> Eliza was written
+well before this, and was, to use his own words: "conceptual, and
+pretty poor."  Regardless, 1977 was around the dawning of the era of
+the <a href=https://en.wikipedia.org/wiki/Personal_computer
+target=_blank>personal computer</a> (the Commodore PET, Apple ][, and
+TRS-80 were all introduced in that year!), and although few folks in
+the hobbyist community knew Lisp, lots of them knew Basic, so
+Shrager's Eliza was widely circulated and many knock-offs appeared in
+many other languages, some as late as 2006. In fact, Shrager's version
+has even apparently been translated back into Lisp a number of
+times. Indeed, there are so many near-and-distant knock-offs of this
+program floating around that it would be pointless to try to assign
+any sort of Creative Commons, or otherwise, license to it.
+
+<p>
+
+The version published in CC in 1977 was under CC editor Steve North's
+byline, but Shrager is correctly attributed as the author in the
+comments.
+<p>
+This alternative publication: 
+<p>
+&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="http://www.atariarchives.org/bigcomputergames/showpage.php?page=20">[1984 BASIC Eliza in Big Computer Games]</a>
+<p>
+gives the correct year of creation of the program as 1973.
+
+<p>
+
+Note that North's text incorrectly attributes the Lisp Eliza to Joseph
+Weizenbaum, whereas it was actually written by Bernie Cosell (see
+above). This was, and continues to be, a common mistake.
+
+<p>
+
+If you have an iPhone or iPad and are seeking immediate Eliza
+gratification, check out <a target=_blank
+href=http://www.schorn.ch/ialtair.html>"iAltair"</a>, a MITS Altair
+8800 CP/M simulator that comes with a copy of ELIZA.BAS, adapted
+directly from the Creative Computing version.
+
+<p>
+Check it out:<br>
+<table>
+<tr>
+<td><img src=iAltair4.PNG width=200></td>
+<td><img src=iAltair1.PNG width=200></td>
+<td><img src=iAltair2.PNG width=200></td>
+<td><img src=iAltair3.PNG width=200></td>
+</tr>
+</table>
+<p>
+
+<p />
+
+<hr>
+<h3>Richard Stallman's GNU EMACS "Doctor"</h3>
+<p>
+
+The code for the GNU EMACS "doctor" can be found in the GNU EMACS repo, currently:
+<p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target=_blank href=http://git.savannah.gnu.org/cgit/emacs.git/tree/lisp/play/doctor.el>http://git.savannah.gnu.org/cgit/emacs.git/tree/lisp/play/doctor.el</a>
+<p>
+
+It begins:
+
+<pre>
+;;; doctor.el --- psychological help for frustrated users
+
+;; Copyright (C) 1985, 1987, 1994, 1996, 2000-2013 Free Software
+;; Foundation, Inc.
+
+;; Maintainer: FSF
+;; Keywords: games
+
+...
+
+;;; Commentary:
+
+;; The single entry point `doctor', simulates a Rogerian analyst using
+;; phrase-production techniques similar to the classic ELIZA demonstration
+;; of pseudo-AI.
+</pre>
+<p>
+It was most likely written by Richard Stallman. Note this subset of code:
+<pre>
+ (set (make-local-variable 'doctor--stallmanlst)
+       '(((doc$ doctor--describe) your (doc$ doctor--feelings-about) him \.)
+        ((doc$ doctor--areyou) a friend of Stallman \?)
+	 ((doc$ doctor--bother) Stallman is (doc$ doctor--random-adjective) \?)
+	  ((doc$ doctor--ibelieve) you are (doc$ doctor--afraidof) him \.)))
+</pre>
+
+It claims to use techniques "similar to the classic Eliza", but
+doesn't say whether it is based upon Cosell's Lisp code or
+Weizenbaum's paper. Although it is unknown whether Stallman actually
+saw Cosell's version, it's pretty likely that he did, being a Lisp
+hacker and at MIT around the time that the Lisp version would have
+been making the rounds.
+
+<p>
+<hr>
+<h3>Various other, more recent, Elizas (Continuously Updated)</h3>
+
+<p>
+<font color=green>If you know of open source Elizas in any language roaming around,
+please send me links or code so that I can add them to this section.</font>
+<p>
+
+&nbsp;&nbsp;&nbsp;&nbsp;<a target=_blank
+href=http://jeffshrager.org/llisp/26.html>Steve Cherry's 1982 Lisp
+Eliza</a> 
+
+<blockquote> 
+
+[Okay, this is crazy: Cherry's version of Eliza appears in a book
+called <a target=_blank href=http://shrager.org/llisp>"Learning
+Lisp"</a>, which was an imprint of the manual for an Apple ][ Lisp,
+written by Cherry, called <a target=_blank
+href=http://www.flownet.com/ron/plisp.html>PLisp</a>. Cherry's Eliza
+seems mostly based upon Shrager's 1973/1977 BASIC Eliza. (It has
+essentially the same key and response structure as Shrager's, but has
+a priority system, a ittle like Cosell's. So it's not a direct
+translation, but is pretty close.) Shrager's Eliza had been ported to
+an Apple ][ at some point, so Cherry would definately have had it
+close to hand. Anyway, so bear with me here now: Cherry's PLisp manual
+was actually a port of a Lisp textbook written by Shrager and a friend
+(Steve Bagley) in about 1979. (See <a
+href=http://shrager.org/llisp/preface.html target=_blank>the preface
+to Learning Lisp</a>). HOWEVER, <i>Shrager and Bagley's book didn't
+include an Eliza !! </i> Cherry apparently added it for either the
+PLisp user's manual, or later for the imprinted book version of that
+manual. What this means is that Cherry, probably unknowingly, borrowed
+(fairly directly) Shrager's BASIC Eliza, which was itself borrowed
+(indirectly) by Shrager from a Lisp program, back into a <i>different
+Lisp program</i> to appear in a manual/book on Lisp originally
+co-authored by Shrager, who wrote the original (BASIC) Eliza that
+Cherry based <i>his</i> Lisp Eliza on ... Confusing enough for you!?]
+
+</blockquote>
+
+<p>
+
+&nbsp;&nbsp;&nbsp;&nbsp;<a target=_blank href=http://wiki.tcl.tk/36981>Tcl Eliza, possibly by Gerry Snyder (explicitly inspired by the BASIC version)</a><br />
+<p>
+
+&nbsp;&nbsp;&nbsp;&nbsp;<a target=_blank href=http://nlp-addiction.com/eliza/>NLP-Addtion.com's Eliza Chat Bot in js(directly based on the BASIC version)</a><br />
+<p>
+
+&nbsp;&nbsp;&nbsp;&nbsp;<a target=_blank href=http://awk.info/?doc/eliza.html>Eliza in Gawk by Juergen Kahrs (directly based on the BASIC version)</a><br />
+<p>
+
+&nbsp;&nbsp;&nbsp;&nbsp;<a target=_blank href=http://www.ticalc.org/archives/files/fileinfo/354/35463.html>Benjamin Ryves's Eliza in TI-83/84 Plus Assembly</a><br />
+<p>
+
+&nbsp;&nbsp;&nbsp;&nbsp;<a target=_blank href=http://www.chayden.net/eliza/Eliza.html>Charles Hayden's Eliza java applet (claims to be a faithful implementation of Weizenbaum's).</a><br />
+<p>
+
+<p>
+<hr>
+This site is maintained by <a href=mailto:jshrager@stanford.edu>Jeff Shrager (jshrager@stanford.edu)</a>
+<br>
+Thanks for <a target=_blank href=http://Commerce.Net>CommerceNet</a> for their support.
+</body>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-45719811-1']);
+  _gaq.push(['_setDomainName', 'shrager.org']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>

@@ -1,0 +1,56 @@
+; Eliza-19690731-SCRIPTp1-13of21.TIF
+*  /SCRIPT/   31 JULY 1969  1008:27                             PAGE 1:13
+
+
+(RPLQQ XXYZZ
+RULES
+   (((0)
+         (NIL)
+         (IS THERE SOMETHING BOTHERING YOU)
+         (CAN YOU BE MORE INFORMATIVE)
+         (PERHAPS YOU'D RATHER TALK ABOUT SOMETHING ELSE ".")
+         (PLEASE TELL ME MORE "."))))
+
+(RPLQQ YES
+PRIORITY
+   -1
+RULES
+   (((0)
+         (NIL)
+         XXYYZZ
+         (WHY ARE YOU SO SURE)
+         (I SEE ".")
+         (I UNDERSTAND "."))))
+
+(RPLQQ NO
+PRIORITY
+   -1
+RULES
+   (((0 NO (BODY ONE)
+            0)
+         (NIL)
+         NOBODY)
+      ((0)
+         (NIL)
+         XXYYZZ
+         (VERY WELL ".")
+         (WHY NOT)
+         (WHY 'NO'))))
+
+(RPLQQ CAN
+PRIORITY
+   0
+RULES
+   (((CAN I 0)
+         (NIL)
+         (YOU BELIEVE I CAN 3 DON'T YOU)
+         XXWHAT
+         (WOU WANT ME TO BE ABLE TO 3 ".")
+         (PERHAPS YOU WOULD LIKE TO BE ABLE TO 3 YOURSELF "."))
+      ((CAN YOU 0)
+         (NIL)
+         (WHETHER OR NOT YOU CAN 3 DEPENDS ON YOU MORE THAN ON ME
+".")
+         (DO YOU WANT TO BE ABLE TO 3)
+         (PERHAPS YOU DON'T WANT TO 3 ".")
+         XXWHAT)))
