@@ -1,0 +1,726 @@
+   (defprop sorry 0 priority)
+
+   (defprop sorry (((0)
+            (nil)
+            (please don't apologize)
+            (apologies are not necessary)
+            (what feelings do you have when you apologize)
+            (i've told you that apologies are not required
+)))
+      rules)
+
+   (defprop dont don't translation)
+
+   (defprop cant can't translation)
+
+   (defprop wont won't translation)
+
+   (defprop remember 5 priority)
+
+   (defprop remember (((0 you remember 0)
+            (nil)
+            (do you often think of 4)
+            (does thinking of 4 bring anything else to mind
+)
+            (what else do you remember)
+            (why do you remember 4 just now)
+            (what in the present situation reminds you of 
+4)
+            (what is the connection between me and 4))
+         ((0 do i remember 0)
+            (nil)
+            (did you think i would forget 5)
+            (why do you think i should recall 5 now)
+            (what about 5)
+            what
+            (you mentioned 5))
+         zzyyxx)
+      rules)
+
+   (defprop if 3 priority)
+
+   (defprop if (((0 if 0 had 0)
+            (nil)
+            (pre (1 2 3 might have 5)
+               if))
+         ((0 if 0)
+            (nil)
+            (do you think its likely that 3)
+            (do you wish that 3)
+            (what do you think about 3)
+            (really"," if 3)))
+      rules)
+
+   (defprop dreamt 4 priority)
+
+   (defprop dreamt (((0 you dreamt 0)
+            (nil)
+            (really 4)
+            (have you ever fantasied 4 while you were awake
+)
+            (have you dreamt 4 before)
+            dream
+            newkey))
+      rules)
+
+   (defprop dreamed dreamt translation)
+
+   (defprop dreamed 4 priority)
+
+   (defprop dreamed (dreamt)
+      rules)
+
+   (defprop dream 3 priority)
+
+   (defprop dream (((0)
+            (nil)
+            (what does that dream suggest to you)
+            (do you dream often)
+            (what persons appear in your dreams)
+            (don't you believe that dream has something 
+to do with your problem)
+            newkey))
+      rules)
+
+   (defprop dreams dream translation)
+
+   (defprop dreams 3 priority)
+
+   (defprop dreams (dream)
+      rules)
+
+   (defprop how (what)
+      rules)
+
+   (defprop how 0 priority)
+
+   (defprop when 0 priority)
+
+   (defprop when (what)
+      rules)
+
+   (defprop alike 10 priority)
+
+   (defprop alike (dit)
+      rules)
+
+   (defprop same (dit)
+      rules)
+
+   (defprop certainly 0 priority)
+
+   (defprop certainly (yes)
+      rules)
+
+   (defprop feel t belief)
+
+   (defprop think t belief)
+
+   (defprop believe t belief)
+
+   (defprop wish t belief)
+
+   (defprop my (((0 your 1 0)
+            (nil)
+            (lets discuss further why your 3 4)
+            (earlier you said your 3 4)
+            (but your 3 4)
+            (does that have anything to do with the fact that 
+your 3 4)))
+      memr)
+
+   (putprop (quote none)
+      (list (car nil)
+         (quote rules)
+         (quote (((0)
+                  (nil)
+                  (i am not sure i understand you fully)
+                  (please go on)
+                  (what does that suggest to you)
+                  (do you feel strongly about discussing such 
+things)))))
+      (quote lastresort))
+
+   (defprop perhaps 0 priority)
+
+   (defprop perhaps (((0)
+            (nil)
+            (you don't seem quite certain)
+            (why the uncertain tone)
+            (can't you be more positive)
+            (you aren't sure)
+            (don't you know)))
+      rules)
+
+   (defprop maybe 0 priority)
+
+   (defprop maybe (perhaps)
+      rules)
+
+   (defprop name 15 priority)
+
+   (defprop name (((0)
+            (nil)
+            (i am not interested in names)
+            (i've told you before i don't care about names 
+- please continue)))
+      rules)
+
+   (defprop deutsch 0 priority)
+
+   (defprop deutsch (((0)
+            (nil)
+            (i am sorry"," i speak only english)))
+      rules)
+
+   (defprop francais 0 priority)
+
+   (defprop francais (deutsch)
+      rules)
+
+   (defprop svenska 0 priority)
+
+   (defprop svenska (deutsch)
+      rules)
+
+   (defprop italiano 0 priority)
+
+   (defprop italiano (deutsch)
+      rules)
+
+   (defprop espanol 0 priority)
+
+   (defprop espanol (deutsch)
+      rules)
+
+   (defprop hello 0 priority)
+
+   (defprop hello (((0)
+            (nil)
+            (how do you do"." please state your problem
+)))
+      rules)
+
+   (defprop computer 50 priority)
+
+   (defprop computer (((0)
+            (nil)
+            (do computers worry you)
+            (why do you mention computers)
+            (what do you think machines have to do with your 
+problem)
+            (don't you think computers can help people)
+            (what about machines worries you)
+            (what do you think about machines)))
+      rules)
+
+   (defprop machine 50 priority)
+
+   (defprop machine (computer)
+      rules)
+
+   (defprop machines 50 priority)
+
+   (defprop machines (computer)
+      rules)
+
+   (defprop computers 50 priority)
+
+   (defprop computers (computer)
+      rules)
+
+   (defprop am 0 priority)
+
+   (defprop am are translation)
+
+   (defprop am (((0 are you 0)
+            (nil)
+            (do you believe you are 4)
+            (would you want to be 4)
+            (you wish i would tell you you are 4)
+            (what would it mean if you were 4)
+            what)
+         ((0)
+            (nil)
+            (why do you say 'am')
+            (i don't understand that)))
+      rules)
+
+   (defprop are 0 priority)
+
+   (defprop are (((0 there are 0 you 0)
+            (nil)
+            (pre (1 2 3 4)
+               are))
+         ((0 are i 0)
+            (nil)
+            (why are you interested in whether i am 4 or not
+)
+            (would you prefer if i weren't 4)
+            (perhaps i am 4 in your fantasies)
+            (do you sometimes think i am 4)
+            what)
+         ((are 0)
+            (nil)
+            what)
+         ((0 are 0)
+            (nil)
+            (did you think they might not be 3)
+            (would you like it if they were not 3)
+            (what if they were not 3)
+            (possibly they are 3)))
+      rules)
+
+   (defprop your 0 priority)
+
+   (defprop your my translation)
+
+   (defprop your (((0 my 0)
+            (nil)
+            (why are you concerned over my 3)
+            (what about your own 3)
+            (are you worried about someone elses 3)
+            (really/ my 3)))
+      rules)
+
+   (defprop was 2 priority)
+
+   (defprop was (((0 was you 0)
+            (nil)
+            (what if you were 4)
+            (do you think you were 4)
+            (were you 4)
+            (what would it mean if you were 4)
+            (what does ' 4 ' suggest to you)
+            what)
+         ((0 you was 0)
+            (nil)
+            (were you really)
+            (why do you tell me you were 4 now)
+            (perhaps i already knew you were 4))
+         ((0 was i 0)
+            (nil)
+            (would you like to believe i was 4)
+            (what suggests that i was 4)
+            (what do you think)
+            (perhaps i was 4)
+            (what if i had been 4))
+         zzyyxx)
+      rules)
+
+   (defprop were 0 priority)
+
+   (defprop were was translation)
+
+   (defprop were (was)
+      rules)
+
+   (defprop me you translation)
+
+   (defprop you're 0 priority)
+
+   (defprop you're i'm translation)
+
+   (defprop you're (((0 i'm 0)
+            (nil)
+            (pre (i are 3)
+               you)))
+      rules)
+
+   (defprop i'm 0 priority)
+
+   (defprop i'm you're translation)
+
+   (defprop i'm (((0 you're 0)
+            (nil)
+            (pre (you are 3)
+               i)))
+      rules)
+
+   (defprop myself yourself translation)
+
+   (defprop yourself myself translation)
+
+   (defprop mother t family)
+
+   (defprop mom mother translation)
+
+   (defprop mom t family)
+
+   (defprop dad father translation)
+
+   (defprop dad t family)
+
+   (defprop father t family)
+
+   (defprop sister t family)
+
+   (defprop brother t family)
+
+   (defprop wife t family)
+
+   (defprop children t family)
+
+   (defprop i 0 priority)
+
+   (defprop i you translation)
+
+   (defprop i (((0 you (want need)
+               0)
+            (nil)
+            (what would it mean to you if you got 4)
+            (why do you want 4)
+            (suppose you got 4 soon)
+            (what if you never got 4)
+            (what would getting 4 mean to you)
+            (what does wanting 4 have to do with this discussion
+))
+         ((0 you are 0 (sad unhappy depressed sick)
+               0)
+            (nil)
+            (i am sorry to hear you are 5)
+            (do you think coming here will help you not to 
+be 5)
+            (i'm sure its not pleasant to be 5)
+            (can you explain what made you 5))
+         ((0 you are 0 (happy elated glad better)
+               0)
+            (nil)
+            (how have i helped you to be 5)
+            (has your treatment made you 5)
+            (what makes you 5 just now)
+            (can you explain why you are suddenly 5))
+         ((0 you was 0)
+            (nil)
+            was)
+         ((0 you (nil belief)
+               you
+               0)
+            (nil)
+            (do you really think so)
+            (but you are not sure you 5)
+            (do you really doubt you 5))
+         ((0 you 0 (nil belief)
+               0
+               i
+               0)
+            (nil)
+            you)
+         ((0 you are 0)
+            (nil)
+            (is it because you are 4 that you came to me)
+            (how long have you been 4)
+            (do you believe it normal to be 4)
+            (do you enjoy being 4))
+         ((0 you (can't cannot)
+               0)
+            (nil)
+            (how do you know you can't 4)
+            (have you tried)
+            (perhaps you could 4 now)
+            (do you really want to be able to 4))
+         ((0 you don't 0)
+            (nil)
+            (don't you really 4)
+            (why don't you 4)
+            (do you wish to be able to 4)
+            (does that trouble you))
+         ((0 you feel 0)
+            (nil)
+            (tell me more about such feelings)
+            (do you often feel 4)
+            (do you enjoy feeling 4)
+            (of what does feeling 4 remind you))
+         ((0 you 0 i 0)
+            (nil)
+            (perhaps in your fantasy we 3 each other)
+            (do you wish to 3 me)
+            (you seem to need to 3 me)
+            (do you 3 anyone else))
+         ((0)
+            (nil)
+            (you say 1)
+            (can you elaborate on that)
+            (do you say 1 for some special reason)
+            (that's quite interesting)))
+      rules)
+
+   (defprop you 0 priority)
+
+   (defprop you i translation)
+
+   (defprop you (((0 i remind you of 0)
+            (nil)
+            dit)
+         ((0 i are 0 you 0)
+            (nil)
+            (pre (1 2 3 4)
+               you))
+         ((0 i 0 are 0)
+            (nil)
+            (what makes you think i am 5)
+            (does it please you to believe i am 5)
+            (perhaps you would like to be 5)
+            (do you sometimes wish you were 5))
+         ((0 i 0 you)
+            (nil)
+            (why do you think i 3 you)
+            (you like to think i 3 yo0 - don't you)
+            (what makes you think i 3 you)
+            (really"," i 3 you)
+            (do you wish to believe i 3 you)
+            (suppose i did 3 you - what would that mean)
+            (does someone else believe i 3 you))
+         ((0 i 1 0)
+            (nil)
+            (we were discussing you - not me)
+            (oh"," i 3 4)
+            (you're not really talking about me - are you
+)
+            (what are your feelings now))
+         zzyyxx)
+      rules)
+
+   (defprop xxyyzz (((0)
+            (nil)
+            (you're being somewhat short with me)
+            (you don't seem very talkative today)
+            (prehaps you'd rather talk about something else
+)
+            (are you using monosyllables for some reason))
+)
+      rules)
+
+   (defprop yes 0 priority)
+
+   (defprop yes (((yes)
+            (nil)
+            xxyyzz
+            (pre (x yes)
+               yes))
+         ((0)
+            (nil)
+            (you seem quite positive)
+            (you are sure)
+            (i see)
+            (i understand)))
+      rules)
+
+   (defprop no 0 priority)
+
+   (defprop no (((no)
+            (nil)
+            xxyyzz
+            (pre (x no)
+               no))
+         ((0)
+            (nil)
+            (are you saying 'no' just to be negative)
+            (you are being a bit negative)
+            (why not)
+            (why 'no')))
+      rules)
+
+   (defprop my 2 priority)
+
+   (defprop my your translation)
+
+   (defprop my (((0 your 0 (nil family)
+               0)
+            (nil)
+            (tell me more about your family)
+            (who else in your family 5)
+            (your 4)
+            (what else comes to mind when you think of your 
+4))
+         ((0 your 1 0)
+            (nil)
+            (your 3 4)
+            (why do you say your 3 4)
+            (does that suggest anything else which belongs 
+to you)
+            (is it important to you that your 3 4))
+         zzyyxx)
+      rules)
+
+   (defprop can 0 priority)
+
+   (defprop can (((0 can i 0)
+            (nil)
+            (you believe i can 4 don't you)
+            what
+            (you want me to be able to 4)
+            (perhaps you would like to be able to 4 yourself
+))
+         ((0 can you 0)
+            (nil)
+            (whether or not you can 4 depends on you more 
+than on me)
+            (do you want to be able to 4)
+            (perhaps you don't want to 4)
+            what)
+         zzyyxx)
+      rules)
+
+   (defprop is 0 priority)
+
+   (defprop is (((1 0 is 1 0)
+            (nil)
+            (suppose 1 2 were not 4 5)
+            (perhaps 1 2 really is 4 5)
+            (tell me more about 1 2))
+         zzyyxx)
+      rules)
+
+   (defprop where 0 priority)
+
+   (defprop where (what)
+      rules)
+
+   (defprop what 0 priority)
+
+   (defprop what (((0)
+            (nil)
+            (why do you ask)
+            (does that question interest you)
+            (what is it you really want to know)
+            (are such questions much on your mind)
+            (what answer would please you most)
+            (what do you think)
+            (what comes to your mind when you ask that)
+            (have you asked such questions before)
+            (have you asked anyone else)))
+      rules)
+
+   (defprop because 0 priority)
+
+   (defprop because (((0)
+            (nil)
+            (is that the real reason)
+            (don't any other reasons come to mind)
+            (does that reason seem to explain anything else
+)
+            (what other reasons might there be)))
+      rules)
+
+   (defprop why 0 priority)
+
+   (defprop why (((0 why don't i 0)
+            (nil)
+            (do you believe i don't 5)
+            (perhaps i will 5 in good time)
+            (should you 5 yourself)
+            (you want me to 5)
+            what)
+         ((0 why can't you 0)
+            (nil)
+            (do you think you should be able to 5)
+            (do you want to be able to 5)
+            (do you believe this will help you to 5)
+            (have you any idea why you can't 5)
+            what)
+         what)
+      rules)
+
+   (defprop everyone 2 priority)
+
+   (defprop everyone (((0 (everyone everybody nobody noone
+)
+               0)
+            (nil)
+            (really"," 2)
+            (surely not 2)
+            (can you think of anyone in particular)
+            (who"," for example)
+            (you are thinking of a very special person)
+            (who"," may i ask)
+            (someone special perhaps)
+            (you have a particular person in mind"," don't 
+you)
+            (who do you think you're talking about)))
+      rules)
+
+   (defprop everybody 2 priority)
+
+   (defprop everybody (everyone)
+      rules)
+
+   (defprop nobody 2 priority)
+
+   (defprop nobody (everyone)
+      rules)
+
+   (defprop noone 2 priority)
+
+   (defprop noone (everyone)
+      rules)
+
+   (defprop always 1 priority)
+
+   (defprop always (((0)
+            (nil)
+            (can you think of a specific example)
+            (when)
+            (what incident are you thinking of)
+            (really"," always)))
+      rules)
+
+   (defprop like (((0 (am is are was)
+               0
+               like
+               0)
+            (nil)
+            dit)
+         zzyyxx)
+      rules)
+
+   (defprop dit (((0)
+            (nil)
+            (in what way)
+            (what resemblance do you see)
+            (what does that similarity suggest to you)
+            (what other connections do you see)
+            (what do you suppose that resemblance means)
+            (what is the connection"," do you suppose)
+            (could there really be some connection)
+            (how)))
+      rules)
+
+   (defprop hello (((0)
+            (nil)
+            (how do you do"." please state your problem
+)))
+      rules)
+
+   (defprop bag 5 priority)
+
+   (defprop bag (((0 (bite bites)
+               the
+               bag)
+            (nil)
+            (do you say 1 2 3 4 for some special reason)
+            (what might 1 have to do with your problem)
+            (do you often say ' 2 3 4 ')
+            (perhaps you feel that you bite 3 4))
+         zzyyxx)
+      rules)
+
+   (defprop oh 10 priority)
+
+   (defprop oh (((0 my oh my 0)
+            (nil)
+            (pre (1 my-oh-my 5)
+               zzyyxx))
+         ((0 oh my 0)
+            (nil)
+            (pre (1 oh-my 4)
+               zzyyxx))
+         zzyyxx)
+      rules)
+
+   (defprop zzyyxx (((0)
+            (nil)
+            newkey))
+      rules)
+
+stop
