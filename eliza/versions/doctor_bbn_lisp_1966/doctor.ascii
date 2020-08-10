@@ -1,0 +1,323 @@
+(defineq
+
+(doctor
+   (lambda nil
+      (prog (sentence keystack phraselist)
+               (setsepr "
+" " " "	")
+               (setbrk "." "," ? | - + "(" 
+")" L32 @ BS L14)
+               (setq flipflop 0)
+               (control t)
+               (sentprint (quote (tell me your troubles"." 
+please terminate input with an enter)))
+               (setnone)
+         a     (prin1 xarr)
+               (makesentence)
+               (cond
+                  ((equal sentence (quote (goodbye)))
+                     (return (sentprint (quote (it's been 
+my pleasure))))))
+               (analyze)
+               (terpri)
+               (go a)
+         )))
+
+(makesentence
+   (lambda nil
+      (prog (flag word)
+         c     (setq phraselist (cons nil nil))
+         b     (setq sentence (cons nil nil))
+               (setq keystack (cons nil nil))
+         a     (set word (ratom))
+               (cond
+                  ((eq word (quote BS))
+                     (print (quote !))
+                     (go b))
+                  ((member word (quote ("." ? | @ 
+L32 "(" ")" "," L14)))
+                     (cond
+                        ((greaterp (getp (cdr keystack)
+                                 (quote priority))
+                              (getp (cdaar phraselist)
+                                 (quote priority)))
+                           (rplaca phraselist (cons (rplaca 
+(cons phraselist (cdr keystack))
+                                    (car sentence))
+                                 (car phraselist))))
+                        ((tconc (rplaca (cons phraselist (
+cdr keystack))
+                                 (car sentence))
+                              phraselist)))
+                     (cond
+                        ((eq word (quote L14))
+                           (return (terpri)))
+                        ((go c)))))
+               (tconc (cond
+                     ((getp word (quote translation)))
+                     (word))
+                  sentence)
+               (cond
+                  ((and (setq flag (getp word (quote priority
+)))
+                        (cdr keystack)
+                        (greaterp flag (getp (cdr keystack
+)
+                              (quote priority))))
+                     (rplacd keystack (cons (cdr keystack)
+                           (cdr word))))
+                  (flag (bconc (cdr word)
+                        keystack)))
+               (go a)
+         )))
+
+(analyze
+   (lambda nil
+      (prog (rules parselist)
+               (setq phraselist (car (tconc (rplaca (cons 
+phraselist (rplaca (cons phraselist (getp (quote none)
+                                       (cond
+                                          ((zerop (setq flipflop 
+(plus 2 (minus flipflop))))
+                                             (quote lastresort
+))
+                                          ((quote mem)))))
+                                 nil))
+                           nil)
+                        phraselist)))
+         c     (setq sentence (caar phraselist))
+               (setq keystack (cdar phraselist))
+               (setq phraselist (cdr phraselist))
+         a     (setq rules (getp keystack (quote rules)))
+         b     (cond
+                  ((null rules)
+                     (go c))
+                  ((atom (car rules))
+                     (setq rules (getp (car rules)
+                           (quote rules))))
+                  ((not (setq parselist (cons nil nil))))
+                  ((cond
+                        ((not (test (caar rules)
+                                 sentence))
+                           (setq rules (cdr rules)))
+                        ((and (not (atom (car (setq rules 
+(car (advance))))))
+                              (not (eq (caar rules)
+                                    (quote pre))))
+                           (return (sentprint (reconstruct 
+(car rules)))))
+                        ((not (atom (car rules)))
+                           (setq sentence (reconstruct (cadar 
+rules)))
+                           (setq rules (cddar rules)))
+                        ((eq (car rules)
+                              (quote newkey))
+                           (setq keystack (car keystack))
+                           (go a)))))
+               (go b)
+         )))
+
+(test
+   (lambda (d s)
+      (prog nil
+         a     (cond
+                  ((null (car d))
+                     (setq parselist (car parselist))
+                     (return (null s)))
+                  ((cond
+                        ((zerop (car d))
+                           (test5))
+                        ((numberp (car d))
+                           (test3 (car d)))
+                        ((test4 (car d))
+                           (test2))))
+                  ((return nil)))
+               (setq d (cdr d))
+               (go a)
+         )))
+
+(test1
+   (lambda (propl x)
+      (prog nil
+         a     (cond
+                  ((null propl)
+                     (return nil))
+                  ((getp x (car propl))
+                     (return t)))
+               (setq propl (cdr propl))
+               (go a)
+         )))
+
+(test2
+   (lambda nil
+      (tconc (prog1 (car s)
+            (setq s (cdr s)))
+         parselist)))
+
+(test3
+   (lambda (x)
+      (prog (l)
+               (setq l (list nil))
+         a     (cond
+                  ((zerop x)
+                     (return (tconc (car l)
+                           parselist)))
+                  ((null s)
+                     (return nil)))
+               (setq x (sub1 x))
+               (tconc (car s)
+                  l)
+               (setq s (cdr s))
+               (go a)
+         )))
+
+(test4
+   (lambda (d)
+      (cond
+         ((null s)
+            nil)
+         ((atom d)
+            (eq d (car s)))
+         ((car d)
+            (member (car s)
+               d))
+         ((test1 (cdr d)
+               (car s))))))
+
+(test5
+   (lambda nil
+      (prog (l)
+               (cond
+                  ((null (cdr d))
+                     (tconc s parselist)
+                     (return (not (setq s nil)))))
+               (setq l (cons nil nil))
+         a     (cond
+                  ((test4 (cadr d))
+                     (return (tconc (car l)
+                           parselist)))
+                  ((and (tconc (car s)
+                           l)
+                        (setq s (cdr s)))
+                     (go a)))
+         )))
+
+(advance
+   (lambda nil
+      (rplaca (cdar rules)
+         (cond
+            ((null (cdadar rules))
+               (cddar rules))
+            ((cdadar rules))))))
+
+(reconstruct
+   (lambda (recon)
+      (prog (sent)
+               (setq sent (list nil))
+         loop  (cond
+                  ((null recon)
+                     (return (car sent)))
+                  ((numberp (car recon))
+                     (tconc (reco1 (car recon)
+                           parselist)
+                        sent))
+                  ((tconc (car recon)
+                        sent)))
+               (setq recon (cdr recon))
+               (go loop)
+         )))
+
+(reco1
+   (lambda (count plist)
+      (prog nil
+         loop  (cond
+                  ((eq count 1)
+                     (return (car plist))))
+               (setq count (sub1 count))
+               (setq plist (cdr plist))
+               (go loop)
+         )))
+
+(memory
+   (lambda nil
+      (prog (parselist x)
+               (setq parselist (cons nil nil))
+               (cond
+                  ((and (setq rules (getp keystack (quote 
+memr)))
+                        (test (caar rules)
+                           sentence))
+                     (rplaca (setq x (cdaadr (getp (quote 
+none)
+                                 (quote mem))))
+                        (cons (car x)
+                           (cons (reconstruct (caar (advance
+)))
+                              (cdar x))))))
+         )))
+
+(sentprint
+   (lambda (reply)
+      (prog (rep1)
+         a     (cond
+                  ((null reply)
+                     (prin1 period)
+                     (memory)
+                     (return (terpri)))
+                  ((null (car reply)))
+                  ((atom (car reply))
+                     (prin1 space)
+                     (prin1 (car reply)))
+                  ((go b)))
+         d     (setq reply (cdr reply))
+               (go a)
+         b     (setq rep1 (car reply))
+         c     (cond
+                  ((null rep1)
+                     (go d))
+                  ((null (car rep1)))
+                  ((atom (car rep1))
+                     (prin1 space)
+                     (prin1 (car rep1))))
+               (setq rep1 (cdr rep1))
+               (go c)
+         )))
+
+(bconc
+   (lambda (what list)
+      (cond
+         ((null list)
+            (cons (setq list (cons nil what))
+               list))
+         ((null (car list))
+            (rplaca list (cdr (rplacd list (cons nil what)
+))))
+         ((rplaca list (car (rplaca (car list)
+                     (rplaca (cons list what)
+                        nil))))))))
+
+(defprop
+   (nlamda (args)
+      (put (car args)
+         (caddr args)
+         (cadr args))))
+
+(putprop
+   (lambda (atom value property)
+      (put atom property (cdr value))))
+
+(setnone
+   (lambda nil
+      (prog (a)
+               (setq a (gensym))
+               (rplacd a (getp (quote none)
+                     (quote lastresort)))
+               (put (quote none)
+                  (quote mem)
+                  (list (quote rules)
+                     (list (list (list 0)
+                           (list nil)
+                           a))))
+         )))
+)
+stop

@@ -1,0 +1,19 @@
+Eliza for Model I (CAS) - Tandy (1979)
+
+COPY 2 DUMP INFORMATION:
+---------------
+
+Dumped by:        Ira Goldklang
+Dumped on:        February 16, 2005
+Source:           Original Cassette
+Downloaded From:  www.trs-80.com
+
+CASSETTE LABEL:
+---------------
+
+Eliza
+Artificial Intelligence        LEVEL:  II
+Simulation                     RAM:   16K
+
+Mem Size [ENTER]  SYSTEM: ELIZA / [ENTER]
+(c) Tandy Corp 1979  (p) Tandy Corp 1979

@@ -1,0 +1,38 @@
+Paper tape images of the "doctor" program (aka Eliza) in BBN PDP-1 LISP.
+
+README		This file
+doctor.ptape	Paper tape labeled "DOCTOR  10 JULY"
+doctor.ascii	doctor.ptape converted from FIO-DEC to ASCII
+scrip.ptape	Paper tape labeled "SCRIP 4.1  2 July 1966"
+scrip.ascii	scrip.ptape converted from FIO-DEC to ASCII
+bbnlisp.pl	BBN-LISP emulator written in Perl
+bbnlib66.lisp	Function library for BBN-LISP
+session		Transcript of a run on a BBN LISP emulator
+
+The paper tapes are encoded in a (modified?) FIO-DEC encoding for the
+PDP-1 computer.
+
+FIO-DEC is an odd parity encoding of PDP-1 "concise code" (with a few
+additional characters).  The MSB is the parity bit.  Concise code is
+a six-bit code with "upper case" and "lower case" characters that are
+seleced with "shift" codes to switch between upper case and lower case.
+
+Concise code was converted to ASCII based on the conversion table described
+in F-15D, PDP-1 Handbook, October 1963.  Some of the concise codes contained
+in the paper tapes do not have an ASCII equivalent.  These were represented
+using the following:
+
+Upper case octal 05 (or)	!	Same representation used by simh
+Lower case octal 40 (dot)	@	Same representation used by simh
+Octal 75 (back space)		BS
+Lower case octal 14		L14
+Lower case octal 32		L32
+
+The program can be run under the emulator using the following command line:
+
+   bbnlisp.pl -doctor66 -load bbnlib66.lisp -load doctor.ascii -load scrip.ascii
+
+Then type (doctor) at the prompt.
+
+James Markevitch
+December, 2014
