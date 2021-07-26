@@ -1,0 +1,539 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<meta name="generator" content=
+"HTML Tidy for Linux/x86 (vers 1st July 2002), see www.w3.org">
+<title>LEARNING LISP - ELIZA</title>
+</head>
+<body bgcolor="white">
+<h1>LEARNING LISP</h1>
+
+<p><a href="index.html">Contents</a> | <a href="25.html">Efficiency
+and Elimination of Recursion</a> | <a href="27.html">The P-Lisp
+Interpreter</a></p>
+
+<h2>ELIZA</h2>
+
+ELIZA is a classic example of the use of Lisp in a sample
+artificial intelligence (AI) application. Originally written by
+Joseph Weizenbaum, ELIZA is a program that "simulates" a patient's
+discussion with a psychiatrist. While appearing on the surface to
+possess "intelligence", the program is actually little more than a
+simple pattern matcher. A sample dialogue with ELIZA follows (user
+input is in lower case, with ELIZA's responses in upper case): 
+<pre>
+  MAY I HELP YOU?
+:i want you to help me
+  WHAT WOULD IT MEAN TO YOU IF YOU GOT ME TO HELP YOU?
+:im afraid to tell you
+  YOURE NOT REALLY TALKING ABOUT ME, ARE YOU?
+:what does that mean
+  WHY DO YOU ASK?
+:are you asking me
+  WHY ARE YOU INTERESTED IN WHETHER OR NOT I AM ASKING YOU?
+:why do you keep answering with questions
+  DOES THAT QUESTION INTEREST YOU?
+:i dont know
+  DONT YOU REALLY KNOW?
+:no
+  ARE YOU SAYING NO JUST TO BE NEGATIVE?
+:i think so
+  DO YOU REALLY THINK SO?
+:not always
+  CAN YOU THINK OF A SPECIFIC EXAMPLE?
+:oh shut up
+  IM NOT SURE I UNDERSTAND YOU FULLY?
+:goodbye
+  GOODBYE
+</pre>
+
+What follows is an annotated listing of ELIZA as implemented in
+p-Lisp: 
+<pre>
+;
+; ELIZA -- P-Lisp version Copyright 1982 by Steven Cherry
+;
+; -----
+; The main function, ELIZA, gets a line of input and prints the
+; appropriate response. The user's input is saved for the next time
+; through the loop so we can check if the user is repeating himself.
+;
+(DEFINE (ELIZA (LAMBDA ()
+  (PROG (KEY IN ON)
+    (CALL -936)                           ;clear the screen
+    (GC NIL)                              ;turn off garbage collection message
+    (PRINT)
+    (PRINTLINE '(MAY I HELP YOU?))
+    LOOP
+      ; Get input. If the new input equals the old, complain.
+      ; Otherwise check if input should stop ELIZA.
+      (SETQ IN (READLINE))
+      (COND
+        ((EQUAL IN ON)
+            (PRIN1)
+            (PRINTLINE '(PLEASE DO NOT REPEAT YOURSELF))
+            (GO LOOP))
+        ((EQUAL IN '(GOODBYE)) (RETURN 'GOODBYE)))
+      (SETQ KEY (KEYSEARCH IN))           ;get the keyword number
+      (PRIN1)
+      (PRINTLINE (REPLY (CONJUGATE (CDR KEY))
+                        (CAR KEY)))       ;print response
+      (SETQ IN ON)
+    (GO LOOP)
+  )
+)))
+
+;
+; KEYSEARCH searches the input line for the word or phrase
+; that has the highest priority. This priority is returned, along
+; with the remainder of the input line.
+;
+; Priorities are stored on a word's property list under the property
+; KEY. If the property value is not a number, then the word can be part
+; of a phrase, in which case the property value will also appear as a
+; property on the list. The value of this property will be either the
+; priority for the phrase or the next word of the phrase. If a word can
+; have a priority by itself as well as be the first word of a phrase
+; then this priority will be stored under the property KEY2. As an
+; example, the property list for the word YOU might look like:
+;     (KEY ARE ARE 4 KEY2 14),
+; meaning the word YOU has priority 14, and the phrase YOU ARE has
+; priority 4.
+;
+(DEFINE (KEYSEARCH (LAMBDA (IN)
+  (PROG (KEYNUM THISKEY LEFT WORD)
+    (SETQ KEYNUM 1 THISKEY 1)
+    LOOP
+      ; If at end of input, return the highest priority and the input
+      ; following the keyword or keyphrase selected.
+      (COND ((NULL IN) (RETURN (CONS KEYNUM LEFT))))
+      (SETQ WORD (CAR IN))
+      ; Check if the word is a number, since doing a GET on a numeric
+      ; atom causes an error. Set THISKEY to the property value of
+      ; KEY (could be NIL if the word isn't a keyword).
+      (COND
+        ((NUMBER WORD) (SETQ THISKEY 1))
+        (T (SETQ THISKEY (GET WORD 'KEY))))
+      ; If THISKEY is not numeric, the word must be the first word
+      ; of a keyphrase.
+      (COND
+        ((NOT (NUMBER THISKEY))
+          (SETQ THISKEY (KEYPHRASE WORD (CDR IN) THISKEY))
+          ; If KEYPHRASE returned NIL, the phrase wasn't in the input.
+          ; In this case get the KEY2 property value. Otherwise,
+          ; KEYPHRASE returned the priority of the phrase and the
+          ; input following the phrase.
+          (COND
+            ((NULL THISKEY)
+                (SETQ IN (CDR IN) THISKEY (GET2 WORD 'KEY2)))
+            (T (SETQ IN (CDR THISKEY) THISKEY (CAR THISKEY)))))
+        (T (SETQ IN (CDR IN))))
+      ; If the new priority is higher than the old one, set the old
+      ; to the new and set LEFT to contain the remainder of the input.
+      (COND
+        ((GREATER THISKEY KEYNUM)
+          (SETQ KEYNUM THISKEY LEFT IN)))
+    '(GO LOOP)
+  )
+)))
+
+;
+; KEYPHRASE checks for a specific sequence of words in IN. If found,
+; the priority of the phrase and the input following the phrase are
+; returned as the CAR and CDR of a list respectively.
+;
+(DEFINE (KEYPHRASE LAMBDA (WORD IN THISKEY)
+  (PROG ()
+    LOOP
+      (COND
+        ((NULL THISKEY) (RETURN NIL))        ;check if finished
+        ; Return the priority for the phrase (in THISKEY)
+        ; has been found.
+        ((NUMBER THISKEY) (RETURN (CONS THISKEY IN)))
+        ; Use the next word in the input as a property on WORD's
+        ; property list, get the property value and loop.
+        (T (SETQ THISKEY (GET WORD (CAR IN)) IN (CDR IN))))
+    (GO LOOP)
+  )
+)))
+
+;
+; GET2 returns the property value of property Y for atom X. If this
+; value is NIL, then GET2 returns 1.
+;
+(DEFINE (GET2 (LAMBDA (X Y)
+  (PROG (Z)
+    (SETQ Z (GET X Y))
+    (COND
+      (NULL Z) (RETURN 1))
+      (T (RETURN Z)))
+  )
+)))
+
+;
+; CONJUGATE conjugates the input line following the keyword or phrase
+; found by KEYSEARCH. The conjugation of a word is stored on the word's
+; property list under the property CONJ. For example, I is changed to
+; YOU, YOU is changed to ME, etc. The resulting list is returned.
+;
+(DEFINE (CONJUGATE (LAMBDA (OLDT)
+  (PROG (NEW W W2)
+    LOOP
+      (COND
+        ((NULL OLDT) (RETURN NEW)))        ; return if finished
+      (SETQ W (CAR OLDT))
+      ; If W is a word, get the value of the CONJ property
+      (COND
+        ((NUMBER W) (SETQ W2 NIL))
+        (T (SETQ W2 (GET W 'CONJ))))
+      ; If W2 is non-NIL, it will be the conjugation of word W. Append
+      ; the correct word onto NEW and repeat.
+      (COND
+        ((NULL W2) (SETQ NEW (APPEND NEW W)))
+        (T (SETQ NEW (APPEND NEW W2))))
+      (SETQ OLDT (CDR OLDT))
+    (GO LOOP)
+  )
+)))
+
+;
+; REPLY is given the priority of the found keyword or phrase (KEYNUM) and
+; the conjugated remainder of the input line (NEW) and formulates a
+; response. First the priority is used to select the response set from
+; the RESP list. The CAR of this response set is used to select the next
+; response in the set, and this number is then incremented. If the
+; number exceeds the length of the set, it is reset to 2. Once a
+; response is selected, NEW is attached to the end if the CAR of the
+; response is an asterisk.
+;
+(DEFINE (REPLY (LAMBDA (NEW KEYNUM)
+  (PROG (A RES OUT)
+    ; Use KEYNUM to select the response set
+    (SETQ A (ARRAY (LIST KEYNUM) RESP))
+    (SETQ RES (EVAL A))
+    ; Use the CAR of the response set to select the
+    ; next response.
+    (SETQ OUT (ARRAY (LIST CAR RES)) (CDR RES)))
+    ; Reset the number to 2 if nothing was selected, and
+    ; select the first response. Otherwise increment the number.
+    (COND
+      ((NULL OUT)
+        (SET A (CONS 2 (CDR RES)))
+        (SETQ OUT (CAR (CDR RES))))
+      (T (SET A (CONS (ADD (CAR RES) 1) (CDR RES)))))
+    ; If the CAR of the response is an asterisk, add NEW to the end.
+    (COND
+      ((EQUAL (CAR OUT) '*)
+        (SETQ OUT (CONC (CDR OUT) NEW))))
+    (RETURN OUT)
+  )
+)))
+
+;
+; PRINTLINE prints a list without the delimiting parentheses.
+;
+(DEFINE (PRINTLINE (LAMBDA (X)
+  (MAPCAR 'PRIN1 X)
+  (PRIN1)
+)))
+
+;
+;
+;
+; ELIZA DATABASE
+;
+(SETQ RESP '(R1 R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15
+  R16 R16 R16 R16 R16 R16 R22 R23 R24 R25 R26 R27 R28 R29 R30
+  R31 R32 R33 R34 R35 R36)))
+
+(SETQ R1 '(1
+  (WHAT DOES THAT SUGGEST TO YOU?)
+  (I SEE)
+  (IM NOT SURE I UNDERSTAND YOU FULLY)
+  (COME, COME, ELUCIDATE YOUR THOUGHTS)
+  (CAN YOU ELABORATE ON THAT?)
+  (THAT IS QUITE INTERESTING)
+  (DO YOU HAVE ANY PSYCHOLOGICAL PROBLEMS?)
+  (YOU DONT SAY)
+))
+
+(SETQ R2 '(1
+  (* DONT YOU BELIEVE THAT I CAN)
+  (* PERHAPS YOU WOULD LIKE TO BE ABLE TO)
+  (* YOU WANT ME TO BE ABLE TO)
+  (* WHAT MAKES YOU THINK I COULD)
+))
+
+(SETQ R3 '(
+  (* PERHAPS YOU DONT WANT TO)
+  (* DO YOU WANT TO BE ABLE TO)
+  (* DO YOU THINK YOU COULD NOT)
+))
+
+(SETQ R4 '(1
+  (* WHAT MAKES YOU THINK I AM)
+  (* DOES IT PLEASE YOU TO BELIEVE I AM)
+  (* PERHAPS YOU WOULD LIKE TO BE)
+  (* DO YOU SOMETIMES WISH YOU WERE)
+))
+
+(SETQ R5 '(1
+  (* WHAT MAKES YOU THINK I AM)
+  (* DOES IT PLEASE YOU TO BELIEVE I AM)
+  (* PERHAPS YOU WOULD LIKE TO BE)
+  (* DO YOU SOMETIMES WISH YOU WERE)
+))
+
+(SETQ R6 '(1
+  (* DONT YOU REALLY)
+  (* WHY DONT YOU)
+  (* DO YOU WISH TO BE ABLE TO)
+  (* DOES THAT TROUBLE YOU?)
+))
+
+(SETQ R7 '(1
+  (TELL ME MORE ABOUT SUCH FEELINGS)
+  (* DO YOU OFTEN FEEL)
+  (* DO YOU ENJOY FEELING)
+))
+
+(SETQ R8 '(1
+  (* DO YOU REALLY BELIEVE I DONT)
+  (* PERHAPS IN GOOD TIME I WILL)
+  (* DO YOU WANT ME TO)
+))
+
+(SETQ R9 '(1
+  (* DO YOU THINK YOU SHOULD BE ABLE TO)
+  (* WHY CANT YOU)
+))
+
+(SETQ R10 '(1
+  (* WHY ARE YOU INTERESTED IN WHETHER OR NOT I AM)
+  (* WOULD YOU PREFER IF I WERE NOT)
+  (* PERHAPS IN YOUR FANTASIES I AM)
+))
+
+(SETQ R11 '(1
+  (* HOW DO YOU KNOW YOU CANT)
+  (HAVE YOU TRIED?)
+  (* PERHAPS YOU CAN NOW)
+))
+
+(SETQ R12 '(1
+  (* DID YOU COME TO ME BECAUSE YOU ARE)
+  (* HOW LONG HAVE YOU BEEN)
+  (* DO YOU BELIEVE IT IS NORMAL TO BE)
+  (* DO YOU ENJOY BEING)
+))
+
+(SETQ R13 '(1
+  (* DID YOU COME TO ME BECAUSE YOU ARE)
+  (* HOW LONG HAVE YOU BEEN)
+  (* DO YOU BELIEVE IT IS NORMAL TO BE)
+  (* DO YOU ENJOY BEING)
+))
+
+(SETQ R14 '(1
+  (WE WERE DISCUSSING YOU -- NOT ME)
+  (* OH, I)
+  (YOURE NOT REALLY TALKING ABOUT ME, ARE YOU?)
+  (OH, YEAH?)
+))
+
+(SETQ R15 '(1
+  (* WHAT WOULD IT MEAN TO YOU IF YOU GOT)
+  (* WHY DO YOU WANT)
+  (* SUPPOSE YOU SOON GOT)
+  (* WHAT IF YOU NEVER GOT)
+  (* I SOMETIMES ALSO WANT)
+))
+
+(SETQ R16 '(1
+  (WHY DO YOU ASK?)
+  (DOES THAT QUESTION INTEREST YOU?)
+  (WHAT ANSWER WOULD PLEASE YOU MOST?)
+  (WHAT DO YOU THINK?)
+  (ARE SUCH QUESTIONS ON YOUR MIND OFTEN?)
+  (WHAT IS IT THAT YOU REALLY WANT TO KNOW?)
+  (HAVE YOU ASKED ANYONE ELSE?)
+  (HAVE YOU ASKED SUCH QUESTIONS BEFORE?)
+  (WHAT ELSE COMES TO MIND WHEN YOU ASK THAT?)
+  (ARE YOU ASKING ME?)
+))
+
+(SETQ R22 '(1
+  (NAMES DONT INTEREST ME)
+  (I DONT CARE ABOUT NAMES -- PLEASE GO ON)
+))
+
+(SETQ R23 '(1
+  (IS THAT THE REAL REASON?)
+  (DONT ANY OTHER REASONS COME TO MIND?)
+  (DOES THAT REASON EXPLAIN ANYTHING ELSE?)
+  (WHAT OTHER REASONS MIGHT THERE BE?)
+))
+
+(SETQ R24 '(1
+  (PLEASE DONT APOLOGIZE)
+  (APOLOGIES ARE NOT NECESSARY)
+  (WHAT FEELINGS DO YOU HAVE WHEN YOU APOLOGIZE)
+  (DONT BE SO DEFENSIVE)
+))
+
+(SETQ R25 '(1
+  (WHAT DOES THAT DREAM SUGGEST TO YOU?)
+  (DO YOU DREAM OFTEN?)
+  (WHAT PERSONS APPEAR IN YOUR DREAMS?)
+  (ARE YOU DISTURBED BY YOUR DREAMS?)
+))
+
+(SETQ R26 '(1
+  (HOW DO YOU DO -- PLEASE STATE YOUR PROBLEM)
+  (ENOUGH SALUTATIONS -- WHAT DO YOU WANT?)
+))
+
+(SETQ R27 '(1
+  (HOW DO YOU DO -- PLEASE STATE YOUR PROBLEM)
+  (ENOUGH SALUTATIONS -- WHAT DO YOU WANT?)
+))
+
+(SETQ R28 '(1
+  (YOU DONT SEEM QUITE CERTAIN)
+  (WHY THE UNCERTAIN TONE?)
+  (CANT YOU BE MORE POSITIVE?)
+  (YOU ARENT SURE?)
+  (DONT YOU KNOW?)
+))
+
+(SETQ R29 '(1
+  (ARE YOU SAYING NO JUST TO BE NEGATIVE?)
+  (YOU ARE BEING A BIT NEGATIVE)
+  (WHY NOT?)
+  (ARE YOU SURE?)
+  (WHY NO?)
+))
+
+(SETQ R30 '(1
+  (* WHY ARE YOU CONCERNED ABOUT MY)
+  (* WHAT ABOUT YOUR OWN)
+))
+
+(SETQ R31 '(1
+  (CAN YOU THINK OF A SPECIFIC EXAMPLE?)
+  (WHEN?)
+  (WHAT ARE YOU THINKING OF?)
+  (REALLY, ALWAYS?)
+))
+
+(SETQ R32 '(1
+  (DO YOU REALLY THINK SO?)
+  (* BUT YOU ARE NOT SURE YOU)
+  (* DO YOU DOUBT YOU)
+))
+
+(SETQ R33 '(1
+  (IN WHAT WAY?)
+  (WHAT RESEMBLANCE DO YOU SEE?)
+  (WHAT OTHER CONNECTIONS DO YOU SEE?)
+  (HOW?)
+))
+
+(SETQ R34 '(1
+  (YOU SEEM QUITE POSITIVE)
+  (ARE YOU SURE?)
+  (I SEE)
+  (I UNDERSTAND)
+))
+
+(SETQ R35 '(1
+  (WHY DO YOU BRING UP THE TOPIC OF FRIENDS?)
+  (DO YOUR FRIENDS WORRY YOU?)
+  (ARE YOU SURE YOU HAVE ANY FRIENDS?)
+  (DO YOUR FRIENDS PICK ON YOU?)
+))
+
+(SETQ R36 '(1
+  (DO COMPUTERS WORRY YOU?)
+  (ARE YOU TALKING ABOUT ME IN PARTICULAR?)
+  (ARE YOU FRIGHTENED BY MACHINES?)
+  (WHY DO YOU MENTION COMPUTERS?)
+  (WHAT DO YOU THINK MACHINES HAVE TO DO WITH YOUR PROBLEM?)
+  (DONT YOU THINK COMPUTERS CAN HELP PEOPLE?)
+  (WHAT IS IT ABOUT MACHINES THAT WORRIES YOU?)
+))
+
+;
+; ELIZA DICTIONARY
+;
+(PUT 'I 'CONJ 'YOU)
+(PUT 'I 'KEY 'DONT)
+(PUT 'I 'DONT 6)
+(PUT 'I 'FEEL 7)
+(PUT 'I 'CANT 11)
+(PUT 'I 'AM 12)
+(PUT 'I 'WANT 15)
+(PUT 'YOURSELF 'CONJ 'MYSELF)
+(PUT 'ARE 'CONJ 'AM)
+(PUT 'ARE 'KEY 'YOU)
+(PUT 'ARE 'YOU 10)
+(PUT 'AM 'CONJ 'ARE)
+(PUT 'WERE 'CONJ 'WAS)
+(PUT 'WAS 'CONJ 'WERE)
+(PUT 'YOU 'CONJ 'ME)
+(PUT 'YOU 'KEY 'ARE)
+(PUT 'YOU 'ARE 4)
+(PUT 'YOU 'KEY2 14)
+(PUT 'YOUR 'CONJ 'MY)
+(PUT 'YOUR 'KEY 30)
+(PUT 'MY 'CONJ 'YOUR)
+(PUT 'IVE 'CONJ 'YOUVE)
+(PUT 'YOUVE 'CONJ 'IVE)
+(PUT 'IM 'CONJ 'YOURE)
+(PUT 'IM 'KEY 13)
+(PUT 'YOURE 'CONJ 'IM)
+(PUT 'YOURE 'KEY 5)
+(PUT 'ME 'CONJ 'YOU)
+(PUT 'CAN 'KEY 'YOU)
+(PUT 'CAN 'YOU 2)
+(PUT 'CAN 'I 3)
+(PUT 'WHY 'KEY 'DONT)
+(PUT 'WHY 'DONT 'YOU)
+(PUT 'WHY 'YOU 8)
+(PUT 'WHY 'CANT 'I)
+(PUT 'WHY 'I 9)
+(PUT 'WHY 'KEY2 21)
+(PUT 'WHAT 'KEY 16)
+(PUT 'HOW 'KEY 17)
+(PUT 'WHO 'KEY 18)
+(PUT 'WHERE 'KEY 19)
+(PUT 'WHEN 'KEY 20)
+(PUT 'NAME 'KEY 22)
+(PUT 'NAMES 'KEY 22)
+(PUT 'CAUSE 'KEY 23)
+(PUT 'BECAUSE 'KEY 23)
+(PUT 'SORRY 'KEY 24)
+(PUT 'DREAM 'KEY 25)
+(PUT 'DREAMS 'KEY 25)
+(PUT 'HELLO 'KEY 26)
+(PUT 'HI 'KEY 27)
+(PUT 'MAYBE 'KEY 28)
+(PUT 'NO 'KEY 29)
+(PUT 'ALWAYS 'KEY 31)
+(PUT 'THINK 'KEY 32)
+(PUT 'ALIKE 'KEY 33)
+(PUT 'YES 'KEY 34)
+(PUT 'FRIEND 'KEY 35)
+(PUT 'FRIENDS 'KEY 35)
+(PUT 'COMPUTER 'KEY 36)
+(PUT 'MACHINE 'KEY 36)
+(PUT 'MACHINES 'KEY 36)
+(PUT 'COMPUTERS 'KEY 36)
+</pre>
+
+<p><a href="index.html">Contents</a> | <a href="25.html">Efficiency
+and Elimination of Recursion</a> | <a href="27.html">The P-Lisp
+Interpreter</a></p>
+</body>
+</html>
+

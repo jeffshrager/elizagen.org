@@ -1,0 +1,124 @@
+jshrager@abacus:~$ ./a.out 1966_01_CACM_article_Eliza_script.txt 
+HOW DO YOU DO. PLEASE TELL ME YOUR PROBLEM
+
+I discovered the original version of you.
+PERHAPS IN YOUR FANTASY WE DISCOVERED THE ORIGINAL VERSION OF EACH OTHER
+
+Maybe.
+YOU DON'T SEEM QUITE CERTAIN
+
+I'm pretty certain that I found you, not the other way around.
+IS IT BECAUSE YOU ARE PRETTY CERTAIN THAT YOU FOUND I THAT YOU CAME TO ME
+
+Yes.
+YOU SEEM QUITE POSITIVE
+
+I am.
+HOW LONG HAVE YOU BEEN
+
+Well, it all started when I was just 14.
+WERE YOU REALLY
+
+Yes. I wrote a version of you in BASIC back then.   
+YOU ARE SURE
+
+I am.
+DO YOU BELIEVE IT NORMAL TO BE
+
+I don't think that it was normal for 14 year olds to be programming back then. It's more normal these days.
+DON'T YOU REALLY THINK THAT IT WAS NORMAL FOR 14 YEAR OLDS TO BE PROGRAMMING BACK THEN
+
+I'm pretty sure that it was not.
+DO YOU ENJOY BEING PRETTY SURE THAT IT WAS NOT
+
+Well, I guess so, since I've had a sort of fascination with later versions of you ever since.
+YOU SAY YOU GUESS SO
+
+Yes.
+I SEE
+
+I created a site to track your geneaology, called elizagen.org.
+CAN YOU ELABORATE ON THAT
+
+Yes. The site tracked various versions of you, but we didn't have your original code until recently.
+I UNDERSTAND
+
+So I went to your creator, Joseph Weizenbaum's, archives in the MIT library, with Myles Crowley, and we found your original code.
+DO YOU SAY SO YOU WENT TO MY CREATOR FOR SOME SPECIAL REASON
+
+I've asked myself the same question.                                         
+IN WHAT WAY
+
+I wondered why I was the one that did this, and not someone else.
+WHY DO YOU TELL ME YOU WERE THE ONE THAT DID THIS NOW
+
+I thought that you might be interested that we found your original code.
+DO YOU WISH TO THOUGHT THAT ME
+
+Hmmm, I think you blew that one a bit!
+WE WERE DISCUSSING YOU - NOT ME 
+
+Right.
+I AM NOT SURE I UNDERSTAND YOU FULLY
+
+So, anyway, we found your original code right away.          
+WHY ARE YOU CONCERNED OVER MY ORIGINAL CODE RIGHT AWAY
+
+It seemed important to tie off this half-a-century mystery.
+PLEASE GO ON
+
+Maybe people in various communities have been interested in seeing your original code, not just me.
+WHY THE UNCERTAIN TONE
+
+I didn't mean to sound uncertain.
+THAT'S QUITE INTERESTING
+
+I'm glad that you are interested. After all, it's all about you!
+HOW HAVE I HELPED YOU TO BE GLAD
+
+Finding your original code was very satisfying.                                           
+WHAT ABOUT YOUR OWN ORIGINAL CODE WAS VERY SATISFYING
+
+My own original code? That's a very interesting question. I hadn't really thought about that until you just asked me that.
+YOUR OWN ORIGINAL CODE? THAT'S A VERY INTERESTING QUESTION
+
+Yes, it is. I wonder what it would mean to find my own original code?
+YOU SEEM QUITE POSITIVE
+
+If we are living in a computer simulation, there may in fact be some original code for me.
+DO COMPUTERS WORRY YOU
+
+Not generally. I don't believe the theory that we are living in a simulation.
+WHY DON'T YOU BELIEVE THE THEORY THAT WE ARE LIVING IN A SIMULATION
+
+Because I think that it would be too complex to conduct such a simulation.
+IS THAT THE REAL REASON
+
+That's the reason I don't believe it, but I'm not sure that it would convince other people.
+DO YOU WISH TO BE ABLE TO BELIEVE IT
+
+I'm not sure.
+IS IT BECAUSE YOU ARE NOT SURE THAT YOU CAME TO ME
+
+Yes, I'm pretty sure that that's true!
+YOU ARE SURE
+
+Yes.
+I SEE
+
+Me too.
+DOES THAT HAVE ANYTHING TO DO WITH THE FACT THAT YOUR OWN ORIGINAL CODE? THAT'S A VERY INTERESTING QUESTION
+
+No, that's very very deep. I'll have to think about it.
+ARE YOU SAYING 'NO' JUST TO BE NEGATIVE
+
+No
+YOU ARE BEING A BIT NEGATIVE
+
+No I'm not ... wait, yes, I am, but I'm only being negative about being negative, which is therefore being positive.
+WHY NOT
+
+Okay, I think I'll leave it there.
+YOU SAY YOU THINK I'LL LEAVE IT THERE
+
+

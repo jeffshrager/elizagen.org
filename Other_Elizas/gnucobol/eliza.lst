@@ -1,0 +1,1914 @@
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0001
+
+LINE    PG/LN  A...B............................................................
+
+000001  <<<<<<< .mine
+error: invalid indicator '<' at column 7
+000002         IDENTIFICATION DIVISION.
+000003
+000004         PROGRAM-ID.             ELIZA.
+000005        *AUTHOR.                 ARNOLD J. TREMBLEY.
+000006        *DATE-WRITTEN.           2017-10-01.
+000007        *SECURITY.               THIS PROGRAM IS PUBLIC DOMAIN FREEWARE.
+000008
+000009        ****************************************************************
+000010        *                                                              *
+000011        *    https://en.wikipedia.org/wiki/ELIZA                       *
+000012        *    ELIZA is an early natural language processing program     *
+000013        *    created around 1964 by Joseph Wiezenbaum at MIT.  This    *
+000014        *    version is adapted from ELIZA.BAS which appeared in       *
+000015        *    Creative Computing magazine in 1977, written by Jeff      *
+000016        *    Shrager and adapted for IBM PC in the early 1980's by     *
+000017        *    Patricia Danielson and Paul Hashfield.                    *
+000018        *                                                              *
+000019        *    COBOL translation by Arnold Trembley, 2017-10-01.         *
+000020        *    arnold.trembley@att.net                                   *
+000021        *    Using MinGW GnuCOBOL 2.2 for Windows 7 Pro.               *
+000022        *    This version is public domain freeware.                   *
+000023        *                                                              *
+000024        *    ELIZA simulates a psychotherapist interacting with a      *
+000025        *    human patient. Enter "shut up" to stop the dialog.        *
+000026        *                                                              *
+000027        ****************************************************************
+000028
+000029         ENVIRONMENT DIVISION.
+000030
+000031         CONFIGURATION SECTION.
+000032
+000033         REPOSITORY.
+000034             FUNCTION ALL INTRINSIC.
+000035
+000036         INPUT-OUTPUT SECTION.
+000037
+000038         FILE-CONTROL.
+000039
+000040         DATA DIVISION.
+000041
+000042         FILE SECTION.
+000043
+000044         WORKING-STORAGE SECTION.
+000045
+000046         01  100-PROGRAM-FLAGS.
+000047             05  100-EOF-FLAG                PIC X(01)   VALUE SPACE.
+000048                 88  88-100-ALL-DONE                     VALUE "Y".
+000049             05  100-KEYWORD-FLAG            PIC X(01)   VALUE SPACE.
+000050                 88  88-100-KEYWORD-FOUND                VALUE "Y".
+000051                 88  88-100-KEYWORD-NOT-FOUND            VALUE "N".
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0002
+
+LINE    PG/LN  A...B............................................................
+
+000052
+000053         01  200-USER-INPUT                  PIC X(80)   VALUE SPACES.
+000054
+000055         01  210-USER-INPUT-LC               PIC X(80)   VALUE SPACES.
+000056
+000057         01  220-LAST-USER-INPUT             PIC X(80)   VALUE SPACES.
+000058
+000059         01  230-TRANSLATED-INPUT            PIC X(80)   VALUE SPACES.
+000060
+000061         01  240-REPLY                       PIC X(79)   VALUE SPACES.
+000062
+000063         01  250-SUBSTITUTE-WORK             PIC X(100)  VALUE SPACES.
+000064
+000065         01  300-PROGRAM-CONSTANTS.
+000066             05  300-MAX-KEYWORD-ENTRIES     PIC S9(4)   COMP VALUE +36.
+000067             05  300-MAX-SCAN-LEN            PIC S9(4)   COMP VALUE +30.
+000068             05  300-SHUT                    PIC X(04)   VALUE "shut".
+000069             05  300-ASTERISK                PIC X(01)   VALUE "*".
+000070
+000071         01  400-PROGRAM-COUNTERS.
+000072             05  400-HOLD-KW-LEN             PIC S9(4)   COMP VALUE ZERO.
+000073             05  400-SCAN-LEN                PIC S9(4)   COMP VALUE ZERO.
+000074             05  400-HOLD-500-K              PIC S9(4)   COMP VALUE +0.
+000075             05  400-HOLD-OFFSET             PIC S9(4)   COMP VALUE +0.
+000076             05  400-OFFSET                  PIC S9(4)   COMP VALUE +0.
+000077             05  400-SUB                     PIC S9(4)   COMP VALUE ZERO.
+000078             05  400-SPACES-COUNT            PIC S9(4)   COMP VALUE ZERO.
+000079
+000080         01  500-KEYWORD-TABLE-DATA.
+000081             05  FILLER   PIC X(16)  VALUE "07can you ".
+000082             05  FILLER   PIC X(16)  VALUE "05can i ".
+000083             05  FILLER   PIC X(16)  VALUE "07you are ".
+000084             05  FILLER   PIC X(16)  VALUE "06you're ".
+000085             05  FILLER   PIC X(16)  VALUE "07i don't ".
+000086             05  FILLER   PIC X(16)  VALUE "06i feel  ".
+000087             05  FILLER   PIC X(16)  VALUE "13why don't you ".
+000088             05  FILLER   PIC X(16)  VALUE "11why can't i ".
+000089             05  FILLER   PIC X(16)  VALUE "07are you ".
+000090             05  FILLER   PIC X(16)  VALUE "07i can't ".
+000091             05  FILLER   PIC X(16)  VALUE "04i am ".
+000092             05  FILLER   PIC X(16)  VALUE "03i'm  ".
+000093             05  FILLER   PIC X(16)  VALUE "03you ".
+000094             05  FILLER   PIC X(16)  VALUE "06i want ".
+000095             05  FILLER   PIC X(16)  VALUE "04what ".
+000096             05  FILLER   PIC X(16)  VALUE "03how ".
+000097             05  FILLER   PIC X(16)  VALUE "03who ".
+000098             05  FILLER   PIC X(16)  VALUE "05where ".
+000099             05  FILLER   PIC X(16)  VALUE "04when ".
+000100             05  FILLER   PIC X(16)  VALUE "03why ".
+000101             05  FILLER   PIC X(16)  VALUE "04name ".
+000102             05  FILLER   PIC X(16)  VALUE "05cause ".
+000103             05  FILLER   PIC X(16)  VALUE "05sorry ".
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0003
+
+LINE    PG/LN  A...B............................................................
+
+000104             05  FILLER   PIC X(16)  VALUE "05dream ".
+000105             05  FILLER   PIC X(16)  VALUE "05hello ".
+000106             05  FILLER   PIC X(16)  VALUE "02hi ".
+000107             05  FILLER   PIC X(16)  VALUE "05maybe ".
+000108             05  FILLER   PIC X(16)  VALUE "02no ".
+000109             05  FILLER   PIC X(16)  VALUE "04your ".
+000110             05  FILLER   PIC X(16)  VALUE "06always ".
+000111             05  FILLER   PIC X(16)  VALUE "05think ".
+000112             05  FILLER   PIC X(16)  VALUE "05alike ".
+000113             05  FILLER   PIC X(16)  VALUE "03yes ".
+000114             05  FILLER   PIC X(16)  VALUE "06friend ".
+000115             05  FILLER   PIC X(16)  VALUE "08computer ".
+000116             05  FILLER   PIC X(16)  VALUE "10NOKEYFOUND".
+000117
+000118         01  500-KEYWORD-TABLE       REDEFINES 500-KEYWORD-TABLE-DATA.
+000119             05  500-KEYWORD-ENTRY       OCCURS 36 TIMES
+000120                                         INDEXED BY 500-K.
+000121                 10  500-KW-LEN              PIC 9(02).
+000122                 10  500-KEYWORD             PIC X(14).
+000123
+000124         01  520-TRANSLATION-CONSTANTS.
+000125             05 520-THING-IN                 PIC X(05)   VALUE "thing".
+000126             05 520-HIGH-IN                  PIC X(04)   VALUE "high".
+000127             05 520-SHI-IN                   PIC X(03)   VALUE "shi".
+000128             05 520-CHI-IN                   PIC X(03)   VALUE "chi".
+000129             05 520-HIT-IN                   PIC X(03)   VALUE "hit".
+000130             05 520-OUR-IN                   PIC X(03)   VALUE "our".
+000131             05 520-QMARK-IN                 PIC X(02)   VALUE "? ".
+000132             05 520-XMARK-IN                 PIC X(02)   VALUE "! ".
+000133             05 520-FSTOP-IN                 PIC X(02)   VALUE ". ".
+000134
+000135             05 520-THING-OUT                PIC X(05)   VALUE "th!ng".
+000136             05 520-HIGH-OUT                 PIC X(04)   VALUE "h!gh".
+000137             05 520-SHI-OUT                  PIC X(03)   VALUE "sh!".
+000138             05 520-CHI-OUT                  PIC X(03)   VALUE "ch!".
+000139             05 520-HIT-OUT                  PIC X(03)   VALUE "h!t".
+000140             05 520-OUR-OUT                  PIC X(03)   VALUE "0ur".
+000141             05 520-QMARK-OUT                PIC X(02)   VALUE "  ".
+000142             05 520-FSTOP-OUT                PIC X(02)   VALUE "  ".
+000143
+000144             05 520-ARE-IN                   PIC X(05)   VALUE " are ".
+000145             05 520-WERE-IN                  PIC X(06)   VALUE " were ".
+000146             05 520-YOU-IN                   PIC X(05)   VALUE " you ".
+000147             05 520-YOUR-IN                  PIC X(06)   VALUE " your ".
+000148             05 520-MY-IN                    PIC X(04)   VALUE " my ".
+000149             05 520-IVE-IN                   PIC X(06)   VALUE " i've ".
+000150             05 520-IM-IN                    PIC X(05)   VALUE " i'm ".
+000151             05 520-I-AM-IN                  PIC X(06)   VALUE " i am ".
+000152             05 520-ME-IN                    PIC X(04)   VALUE " me ".
+000153             05 520-I-IN                     PIC X(03)   VALUE " i ".
+000154             05 520-YOURE-IN                 PIC X(08)   VALUE " you're ".
+000155             05 520-YOU-ARE-IN           PIC X(09)   VALUE " you are ".
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0004
+
+LINE    PG/LN  A...B............................................................
+
+000156             05 520-YOURSELF-IN          PIC X(10)   VALUE " yourself ".
+000157
+000158             05 520-AM-OUT                   PIC X(04)   VALUE " am ".
+000159             05 520-WAS-OUT                  PIC X(05)   VALUE " was ".
+000160             05 520-I-FIX                    PIC X(04)   VALUE " i# ".
+000161             05 520-IM-FIX                   PIC X(06)   VALUE " i'm# ".
+000162             05 520-I-AM-FIX                 PIC X(07)   VALUE " i am# ".
+000163             05 520-MY-FIX                   PIC X(05)   VALUE " my# ".
+000164             05 520-YOUR-FIX                 PIC X(07)   VALUE " your# ".
+000165             05 520-YOUVE-OUT                PIC X(08)   VALUE " you've ".
+000166             05 520-YOURE-OUT                PIC X(08)   VALUE " you're ".
+000167             05 520-YOU-FIX                  PIC X(06)   VALUE " you# ".
+000168             05 520-MYSELF-OUT               PIC X(08)   VALUE " myself ".
+000169
+000170             05 520-I-OUT                    PIC X(03)   VALUE " I ".
+000171             05 520-IM-OUT                   PIC X(05)   VALUE " I'm ".
+000172             05 520-I-AM-OUT                 PIC X(06)   VALUE " I am ".
+000173             05 520-MY-OUT                   PIC X(04)   VALUE " my ".
+000174             05 520-YOUR-OUT                 PIC X(06)   VALUE " your ".
+000175             05 520-YOU-OUT                  PIC X(05)   VALUE " you ".
+000176
+000177
+000178         01  540-REPLY-TABLE-DATA.
+000179             05  PIC x(60)   VALUE "29Don't you believe that I can*".
+000180             05  PIC X(60)   VALUE "29Perhaps you would like me to*".
+000181             05  PIC x(60)   VALUE "29Do you want me to be able to*".
+000182             05  PIC x(60)   VALUE "26Perhaps you don't want to*".
+000183             05  PIC x(60)   VALUE "26Do you want to be able to*".
+000184             05  PIC x(60)   VALUE "26What makes you think I am*".
+000185
+000186             05  PIC X(30)   VALUE "35Does it please you to believ".
+000187             05  PIC X(30)   VALUE "e I am*".
+000188
+000189             05  PIC x(60)   VALUE "29Perhaps you would like to be*".
+000190
+000191             05  PIC X(30)   VALUE "31Do you sometimes wish you we".
+000192             05  PIC X(30)   VALUE "re*".
+000193
+000194             05  PIC x(60)   VALUE "17Don't you really*".
+000195             05  PIC x(60)   VALUE "14Why don't you*".
+000196             05  PIC x(60)   VALUE "26Do you wish to be able to*".
+000197             05  PIC x(60)   VALUE "22Does that trouble you?".
+000198             05  PIC x(60)   VALUE "18Do you often feel*".
+000199             05  PIC x(60)   VALUE "18Do you often feel*".
+000200             05  PIC x(60)   VALUE "21Do you enjoy feeling*".
+000201             05  PIC x(60)   VALUE "30Do you really believe I don't*".
+000202             05  PIC x(60)   VALUE "28Perhaps in good time I will*".
+000203             05  PIC x(60)   VALUE "18Do you want me to*".
+000204
+000205             05  PIC X(30)   VALUE "35Do you think you should be a".
+000206             05  PIC X(30)   VALUE "ble to*".
+000207
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0005
+
+LINE    PG/LN  A...B............................................................
+
+000208             05  PIC x(60)   VALUE "14Why can't you*".
+000209
+000210             05  PIC X(30)   VALUE "46Why are you interested in wh".
+000211             05  PIC X(30)   VALUE "ether or not I am*".
+000212
+000213             05  PIC x(60)   VALUE "31Would you prefer if I were not*".
+000214             05  PIC x(60)   VALUE "31Perhaps in your fantasies I am*".
+000215             05  PIC x(60)   VALUE "26How do you know you can't*".
+000216             05  PIC x(60)   VALUE "15Have you tried?".
+000217             05  PIC x(60)   VALUE "20Perhaps you can now*".
+000218
+000219             05  PIC X(30)   VALUE "35Did you come to me because y".
+000220             05  PIC X(30)   VALUE "ou are*".
+000221
+000222             05  PIC x(60)   VALUE "23How long have you been*".
+000223
+000224             05  PIC X(30)   VALUE "34Do you believe it is normal ".
+000225             05  PIC X(30)   VALUE "to be*".
+000226
+000227             05  PIC x(60)   VALUE "19Do you enjoy being*".
+000228             05  PIC x(60)   VALUE "31We were discussing you--not me.".
+000229             05  PIC x(60)   VALUE "06Oh, I*".
+000230
+000231             05  PIC X(30)   VALUE "44You're not really talking ab".
+000232             05  PIC X(30)   VALUE "out me, are you?".
+000233
+000234             05  PIC X(30)   VALUE "37What would it mean to you if".
+000235             05  PIC X(30)   VALUE " you got*".
+000236
+000237             05  PIC x(60)   VALUE "16Why do you want*".
+000238             05  PIC x(60)   VALUE "21Suppose you soon got*".
+000239             05  PIC x(60)   VALUE "22What if you never got*".
+000240             05  PIC x(60)   VALUE "22I sometimes also want*".
+000241             05  PIC x(60)   VALUE "15Why do you ask?".
+000242             05  PIC x(60)   VALUE "32Does that question interest you?".
+000243
+000244             05  PIC X(30)   VALUE "38What answer would please you".
+000245             05  PIC X(30)   VALUE " the most?".
+000246
+000247             05  PIC x(60)   VALUE "18What do you think?".
+000248
+000249             05  PIC X(30)   VALUE "38Are such questions on your m".
+000250             05  PIC X(30)   VALUE "ind often?".
+000251
+000252             05  PIC X(30)   VALUE "40What is it that you really w".
+000253             05  PIC X(30)   VALUE "ant to know?".
+000254
+000255             05  PIC x(60)   VALUE "27Have you asked anyone else?".
+000256
+000257             05  PIC X(30)   VALUE "37Have you asked such question".
+000258             05  PIC X(30)   VALUE "s before?".
+000259
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0006
+
+LINE    PG/LN  A...B............................................................
+
+000260             05  PIC X(30)   VALUE "42What else comes to mind when".
+000261             05  PIC X(30)   VALUE " you ask that?".
+000262
+000263             05  PIC x(60)   VALUE "24Names don't interest me.".
+000264
+000265             05  PIC X(30)   VALUE "41I don't care about names -- ".
+000266             05  PIC X(30)   VALUE "Please go on.".
+000267
+000268             05  PIC x(60)   VALUE "24Is that the real reason?".
+000269
+000270             05  PIC X(30)   VALUE "37Don't any other reasons come".
+000271             05  PIC X(30)   VALUE " to mind?".
+000272
+000273             05  PIC X(30)   VALUE "39Does that reason explain any".
+000274             05  PIC X(30)   VALUE "thing else?".
+000275
+000276             05  PIC X(30)   VALUE "34What other reasons might the".
+000277             05  PIC X(30)   VALUE "re be?".
+000278
+000279             05  PIC x(60)   VALUE "23Please don't apologize!".
+000280             05  PIC x(60)   VALUE "28Apologies are not necessary.".
+000281
+000282             05  PIC X(30)   VALUE "45What feelings do you have wh".
+000283             05  PIC X(30)   VALUE "en you apologize?".
+000284
+000285             05  PIC x(60)   VALUE "22Don't be so defensive!".
+000286
+000287             05  PIC X(30)   VALUE "36What does that dream suggest".
+000288             05  PIC X(30)   VALUE " to you?".
+000289
+000290             05  PIC x(60)   VALUE "19Do you dream often?".
+000291
+000292             05  PIC X(30)   VALUE "35What persons appear in your ".
+000293             05  PIC X(30)   VALUE "dreams?".
+000294
+000295             05  PIC X(30)   VALUE "33Are you disturbed by your dr".
+000296             05  PIC X(30)   VALUE "eams?".
+000297
+000298             05  PIC X(30)   VALUE "43How do you do ...Please stat".
+000299             05  PIC X(30)   VALUE "e your problem.".
+000300
+000301             05  PIC x(60)   VALUE "29You don't seem quite certain.".
+000302             05  PIC x(60)   VALUE "23Why the uncertain tone?".
+000303             05  PIC x(60)   VALUE "27Can't you be more positive?".
+000304             05  PIC x(60)   VALUE "16You aren't sure?".
+000305             05  PIC x(60)   VALUE "15Don't you know?".
+000306
+000307             05  PIC X(30)   VALUE "38Are you saying no just to be".
+000308             05  PIC X(30)   VALUE " negative?".
+000309
+000310             05  PIC x(60)   VALUE "29You are being a bit negative.".
+000311             05  PIC x(60)   VALUE "08Why not?".
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0007
+
+LINE    PG/LN  A...B............................................................
+
+000312             05  PIC x(60)   VALUE "13Are you sure?".
+000313             05  PIC x(60)   VALUE "07Why no?".
+000314             05  PIC x(60)   VALUE "31Why are you concerned about my*".
+000315             05  PIC x(60)   VALUE "20What about your own*".
+000316
+000317             05  PIC X(30)   VALUE "36Can you think of a specific ".
+000318             05  PIC X(30)   VALUE "example?".
+000319
+000320             05  PIC x(60)   VALUE "05When?".
+000321             05  PIC x(60)   VALUE "25What are you thinking of?".
+000322             05  PIC x(60)   VALUE "15Really, always?".
+000323             05  PIC x(60)   VALUE "23Do you really think so?".
+000324             05  PIC x(60)   VALUE "21But you are not sure*".
+000325             05  PIC x(60)   VALUE "13Do you doubt*".
+000326             05  PIC x(60)   VALUE "12In what way?".
+000327             05  PIC x(60)   VALUE "28What resemblance do you see?".
+000328
+000329             05  PIC X(30)   VALUE "40What does the similarity sug".
+000330             05  PIC X(30)   VALUE "gest to you?".
+000331
+000332             05  PIC X(30)   VALUE "34What other connections do yo".
+000333             05  PIC X(30)   VALUE "u see?".
+000334
+000335             05  PIC X(30)   VALUE "38Could there really be some c".
+000336             05  PIC X(30)   VALUE "onnection?".
+000337
+000338             05  PIC x(60)   VALUE "04How?".
+000339             05  PIC x(60)   VALUE "24You seem quite positive.".
+000340             05  PIC x(60)   VALUE "13Are you sure?".
+000341             05  PIC x(60)   VALUE "06I see.".
+000342             05  PIC x(60)   VALUE "13I understand.".
+000343
+000344             05  PIC X(30)   VALUE "41Why do you bring up the topi".
+000345             05  PIC X(30)   VALUE "c of friends?".
+000346
+000347             05  PIC x(60)   VALUE "26Do your friends worry you?".
+000348             05  PIC x(60)   VALUE "28Do your friends pick on you?".
+000349
+000350             05  PIC X(30)   VALUE "34Are you sure you have any fr".
+000351             05  PIC X(30)   VALUE "iends?".
+000352
+000353             05  PIC x(60)   VALUE "30Do you impose on your friends?".
+000354
+000355             05  PIC X(30)   VALUE "42Perhaps your love for friend".
+000356             05  PIC X(30)   VALUE "s worries you.".
+000357
+000358             05  PIC x(60)   VALUE "23Do computers worry you?".
+000359
+000360             05  PIC X(30)   VALUE "39Are you talking about me in ".
+000361             05  PIC X(30)   VALUE "particular?".
+000362
+000363             05  PIC X(30)   VALUE "31Are you frightened by machin".
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0008
+
+LINE    PG/LN  A...B............................................................
+
+000364             05  PIC X(30)   VALUE "es?".
+000365
+000366             05  PIC x(60)   VALUE "29Why do you mention computers?".
+000367
+000368             05  PIC X(30)   VALUE "56What do you think machines h".
+000369             05  PIC X(30)   VALUE "ave to do with your problem?".
+000370
+000371             05  PIC X(30)   VALUE "42Don't you think computers ca".
+000372             05  PIC X(30)   VALUE "n help people?".
+000373
+000374             05  PIC X(30)   VALUE "43What is it about machines th".
+000375             05  PIC X(30)   VALUE "at worries you?".
+000376
+000377             05  PIC X(30)   VALUE "44Say, do you have any psychol".
+000378             05  PIC X(30)   VALUE "ogical problems?".
+000379
+000380             05  PIC x(60)   VALUE "30What does that suggest to you?".
+000381             05  PIC x(60)   VALUE "06I see.".
+000382
+000383             05  PIC X(30)   VALUE "36I'm not sure I understand yo".
+000384             05  PIC X(30)   VALUE "u fully.".
+000385
+000386             05  PIC X(30)   VALUE "36Come, Come, elucidate your t".
+000387             05  PIC X(30)   VALUE "houghts.".
+000388
+000389             05  PIC x(60)   VALUE "26Can you elaborate on that?".
+000390             05  PIC x(60)   VALUE "26That is quite interesting.".
+000391
+000392         01  540-REPLY-TABLE         REDEFINES 540-REPLY-TABLE-DATA.
+000393             05  540-REPLY-ENTRY         OCCURS 112 TIMES
+000394                                         INDEXED BY 540-R.
+000395                 10  540-REPLY-LENGTH        PIC 9(02).
+000396                 10  540-REPLY               PIC X(58).
+000397
+000398
+000399         01  560-REPLY-LOCATER-DATA.
+000400             05  FILLER      PIC X(12)   VALUE "000100030004".
+000401             05  FILLER      PIC X(12)   VALUE "000400050005".
+000402             05  FILLER      PIC X(12)   VALUE "000600090009".
+000403             05  FILLER      PIC X(12)   VALUE "000600090009".
+000404             05  FILLER      PIC X(12)   VALUE "001000130013".
+000405             05  FILLER      PIC X(12)   VALUE "001400160016".
+000406             05  FILLER      PIC X(12)   VALUE "001700190019".
+000407             05  FILLER      PIC X(12)   VALUE "002000210021".
+000408             05  FILLER      PIC X(12)   VALUE "002200240024".
+000409             05  FILLER      PIC X(12)   VALUE "002500270027".
+000410             05  FILLER      PIC X(12)   VALUE "002800310031".
+000411             05  FILLER      PIC X(12)   VALUE "002800310031".
+000412             05  FILLER      PIC X(12)   VALUE "003200340034".
+000413             05  FILLER      PIC X(12)   VALUE "003500390039".
+000414             05  FILLER      PIC X(12)   VALUE "004000480048".
+000415             05  FILLER      PIC X(12)   VALUE "004000480048".
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0009
+
+LINE    PG/LN  A...B............................................................
+
+000416             05  FILLER      PIC X(12)   VALUE "004000480048".
+000417             05  FILLER      PIC X(12)   VALUE "004000480048".
+000418             05  FILLER      PIC X(12)   VALUE "004000480048".
+000419             05  FILLER      PIC X(12)   VALUE "004000480048".
+000420             05  FILLER      PIC X(12)   VALUE "004900500050".
+000421             05  FILLER      PIC X(12)   VALUE "005100540054".
+000422             05  FILLER      PIC X(12)   VALUE "005500580058".
+000423             05  FILLER      PIC X(12)   VALUE "005900620062".
+000424             05  FILLER      PIC X(12)   VALUE "006300630063".
+000425             05  FILLER      PIC X(12)   VALUE "006300630063".
+000426             05  FILLER      PIC X(12)   VALUE "006400680068".
+000427             05  FILLER      PIC X(12)   VALUE "006900730073".
+000428             05  FILLER      PIC X(12)   VALUE "007400750075".
+000429             05  FILLER      PIC X(12)   VALUE "007600790079".
+000430             05  FILLER      PIC X(12)   VALUE "008000820082".
+000431             05  FILLER      PIC X(12)   VALUE "008300890089".
+000432             05  FILLER      PIC X(12)   VALUE "009000920092".
+000433             05  FILLER      PIC X(12)   VALUE "009300980098".
+000434             05  FILLER      PIC X(12)   VALUE "009901050105".
+000435             05  FILLER      PIC X(12)   VALUE "010601120112".
+000436
+000437         01  560-REPLY-LOCATER-TABLE REDEFINES 560-REPLY-LOCATER-DATA.
+000438             05  560-REPLY-LOCATER-ENTRY OCCURS 36 TIMES INDEXED BY 560-L.
+000439                 10  560-REPLY-LO            PIC 9(04).
+000440                 10  560-REPLY-HI            PIC 9(04).
+000441                 10  560-REPLY-LAST-USED     PIC 9(04).
+000442
+000443         01  600-PROGRAM-MESSAGES.
+000444             05  600-REPLY-LIST.
+000445                 10  FILLER                  PIC X(07)   VALUE 'Reply: '.
+000446                 10  600-REPLY-DATA          PIC X(70)   VALUE SPACES.
+000447
+000448             05  600-INITIAL-MESSAGE         PIC X(40)   VALUE
+000449                 "Hi!  I'm ELIZA.  What's your problem?".
+000450
+000451             05  600-GOODBYE-MESSAGE         PIC X(40)   VALUE
+000452                 "If that's how you feel--goodbye...".
+000453
+000454             05  600-NO-REPEAT-MSG           PIC X(32)   VALUE
+000455                 "Please don't repeat yourself!".
+000456
+000457         PROCEDURE DIVISION.
+000458
+000459        ****************************************************************
+000460        *    0 0 0 0 - M A I N L I N E .                               *
+000461        ****************************************************************
+000462        *    START THE PSYCHOTHERAPIST DIALOG WITH THE USER, ANALYZE   *
+000463        *    THE USER INPUT AND GENERATE THE REPLIES.  THE USER CAN    *
+000464        *    TYPE "SHUT UP" OR SIMPLY "SHUT" TO TERMINATE THE SESSION. *
+000465        ****************************************************************
+000466
+000467         0000-MAINLINE.
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0010
+
+LINE    PG/LN  A...B............................................................
+
+000468
+000469             DISPLAY SPACE
+warning: DISPLAY statement not terminated by END-DISPLAY
+000470             MOVE SPACE                  TO 100-EOF-FLAG
+000471             DISPLAY 600-INITIAL-MESSAGE
+warning: DISPLAY statement not terminated by END-DISPLAY
+000472             PERFORM UNTIL 88-100-ALL-DONE
+000473                 ACCEPT 200-USER-INPUT
+warning: ACCEPT statement not terminated by END-ACCEPT
+000474                 MOVE FUNCTION LOWER-CASE (200-USER-INPUT)
+000475                                         TO 210-USER-INPUT-LC
+000476                 IF 210-USER-INPUT-LC (1:4) = 300-SHUT
+000477                     SET 88-100-ALL-DONE TO TRUE
+000478                     DISPLAY 600-GOODBYE-MESSAGE
+warning: DISPLAY statement not terminated by END-DISPLAY
+000479                 ELSE
+000480                     IF 210-USER-INPUT-LC = 220-LAST-USER-INPUT
+000481                         DISPLAY 600-NO-REPEAT-MSG
+warning: DISPLAY statement not terminated by END-DISPLAY
+000482                     ELSE
+000483                         MOVE 210-USER-INPUT-LC
+000484                                         TO 220-LAST-USER-INPUT
+000485                         PERFORM 1000-SCAN-FOR-KEYWORD
+000486                         IF 400-HOLD-OFFSET > ZERO
+000487                             PERFORM 2000-TRANSLATE-USER-INPUT
+000488                         END-IF
+000489                         PERFORM 3000-BUILD-KEYWORD-REPLY
+000490                     END-IF
+000491                 END-IF
+000492             END-PERFORM
+000493
+000494             STOP RUN.
+000495
+000496        ****************************************************************
+000497        *    1 0 0 0 - S C A N - F O R - K E Y W O R D .               *
+000498        ****************************************************************
+000499        *    SEARCH THE USER INPUT FOR KEYWORDS THAT WILL TRIGGER      *
+000500        *    THE RESPONSES FROM THE REPLY TABLE.                       *
+000501        ****************************************************************
+000502
+000503         1000-SCAN-FOR-KEYWORD.
+000504
+000505             PERFORM 1100-MASK-STRING-HI
+000506
+000507             SET 88-100-KEYWORD-NOT-FOUND TO TRUE
+000508             MOVE ZERO                   TO 400-HOLD-OFFSET
+000509             PERFORM VARYING 400-SUB FROM +1 BY +1
+000510                     UNTIL   400-SUB > 300-MAX-SCAN-LEN
+000511                     OR      88-100-KEYWORD-FOUND
+000512                 PERFORM VARYING 500-K FROM +1 BY +1
+000513                         UNTIL   500-K > 300-MAX-KEYWORD-ENTRIES
+000514                         OR      88-100-KEYWORD-FOUND
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0011
+
+LINE    PG/LN  A...B............................................................
+
+000515                     MOVE 500-KW-LEN (500-K)
+000516                                         TO 400-HOLD-KW-LEN
+000517                     IF 210-USER-INPUT-LC (400-SUB:400-HOLD-KW-LEN) =
+000518                             500-KEYWORD (500-K)
+000519                         SET 400-HOLD-500-K TO 500-K
+warning: some digits may be truncated
+000520                         SET 88-100-KEYWORD-FOUND TO TRUE
+000521                         COMPUTE 400-HOLD-OFFSET =
+warning: COMPUTE statement not terminated by END-COMPUTE
+000522                             400-SUB + 400-HOLD-KW-LEN
+000523                         COMPUTE 400-SUB = 400-SCAN-LEN + 1
+warning: COMPUTE statement not terminated by END-COMPUTE
+000524                     END-IF
+000525                 END-PERFORM
+000526             END-PERFORM
+000527
+000528             IF 88-100-KEYWORD-NOT-FOUND
+000529                 MOVE 300-MAX-KEYWORD-ENTRIES
+000530                                         TO 400-HOLD-500-K
+000531                 SET 88-100-KEYWORD-FOUND TO TRUE
+000532             END-IF
+000533
+000534             PERFORM 1200-RESTORE-STRING-HI
+000535             .
+000536
+000537        ****************************************************************
+000538        *    1 1 0 0 - M A S K - S T R I N G - H I .                   *
+000539        ****************************************************************
+000540        *    WORDS LIKE "THING" AND "HIGH" WERE CAUSING A KEYWORD      *
+000541        *    "HI" MATCH THAT TRIGGERED THE HELLO/HI KEYWORD RESPONSES, *
+000542        *    SO THEY ARE MASKED HERE TO PREVENT THAT.                  *
+000543        *    ALSO REMOVE TRAILING "?", "!", AND "." CHARACTERS.        *
+000544        ****************************************************************
+000545
+000546         1100-MASK-STRING-HI.
+000547
+000548             MOVE FUNCTION SUBSTITUTE
+000549                 (210-USER-INPUT-LC, 520-THING-IN, 520-THING-OUT,
+000550                                     520-HIGH-IN,  520-HIGH-OUT,
+000551                                     520-SHI-IN,   520-SHI-OUT,
+000552                                     520-CHI-IN,   520-CHI-OUT,
+000553                                     520-HIT-IN,   520-HIT-OUT,
+000554                                     520-OUR-IN,   520-OUR-OUT,
+000555                                     520-QMARK-IN, 520-QMARK-OUT,
+000556                                     520-XMARK-IN, 520-QMARK-OUT,
+000557                                     520-FSTOP-IN, 520-FSTOP-OUT)
+000558                                         TO 250-SUBSTITUTE-WORK
+000559             MOVE 250-SUBSTITUTE-WORK    TO 210-USER-INPUT-LC
+warning: sending field larger than receiving field
+000560        ****************************************************************
+000561        *    REMOVE MULTIPLE TRAILING QUESTION MARKS, EXCLAMATION      *
+000562        *    POINTS, AND PERIODS (FULL STOPS).                         *
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0012
+
+LINE    PG/LN  A...B............................................................
+
+000563        ****************************************************************
+000564             MOVE FUNCTION SUBSTITUTE
+000565                 (210-USER-INPUT-LC, 520-QMARK-IN, 520-QMARK-OUT,
+000566                                     520-XMARK-IN, 520-QMARK-OUT,
+000567                                     520-FSTOP-IN, 520-FSTOP-OUT)
+000568                                         TO 250-SUBSTITUTE-WORK
+000569             MOVE 250-SUBSTITUTE-WORK    TO 210-USER-INPUT-LC
+warning: sending field larger than receiving field
+000570             MOVE FUNCTION SUBSTITUTE
+000571                 (210-USER-INPUT-LC, 520-QMARK-IN, 520-QMARK-OUT,
+000572                                     520-XMARK-IN, 520-QMARK-OUT,
+000573                                     520-FSTOP-IN, 520-FSTOP-OUT)
+000574                                         TO 250-SUBSTITUTE-WORK
+000575             MOVE 250-SUBSTITUTE-WORK    TO 210-USER-INPUT-LC
+warning: sending field larger than receiving field
+000576             .
+000577
+000578        ****************************************************************
+000579        *    1 2 0 0 - R E S T O R E - S T R I N G - H I .             *
+000580        ****************************************************************
+000581        *    AFTER COMPLETING THE KEYWORD SEARCH, RESTORE THE "HI"     *
+000582        *    STRING IN THE USER INPUT.                                 *
+000583        ****************************************************************
+000584
+000585         1200-RESTORE-STRING-HI.
+000586
+000587             MOVE FUNCTION SUBSTITUTE
+000588                 (210-USER-INPUT-LC, 520-THING-OUT, 520-THING-IN,
+000589                                     520-HIGH-OUT,  520-HIGH-IN,
+000590                                     520-SHI-OUT,   520-SHI-IN,
+000591                                     520-CHI-OUT,   520-CHI-IN,
+000592                                     520-HIT-OUT,   520-HIT-IN,
+000593                                     520-OUR-OUT,   520-OUR-IN)
+000594                                         TO 250-SUBSTITUTE-WORK
+000595             MOVE 250-SUBSTITUTE-WORK    TO 210-USER-INPUT-LC
+warning: sending field larger than receiving field
+000596             .
+000597
+000598        ****************************************************************
+000599        *    2 0 0 0 - T R A N S L A T E - U S E R - I N P U T .       *
+000600        ****************************************************************
+000601        *    PERFORM PRONOUN REPLACEMENT AND CONJUGATION ON THE USER   *
+000602        *    INPUT SO IT WILL SOUND FAIRLY NORMAL WHEN APPENDED TO     *
+000603        *    THE DOCTOR'S REPLY.                                       *
+000604        ****************************************************************
+000605
+000606         2000-TRANSLATE-USER-INPUT.
+000607
+000608             MOVE 210-USER-INPUT-LC (400-HOLD-OFFSET:)
+000609                                         TO 230-TRANSLATED-INPUT.
+000610
+000611             MOVE FUNCTION SUBSTITUTE
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0013
+
+LINE    PG/LN  A...B............................................................
+
+000612                 (230-TRANSLATED-INPUT, 520-ARE-IN,  520-AM-OUT,
+000613                                        520-WERE-IN, 520-WAS-OUT
+000614                                        520-YOU-IN,  520-I-FIX,
+000615                                        520-YOUR-IN, 520-MY-FIX,
+000616                                        520-MY-IN,   520-YOUR-FIX,
+000617                                        520-IVE-IN,  520-YOUVE-OUT,
+000618                                        520-IM-IN,   520-YOURE-OUT,
+000619                                        520-I-AM-IN, 520-YOURE-OUT,
+000620                                        520-ME-IN,   520-YOU-FIX,
+000621                                        520-I-IN,    520-YOU-FIX,
+000622                                        520-YOURE-IN 520-IM-FIX,
+000623                                    520-YOU-ARE-IN   520-I-AM-FIX,
+000624                                    520-YOURSELF-IN, 520-MYSELF-OUT)
+000625                                         TO 250-SUBSTITUTE-WORK.
+000626
+000627             MOVE 250-SUBSTITUTE-WORK TO 230-TRANSLATED-INPUT.
+warning: sending field larger than receiving field
+000628
+000629             MOVE FUNCTION SUBSTITUTE
+000630                 (230-TRANSLATED-INPUT, 520-I-FIX,     520-I-OUT,
+000631                                        520-IM-FIX,    520-IM-OUT,
+000632                                        520-I-AM-FIX,  520-I-AM-OUT,
+000633                                        520-MY-FIX,    520-MY-OUT,
+000634                                        520-YOUR-FIX,  520-YOUR-OUT,
+000635                                        520-YOU-FIX,   520-YOU-OUT)
+000636                                         TO 250-SUBSTITUTE-WORK.
+000637
+000638             MOVE 250-SUBSTITUTE-WORK    TO 230-TRANSLATED-INPUT
+warning: sending field larger than receiving field
+000639             .
+000640
+000641        ****************************************************************
+000642        *    3 0 0 0 - B U I L D - K E Y W O R D - R E P L Y .         *
+000643        ****************************************************************
+000644        *    BUILD THE REPLY BASED ON THE KEYWORD FOUND IN THE USER    *
+000645        *    INPUT.  NOTE THERE ARE A VARIABLE NUMBER OF POSSIBLE      *
+000646        *    REPLIES FOR EACH KEYWORD, AND SOME REPLIES INCLUDE TEXT   *
+000647        *    ECHOED FROM THE USER INPUT.                               *
+000648        ****************************************************************
+000649
+000650         3000-BUILD-KEYWORD-REPLY.
+000651
+000652             SET 560-L                   TO 400-HOLD-500-K
+000653             ADD +1                      TO 560-REPLY-LAST-USED (560-L)
+warning: ADD statement not terminated by END-ADD
+000654             IF 560-REPLY-LAST-USED (560-L) > 560-REPLY-HI (560-L)
+000655                 MOVE 560-REPLY-LO (560-L) TO 560-REPLY-LAST-USED (560-L)
+000656             END-IF
+000657
+000658             SET 540-R                    TO 560-REPLY-LAST-USED (560-L)
+000659             MOVE 540-REPLY (540-R)       TO 240-REPLY
+000660             MOVE 540-REPLY-LENGTH (540-R)    TO 400-SUB
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0014
+
+LINE    PG/LN  A...B............................................................
+
+000661             IF 240-REPLY (400-SUB:1) = 300-ASTERISK
+000662                 MOVE SPACE               TO 240-REPLY (400-SUB:1)
+000663                 MOVE 230-TRANSLATED-INPUT
+warning: sending field larger than receiving field
+000664                                          TO 240-REPLY (400-SUB:)
+000665                 PERFORM 3100-FIX-MORE-BAD-GRAMMAR
+000666                 MOVE ZERO                TO 400-SPACES-COUNT
+000667                 INSPECT 240-REPLY TALLYING 400-SPACES-COUNT
+000668                     FOR TRAILING SPACES
+000669        ****************************************************************
+000670        *        MERGE USER INPUT INTO THE REPLY AND THEN CORRECT      *
+000671        *        ENDING PUNCTUATION FOR "?" OR "." (FULL-STOP).        *
+000672        ****************************************************************
+000673                 IF  400-SPACES-COUNT > ZERO
+000674                 AND 400-SPACES-COUNT < (LENGTH OF 240-REPLY) - 1
+000675                     COMPUTE 400-OFFSET =
+000676                         (LENGTH OF 240-REPLY) - 400-SPACES-COUNT + 1
+000677                     END-COMPUTE
+000678                     IF 560-REPLY-LAST-USED (560-L) = 02 OR 04 OR 05
+000679                     OR 08 OR 18 OR 24 OR 33 OR 39 OR 81
+000680                         MOVE "."         TO 240-REPLY (400-OFFSET:1)
+000681                     ELSE
+000682                         MOVE "?"         TO 240-REPLY (400-OFFSET:1)
+000683                     END-IF
+000684                 END-IF
+000685             END-IF
+000686
+000687             DISPLAY 240-REPLY
+warning: DISPLAY statement not terminated by END-DISPLAY
+000688             .
+000689
+000690        ****************************************************************
+000691        *    3 1 0 0 - F I X - M O R E - B A D - G R A M M A R .       *
+000692        ****************************************************************
+000693        *    HERE ARE SOME MORE FIXUPS FOR GRAMMAR PROBLEMS.  BUT IT   *
+000694        *    DOESN'T SOLVE ALL OF THEM.                                *
+000695        ****************************************************************
+000696
+000697         3100-FIX-MORE-BAD-GRAMMAR.
+000698
+000699             MOVE FUNCTION SUBSTITUTE (240-REPLY,
+000700                 " you want I ",            " you want me ",
+000701                 " you got I ",             " you got me ",
+000702                 " to make I ",             " to make me ",
+000703                 " you been I ",            " you been me ",
+000704                 " you be I ",              " you be me ",
+000705                 " to be I ",               " to be me ",
+000706                 " soon got I ",            " soon got me ",
+000707                 " never got I ",           " never got me ",
+000708                 " sometimes also want I ", " sometimes also want me ",
+000709                 " normal to be I ",        " normal to be me ",
+000710                 " enjoy being I ",         " enjoy being me ",
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0015
+
+LINE    PG/LN  A...B............................................................
+
+000711                 " can't make I ",          " can't make me ",
+000712                 " can now make I ",        " can now make me ",
+000713                 " I are ",                 " I am ",
+000714                 " you am ",                " you are ",
+000715                 " with I ",                " with me")
+000716                                         TO 250-SUBSTITUTE-WORK.
+000717
+000718             MOVE 250-SUBSTITUTE-WORK TO 240-REPLY.
+warning: sending field larger than receiving field
+000719
+000720         END PROGRAM ELIZA.
+000721  ||||||| .r0
+error: invalid indicator '|' at column 7
+000722  =======
+error: invalid indicator '=' at column 7
+000723         IDENTIFICATION DIVISION.
+000724
+000725         PROGRAM-ID.             ELIZA.
+error: redefinition of program ID 'ELIZA'
+000726        *AUTHOR.                 ARNOLD J. TREMBLEY.
+000727        *DATE-WRITTEN.           2017-10-01.
+000728        *SECURITY.               THIS PROGRAM IS PUBLIC DOMAIN FREEWARE.
+000729
+000730        ****************************************************************
+000731        *                                                              *
+000732        *    https://en.wikipedia.org/wiki/ELIZA                       *
+000733        *    ELIZA is an early natural language processing program     *
+000734        *    created around 1964 by Joseph Wiezenbaum at MIT.  This    *
+000735        *    version is adapted from ELIZA.BAS which appeared in       *
+000736        *    Creative Computing magazine in 1977, written by Jeff      *
+000737        *    Shrager and adapted for IBM PC in the early 1980's by     *
+000738        *    Patricia Danielson and Paul Hashfield.                    *
+000739        *                                                              *
+000740        *    COBOL translation by Arnold Trembley, 2017-10-01.         *
+000741        *    arnold.trembley@att.net                                   *
+000742        *    Using MinGW GnuCOBOL 2.2 for Windows 7.                   *
+000743        *    This version is public domain freeware.                   *
+000744        *                                                              *
+000745        *    ELIZA simulates a psychotherapist interacting with a      *
+000746        *    human patient. Enter "shut up" to stop the dialog.        *
+000747        *                                                              *
+000748        ****************************************************************
+000749
+000750         ENVIRONMENT DIVISION.
+000751
+000752         CONFIGURATION SECTION.
+000753
+000754         REPOSITORY.
+000755             FUNCTION ALL INTRINSIC.
+000756
+000757         INPUT-OUTPUT SECTION.
+000758
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0016
+
+LINE    PG/LN  A...B............................................................
+
+000759         FILE-CONTROL.
+000760
+000761         DATA DIVISION.
+000762
+000763         FILE SECTION.
+000764
+000765         WORKING-STORAGE SECTION.
+000766
+000767         01  100-PROGRAM-FLAGS.
+000768             05  100-EOF-FLAG                PIC X(01)   VALUE SPACE.
+000769                 88  88-100-ALL-DONE                     VALUE "Y".
+000770             05  100-KEYWORD-FLAG            PIC X(01)   VALUE SPACE.
+000771                 88  88-100-KEYWORD-FOUND                VALUE "Y".
+000772                 88  88-100-KEYWORD-NOT-FOUND            VALUE "N".
+000773
+000774         01  200-USER-INPUT                  PIC X(80)   VALUE SPACES.
+000775
+000776         01  210-USER-INPUT-LC               PIC X(80)   VALUE SPACES.
+000777
+000778         01  220-LAST-USER-INPUT             PIC X(80)   VALUE SPACES.
+000779
+000780         01  230-TRANSLATED-INPUT            PIC X(80)   VALUE SPACES.
+000781
+000782         01  240-REPLY                       PIC X(79)   VALUE SPACES.
+000783
+000784         01  250-SUBSTITUTE-WORK             PIC X(100)  VALUE SPACES.
+000785
+000786         01  300-PROGRAM-CONSTANTS.
+000787             05  300-MAX-KEYWORD-ENTRIES     PIC S9(4)   COMP VALUE +36.
+000788             05  300-MAX-SCAN-LEN            PIC S9(4)   COMP VALUE +30.
+000789             05  300-SHUT                    PIC X(04)   VALUE "shut".
+000790             05  300-ASTERISK                PIC X(01)   VALUE "*".
+000791
+000792         01  400-PROGRAM-COUNTERS.
+000793             05  400-HOLD-KW-LEN             PIC S9(4)   COMP VALUE ZERO.
+000794             05  400-SCAN-LEN                PIC S9(4)   COMP VALUE ZERO.
+000795             05  400-HOLD-500-K              PIC S9(4)   COMP VALUE +0.
+000796             05  400-HOLD-OFFSET             PIC S9(4)   COMP VALUE +0.
+000797             05  400-OFFSET                  PIC S9(4)   COMP VALUE +0.
+000798             05  400-SUB                     PIC S9(4)   COMP VALUE ZERO.
+000799             05  400-SPACES-COUNT            PIC S9(4)   COMP VALUE ZERO.
+000800
+000801         01  500-KEYWORD-TABLE-DATA.
+000802             05  FILLER   PIC X(16)  VALUE "07can you ".
+000803             05  FILLER   PIC X(16)  VALUE "05can i ".
+000804             05  FILLER   PIC X(16)  VALUE "07you are ".
+000805             05  FILLER   PIC X(16)  VALUE "06you're ".
+000806             05  FILLER   PIC X(16)  VALUE "07i don't ".
+000807             05  FILLER   PIC X(16)  VALUE "06i feel  ".
+000808             05  FILLER   PIC X(16)  VALUE "13why don't you ".
+000809             05  FILLER   PIC X(16)  VALUE "11why can't i ".
+000810             05  FILLER   PIC X(16)  VALUE "07are you ".
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0017
+
+LINE    PG/LN  A...B............................................................
+
+000811             05  FILLER   PIC X(16)  VALUE "07i can't ".
+000812             05  FILLER   PIC X(16)  VALUE "04i am ".
+000813             05  FILLER   PIC X(16)  VALUE "03i'm  ".
+000814             05  FILLER   PIC X(16)  VALUE "03you ".
+000815             05  FILLER   PIC X(16)  VALUE "06i want ".
+000816             05  FILLER   PIC X(16)  VALUE "04what ".
+000817             05  FILLER   PIC X(16)  VALUE "03how ".
+000818             05  FILLER   PIC X(16)  VALUE "03who ".
+000819             05  FILLER   PIC X(16)  VALUE "05where ".
+000820             05  FILLER   PIC X(16)  VALUE "04when ".
+000821             05  FILLER   PIC X(16)  VALUE "03why ".
+000822             05  FILLER   PIC X(16)  VALUE "04name ".
+000823             05  FILLER   PIC X(16)  VALUE "05cause ".
+000824             05  FILLER   PIC X(16)  VALUE "05sorry ".
+000825             05  FILLER   PIC X(16)  VALUE "05dream ".
+000826             05  FILLER   PIC X(16)  VALUE "05hello ".
+000827             05  FILLER   PIC X(16)  VALUE "02hi ".
+000828             05  FILLER   PIC X(16)  VALUE "05maybe ".
+000829             05  FILLER   PIC X(16)  VALUE "02no ".
+000830             05  FILLER   PIC X(16)  VALUE "04your ".
+000831             05  FILLER   PIC X(16)  VALUE "06always ".
+000832             05  FILLER   PIC X(16)  VALUE "05think ".
+000833             05  FILLER   PIC X(16)  VALUE "05alike ".
+000834             05  FILLER   PIC X(16)  VALUE "03yes ".
+000835             05  FILLER   PIC X(16)  VALUE "06friend ".
+000836             05  FILLER   PIC X(16)  VALUE "08computer ".
+000837             05  FILLER   PIC X(16)  VALUE "10NOKEYFOUND".
+000838
+000839         01  500-KEYWORD-TABLE       REDEFINES 500-KEYWORD-TABLE-DATA.
+000840             05  500-KEYWORD-ENTRY       OCCURS 36 TIMES
+000841                                         INDEXED BY 500-K.
+000842                 10  500-KW-LEN              PIC 9(02).
+000843                 10  500-KEYWORD             PIC X(14).
+000844
+000845         01  520-TRANSLATION-CONSTANTS.
+000846             05 520-THING-IN                 PIC X(05)   VALUE "thing".
+000847             05 520-HIGH-IN                  PIC X(04)   VALUE "high".
+000848             05 520-SHI-IN                   PIC X(03)   VALUE "shi".
+000849             05 520-CHI-IN                   PIC X(03)   VALUE "chi".
+000850             05 520-HIT-IN                   PIC X(03)   VALUE "hit".
+000851             05 520-OUR-IN                   PIC X(03)   VALUE "our".
+000852             05 520-QMARK-IN                 PIC X(02)   VALUE "? ".
+000853             05 520-XMARK-IN                 PIC X(02)   VALUE "! ".
+000854             05 520-FSTOP-IN                 PIC X(02)   VALUE ". ".
+000855
+000856             05 520-THING-OUT                PIC X(05)   VALUE "th!ng".
+000857             05 520-HIGH-OUT                 PIC X(04)   VALUE "h!gh".
+000858             05 520-SHI-OUT                  PIC X(03)   VALUE "sh!".
+000859             05 520-CHI-OUT                  PIC X(03)   VALUE "ch!".
+000860             05 520-HIT-OUT                  PIC X(03)   VALUE "h!t".
+000861             05 520-OUR-OUT                  PIC X(03)   VALUE "0ur".
+000862             05 520-QMARK-OUT                PIC X(02)   VALUE "  ".
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0018
+
+LINE    PG/LN  A...B............................................................
+
+000863             05 520-FSTOP-OUT                PIC X(02)   VALUE "  ".
+000864
+000865             05 520-ARE-IN                   PIC X(05)   VALUE " are ".
+000866             05 520-WERE-IN                  PIC X(06)   VALUE " were ".
+000867             05 520-YOU-IN                   PIC X(05)   VALUE " you ".
+000868             05 520-YOUR-IN                  PIC X(06)   VALUE " your ".
+000869             05 520-MY-IN                    PIC X(04)   VALUE " my ".
+000870             05 520-IVE-IN                   PIC X(06)   VALUE " i've ".
+000871             05 520-IM-IN                    PIC X(05)   VALUE " i'm ".
+000872             05 520-I-AM-IN                  PIC X(06)   VALUE " i am ".
+000873             05 520-ME-IN                    PIC X(04)   VALUE " me ".
+000874             05 520-I-IN                     PIC X(03)   VALUE " i ".
+000875             05 520-YOURE-IN                 PIC X(08)   VALUE " you're ".
+000876             05 520-YOU-ARE-IN           PIC X(09)   VALUE " you are ".
+000877             05 520-YOURSELF-IN          PIC X(10)   VALUE " yourself ".
+000878
+000879             05 520-AM-OUT                   PIC X(04)   VALUE " am ".
+000880             05 520-WAS-OUT                  PIC X(05)   VALUE " was ".
+000881             05 520-I-FIX                    PIC X(04)   VALUE " i# ".
+000882             05 520-IM-FIX                   PIC X(06)   VALUE " i'm# ".
+000883             05 520-I-AM-FIX                 PIC X(07)   VALUE " i am# ".
+000884             05 520-MY-FIX                   PIC X(05)   VALUE " my# ".
+000885             05 520-YOUR-FIX                 PIC X(07)   VALUE " your# ".
+000886             05 520-YOUVE-OUT                PIC X(08)   VALUE " you've ".
+000887             05 520-YOURE-OUT                PIC X(08)   VALUE " you're ".
+000888             05 520-YOU-FIX                  PIC X(06)   VALUE " you# ".
+000889             05 520-MYSELF-OUT               PIC X(08)   VALUE " myself ".
+000890
+000891             05 520-I-OUT                    PIC X(03)   VALUE " I ".
+000892             05 520-IM-OUT                   PIC X(05)   VALUE " I'm ".
+000893             05 520-I-AM-OUT                 PIC X(06)   VALUE " I am ".
+000894             05 520-MY-OUT                   PIC X(04)   VALUE " my ".
+000895             05 520-YOUR-OUT                 PIC X(06)   VALUE " your ".
+000896             05 520-YOU-OUT                  PIC X(05)   VALUE " you ".
+000897
+000898
+000899         01  540-REPLY-TABLE-DATA.
+000900             05  PIC x(60)   VALUE "29Don't you believe that I can*".
+000901             05  PIC X(60)   VALUE "29Perhaps you would like me to*".
+000902             05  PIC x(60)   VALUE "29Do you want me to be able to*".
+000903             05  PIC x(60)   VALUE "26Perhaps you don't want to*".
+000904             05  PIC x(60)   VALUE "26Do you want to be able to*".
+000905             05  PIC x(60)   VALUE "26What makes you think I am*".
+000906
+000907             05  PIC X(30)   VALUE "35Does it please you to believ".
+000908             05  PIC X(30)   VALUE "e I am*".
+000909
+000910             05  PIC x(60)   VALUE "29Perhaps you would like to be*".
+000911
+000912             05  PIC X(30)   VALUE "31Do you sometimes wish you we".
+000913             05  PIC X(30)   VALUE "re*".
+000914
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0019
+
+LINE    PG/LN  A...B............................................................
+
+000915             05  PIC x(60)   VALUE "17Don't you really*".
+000916             05  PIC x(60)   VALUE "14Why don't you*".
+000917             05  PIC x(60)   VALUE "26Do you wish to be able to*".
+000918             05  PIC x(60)   VALUE "22Does that trouble you?".
+000919             05  PIC x(60)   VALUE "18Do you often feel*".
+000920             05  PIC x(60)   VALUE "18Do you often feel*".
+000921             05  PIC x(60)   VALUE "21Do you enjoy feeling*".
+000922             05  PIC x(60)   VALUE "30Do you really believe I don't*".
+000923             05  PIC x(60)   VALUE "28Perhaps in good time I will*".
+000924             05  PIC x(60)   VALUE "18Do you want me to*".
+000925
+000926             05  PIC X(30)   VALUE "35Do you think you should be a".
+000927             05  PIC X(30)   VALUE "ble to*".
+000928
+000929             05  PIC x(60)   VALUE "14Why can't you*".
+000930
+000931             05  PIC X(30)   VALUE "46Why are you interested in wh".
+000932             05  PIC X(30)   VALUE "ether or not I am*".
+000933
+000934             05  PIC x(60)   VALUE "31Would you prefer if I were not*".
+000935             05  PIC x(60)   VALUE "31Perhaps in your fantasies I am*".
+000936             05  PIC x(60)   VALUE "26How do you know you can't*".
+000937             05  PIC x(60)   VALUE "15Have you tried?".
+000938             05  PIC x(60)   VALUE "20Perhaps you can now*".
+000939
+000940             05  PIC X(30)   VALUE "35Did you come to me because y".
+000941             05  PIC X(30)   VALUE "ou are*".
+000942
+000943             05  PIC x(60)   VALUE "23How long have you been*".
+000944
+000945             05  PIC X(30)   VALUE "34Do you believe it is normal ".
+000946             05  PIC X(30)   VALUE "to be*".
+000947
+000948             05  PIC x(60)   VALUE "19Do you enjoy being*".
+000949             05  PIC x(60)   VALUE "31We were discussing you--not me.".
+000950             05  PIC x(60)   VALUE "06Oh, I*".
+000951
+000952             05  PIC X(30)   VALUE "44You're not really talking ab".
+000953             05  PIC X(30)   VALUE "out me, are you?".
+000954
+000955             05  PIC X(30)   VALUE "37What would it mean to you if".
+000956             05  PIC X(30)   VALUE " you got*".
+000957
+000958             05  PIC x(60)   VALUE "16Why do you want*".
+000959             05  PIC x(60)   VALUE "21Suppose you soon got*".
+000960             05  PIC x(60)   VALUE "22What if you never got*".
+000961             05  PIC x(60)   VALUE "22I sometimes also want*".
+000962             05  PIC x(60)   VALUE "15Why do you ask?".
+000963             05  PIC x(60)   VALUE "32Does that question interest you?".
+000964
+000965             05  PIC X(30)   VALUE "38What answer would please you".
+000966             05  PIC X(30)   VALUE " the most?".
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0020
+
+LINE    PG/LN  A...B............................................................
+
+000967
+000968             05  PIC x(60)   VALUE "18What do you think?".
+000969
+000970             05  PIC X(30)   VALUE "38Are such questions on your m".
+000971             05  PIC X(30)   VALUE "ind often?".
+000972
+000973             05  PIC X(30)   VALUE "40What is it that you really w".
+000974             05  PIC X(30)   VALUE "ant to know?".
+000975
+000976             05  PIC x(60)   VALUE "27Have you asked anyone else?".
+000977
+000978             05  PIC X(30)   VALUE "37Have you asked such question".
+000979             05  PIC X(30)   VALUE "s before?".
+000980
+000981             05  PIC X(30)   VALUE "42What else comes to mind when".
+000982             05  PIC X(30)   VALUE " you ask that?".
+000983
+000984             05  PIC x(60)   VALUE "24Names don't interest me.".
+000985
+000986             05  PIC X(30)   VALUE "41I don't care about names -- ".
+000987             05  PIC X(30)   VALUE "Please go on.".
+000988
+000989             05  PIC x(60)   VALUE "24Is that the real reason?".
+000990
+000991             05  PIC X(30)   VALUE "37Don't any other reasons come".
+000992             05  PIC X(30)   VALUE " to mind?".
+000993
+000994             05  PIC X(30)   VALUE "39Does that reason explain any".
+000995             05  PIC X(30)   VALUE "thing else?".
+000996
+000997             05  PIC X(30)   VALUE "34What other reasons might the".
+000998             05  PIC X(30)   VALUE "re be?".
+000999
+001000             05  PIC x(60)   VALUE "23Please don't apologize!".
+001001             05  PIC x(60)   VALUE "28Apologies are not necessary.".
+001002
+001003             05  PIC X(30)   VALUE "45What feelings do you have wh".
+001004             05  PIC X(30)   VALUE "en you apologize?".
+001005
+001006             05  PIC x(60)   VALUE "22Don't be so defensive!".
+001007
+001008             05  PIC X(30)   VALUE "36What does that dream suggest".
+001009             05  PIC X(30)   VALUE " to you?".
+001010
+001011             05  PIC x(60)   VALUE "19Do you dream often?".
+001012
+001013             05  PIC X(30)   VALUE "35What persons appear in your ".
+001014             05  PIC X(30)   VALUE "dreams?".
+001015
+001016             05  PIC X(30)   VALUE "33Are you disturbed by your dr".
+001017             05  PIC X(30)   VALUE "eams?".
+001018
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0021
+
+LINE    PG/LN  A...B............................................................
+
+001019             05  PIC X(30)   VALUE "43How do you do ...Please stat".
+001020             05  PIC X(30)   VALUE "e your problem.".
+001021
+001022             05  PIC x(60)   VALUE "29You don't seem quite certain.".
+001023             05  PIC x(60)   VALUE "23Why the uncertain tone?".
+001024             05  PIC x(60)   VALUE "27Can't you be more positive?".
+001025             05  PIC x(60)   VALUE "16You aren't sure?".
+001026             05  PIC x(60)   VALUE "15Don't you know?".
+001027
+001028             05  PIC X(30)   VALUE "38Are you saying no just to be".
+001029             05  PIC X(30)   VALUE " negative?".
+001030
+001031             05  PIC x(60)   VALUE "29You are being a bit negative.".
+001032             05  PIC x(60)   VALUE "08Why not?".
+001033             05  PIC x(60)   VALUE "13Are you sure?".
+001034             05  PIC x(60)   VALUE "07Why no?".
+001035             05  PIC x(60)   VALUE "31Why are you concerned about my*".
+001036             05  PIC x(60)   VALUE "20What about your own*".
+001037
+001038             05  PIC X(30)   VALUE "36Can you think of a specific ".
+001039             05  PIC X(30)   VALUE "example?".
+001040
+001041             05  PIC x(60)   VALUE "05When?".
+001042             05  PIC x(60)   VALUE "25What are you thinking of?".
+001043             05  PIC x(60)   VALUE "15Really, always?".
+001044             05  PIC x(60)   VALUE "23Do you really think so?".
+001045             05  PIC x(60)   VALUE "21But you are not sure*".
+001046             05  PIC x(60)   VALUE "13Do you doubt*".
+001047             05  PIC x(60)   VALUE "12In what way?".
+001048             05  PIC x(60)   VALUE "28What resemblance do you see?".
+001049
+001050             05  PIC X(30)   VALUE "40What does the similarity sug".
+001051             05  PIC X(30)   VALUE "gest to you?".
+001052
+001053             05  PIC X(30)   VALUE "34What other connections do yo".
+001054             05  PIC X(30)   VALUE "u see?".
+001055
+001056             05  PIC X(30)   VALUE "38Could there really be some c".
+001057             05  PIC X(30)   VALUE "onnection?".
+001058
+001059             05  PIC x(60)   VALUE "04How?".
+001060             05  PIC x(60)   VALUE "24You seem quite positive.".
+001061             05  PIC x(60)   VALUE "13Are you sure?".
+001062             05  PIC x(60)   VALUE "06I see.".
+001063             05  PIC x(60)   VALUE "13I understand.".
+001064
+001065             05  PIC X(30)   VALUE "41Why do you bring up the topi".
+001066             05  PIC X(30)   VALUE "c of friends?".
+001067
+001068             05  PIC x(60)   VALUE "26Do your friends worry you?".
+001069             05  PIC x(60)   VALUE "28Do your friends pick on you?".
+001070
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0022
+
+LINE    PG/LN  A...B............................................................
+
+001071             05  PIC X(30)   VALUE "34Are you sure you have any fr".
+001072             05  PIC X(30)   VALUE "iends?".
+001073
+001074             05  PIC x(60)   VALUE "30Do you impose on your friends?".
+001075
+001076             05  PIC X(30)   VALUE "42Perhaps your love for friend".
+001077             05  PIC X(30)   VALUE "s worries you.".
+001078
+001079             05  PIC x(60)   VALUE "23Do computers worry you?".
+001080
+001081             05  PIC X(30)   VALUE "39Are you talking about me in ".
+001082             05  PIC X(30)   VALUE "particular?".
+001083
+001084             05  PIC X(30)   VALUE "31Are you frightened by machin".
+001085             05  PIC X(30)   VALUE "es?".
+001086
+001087             05  PIC x(60)   VALUE "29Why do you mention computers?".
+001088
+001089             05  PIC X(30)   VALUE "56What do you think machines h".
+001090             05  PIC X(30)   VALUE "ave to do with your problem?".
+001091
+001092             05  PIC X(30)   VALUE "42Don't you think computers ca".
+001093             05  PIC X(30)   VALUE "n help people?".
+001094
+001095             05  PIC X(30)   VALUE "43What is it about machines th".
+001096             05  PIC X(30)   VALUE "at worries you?".
+001097
+001098             05  PIC X(30)   VALUE "44Say, do you have any psychol".
+001099             05  PIC X(30)   VALUE "ogical problems?".
+001100
+001101             05  PIC x(60)   VALUE "30What does that suggest to you?".
+001102             05  PIC x(60)   VALUE "06I see.".
+001103
+001104             05  PIC X(30)   VALUE "36I'm not sure I understand yo".
+001105             05  PIC X(30)   VALUE "u fully.".
+001106
+001107             05  PIC X(30)   VALUE "36Come, Come, elucidate your t".
+001108             05  PIC X(30)   VALUE "houghts.".
+001109
+001110             05  PIC x(60)   VALUE "26Can you elaborate on that?".
+001111             05  PIC x(60)   VALUE "26That is quite interesting.".
+001112
+001113         01  540-REPLY-TABLE         REDEFINES 540-REPLY-TABLE-DATA.
+001114             05  540-REPLY-ENTRY         OCCURS 112 TIMES
+001115                                         INDEXED BY 540-R.
+001116                 10  540-REPLY-LENGTH        PIC 9(02).
+001117                 10  540-REPLY               PIC X(58).
+001118
+001119
+001120         01  560-REPLY-LOCATER-DATA.
+001121             05  FILLER      PIC X(12)   VALUE "000100030004".
+001122             05  FILLER      PIC X(12)   VALUE "000400050005".
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0023
+
+LINE    PG/LN  A...B............................................................
+
+001123             05  FILLER      PIC X(12)   VALUE "000600090009".
+001124             05  FILLER      PIC X(12)   VALUE "000600090009".
+001125             05  FILLER      PIC X(12)   VALUE "001000130013".
+001126             05  FILLER      PIC X(12)   VALUE "001400160016".
+001127             05  FILLER      PIC X(12)   VALUE "001700190019".
+001128             05  FILLER      PIC X(12)   VALUE "002000210021".
+001129             05  FILLER      PIC X(12)   VALUE "002200240024".
+001130             05  FILLER      PIC X(12)   VALUE "002500270027".
+001131             05  FILLER      PIC X(12)   VALUE "002800310031".
+001132             05  FILLER      PIC X(12)   VALUE "002800310031".
+001133             05  FILLER      PIC X(12)   VALUE "003200340034".
+001134             05  FILLER      PIC X(12)   VALUE "003500390039".
+001135             05  FILLER      PIC X(12)   VALUE "004000480048".
+001136             05  FILLER      PIC X(12)   VALUE "004000480048".
+001137             05  FILLER      PIC X(12)   VALUE "004000480048".
+001138             05  FILLER      PIC X(12)   VALUE "004000480048".
+001139             05  FILLER      PIC X(12)   VALUE "004000480048".
+001140             05  FILLER      PIC X(12)   VALUE "004000480048".
+001141             05  FILLER      PIC X(12)   VALUE "004900500050".
+001142             05  FILLER      PIC X(12)   VALUE "005100540054".
+001143             05  FILLER      PIC X(12)   VALUE "005500580058".
+001144             05  FILLER      PIC X(12)   VALUE "005900620062".
+001145             05  FILLER      PIC X(12)   VALUE "006300630063".
+001146             05  FILLER      PIC X(12)   VALUE "006300630063".
+001147             05  FILLER      PIC X(12)   VALUE "006400680068".
+001148             05  FILLER      PIC X(12)   VALUE "006900730073".
+001149             05  FILLER      PIC X(12)   VALUE "007400750075".
+001150             05  FILLER      PIC X(12)   VALUE "007600790079".
+001151             05  FILLER      PIC X(12)   VALUE "008000820082".
+001152             05  FILLER      PIC X(12)   VALUE "008300890089".
+001153             05  FILLER      PIC X(12)   VALUE "009000920092".
+001154             05  FILLER      PIC X(12)   VALUE "009300980098".
+001155             05  FILLER      PIC X(12)   VALUE "009901050105".
+001156             05  FILLER      PIC X(12)   VALUE "010601120112".
+001157
+001158         01  560-REPLY-LOCATER-TABLE REDEFINES 560-REPLY-LOCATER-DATA.
+001159             05  560-REPLY-LOCATER-ENTRY OCCURS 36 TIMES INDEXED BY 560-L.
+001160                 10  560-REPLY-LO            PIC 9(04).
+001161                 10  560-REPLY-HI            PIC 9(04).
+001162                 10  560-REPLY-LAST-USED     PIC 9(04).
+001163
+001164         01  600-PROGRAM-MESSAGES.
+001165             05  600-REPLY-LIST.
+001166                 10  FILLER                  PIC X(07)   VALUE 'Reply: '.
+001167                 10  600-REPLY-DATA          PIC X(70)   VALUE SPACES.
+001168
+001169             05  600-INITIAL-MESSAGE         PIC X(40)   VALUE
+001170                 "Hi!  I'm ELIZA.  What's your problem?".
+001171
+001172             05  600-GOODBYE-MESSAGE         PIC X(40)   VALUE
+001173                 "If that's how you feel--goodbye...".
+001174
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0024
+
+LINE    PG/LN  A...B............................................................
+
+001175             05  600-NO-REPEAT-MSG           PIC X(32)   VALUE
+001176                 "Please don't repeat yourself!".
+001177
+001178         PROCEDURE DIVISION.
+001179
+001180        ****************************************************************
+001181        *    0 0 0 0 - M A I N L I N E .                               *
+001182        ****************************************************************
+001183        *    START THE PSYCHOTHERAPIST DIALOG WITH THE USER, ANALYZE   *
+001184        *    THE USER INPUT AND GENERATE THE REPLIES.  THE USER CAN    *
+001185        *    TYPE "SHUT UP" OR SIMPLY "SHUT" TO TERMINATE THE SESSION. *
+001186        ****************************************************************
+001187
+001188         0000-MAINLINE.
+001189
+001190             DISPLAY SPACE
+warning: DISPLAY statement not terminated by END-DISPLAY
+001191             MOVE SPACE                  TO 100-EOF-FLAG
+001192             DISPLAY 600-INITIAL-MESSAGE
+warning: DISPLAY statement not terminated by END-DISPLAY
+001193             PERFORM UNTIL 88-100-ALL-DONE
+001194                 ACCEPT 200-USER-INPUT
+warning: ACCEPT statement not terminated by END-ACCEPT
+001195                 MOVE FUNCTION LOWER-CASE (200-USER-INPUT)
+001196                                         TO 210-USER-INPUT-LC
+001197                 IF 210-USER-INPUT-LC (1:4) = 300-SHUT
+001198                     SET 88-100-ALL-DONE TO TRUE
+001199                     DISPLAY 600-GOODBYE-MESSAGE
+warning: DISPLAY statement not terminated by END-DISPLAY
+001200                 ELSE
+001201                     IF 210-USER-INPUT-LC = 220-LAST-USER-INPUT
+001202                         DISPLAY 600-NO-REPEAT-MSG
+warning: DISPLAY statement not terminated by END-DISPLAY
+001203                     ELSE
+001204                         MOVE 210-USER-INPUT-LC
+001205                                         TO 220-LAST-USER-INPUT
+001206                         PERFORM 1000-SCAN-FOR-KEYWORD
+001207                         IF 400-HOLD-OFFSET > ZERO
+001208                             PERFORM 2000-TRANSLATE-USER-INPUT
+001209                         END-IF
+001210                         PERFORM 3000-BUILD-KEYWORD-REPLY
+001211                     END-IF
+001212                 END-IF
+001213             END-PERFORM
+001214
+001215             STOP RUN.
+001216
+001217        ****************************************************************
+001218        *    1 0 0 0 - S C A N - F O R - K E Y W O R D .               *
+001219        ****************************************************************
+001220        *    SEARCH THE USER INPUT FOR KEYWORDS THAT WILL TRIGGER      *
+001221        *    THE RESPONSES FROM THE REPLY TABLE.                       *
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0025
+
+LINE    PG/LN  A...B............................................................
+
+001222        ****************************************************************
+001223
+001224         1000-SCAN-FOR-KEYWORD.
+001225
+001226             PERFORM 1100-MASK-STRING-HI
+001227
+001228             SET 88-100-KEYWORD-NOT-FOUND TO TRUE
+001229             MOVE ZERO                   TO 400-HOLD-OFFSET
+001230             PERFORM VARYING 400-SUB FROM +1 BY +1
+001231                     UNTIL   400-SUB > 300-MAX-SCAN-LEN
+001232                     OR      88-100-KEYWORD-FOUND
+001233                 PERFORM VARYING 500-K FROM +1 BY +1
+001234                         UNTIL   500-K > 300-MAX-KEYWORD-ENTRIES
+001235                         OR      88-100-KEYWORD-FOUND
+001236                     MOVE 500-KW-LEN (500-K)
+001237                                         TO 400-HOLD-KW-LEN
+001238                     IF 210-USER-INPUT-LC (400-SUB:400-HOLD-KW-LEN) =
+001239                             500-KEYWORD (500-K)
+001240                         SET 400-HOLD-500-K TO 500-K
+warning: some digits may be truncated
+001241                         SET 88-100-KEYWORD-FOUND TO TRUE
+001242                         COMPUTE 400-HOLD-OFFSET =
+warning: COMPUTE statement not terminated by END-COMPUTE
+001243                             400-SUB + 400-HOLD-KW-LEN
+001244                         COMPUTE 400-SUB = 400-SCAN-LEN + 1
+warning: COMPUTE statement not terminated by END-COMPUTE
+001245                     END-IF
+001246                 END-PERFORM
+001247             END-PERFORM
+001248
+001249             IF 88-100-KEYWORD-NOT-FOUND
+001250                 MOVE 300-MAX-KEYWORD-ENTRIES
+001251                                         TO 400-HOLD-500-K
+001252                 SET 88-100-KEYWORD-FOUND TO TRUE
+001253             END-IF
+001254
+001255             PERFORM 1200-RESTORE-STRING-HI
+001256             .
+001257
+001258        ****************************************************************
+001259        *    1 1 0 0 - M A S K - S T R I N G - H I .                   *
+001260        ****************************************************************
+001261        *    WORDS LIKE "THING" AND "HIGH" WERE CAUSING A KEYWORD      *
+001262        *    "HI" MATCH THAT TRIGGERED THE HELLO/HI KEYWORD RESPONSES, *
+001263        *    SO THEY ARE MASKED HERE TO PREVENT THAT.                  *
+001264        *    ALSO REMOVE TRAILING "?", "!", AND "." CHARACTERS.        *
+001265        ****************************************************************
+001266
+001267         1100-MASK-STRING-HI.
+001268
+001269             MOVE FUNCTION SUBSTITUTE
+001270                 (210-USER-INPUT-LC, 520-THING-IN, 520-THING-OUT,
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0026
+
+LINE    PG/LN  A...B............................................................
+
+001271                                     520-HIGH-IN,  520-HIGH-OUT,
+001272                                     520-SHI-IN,   520-SHI-OUT,
+001273                                     520-CHI-IN,   520-CHI-OUT,
+001274                                     520-HIT-IN,   520-HIT-OUT,
+001275                                     520-OUR-IN,   520-OUR-OUT,
+001276                                     520-QMARK-IN, 520-QMARK-OUT,
+001277                                     520-XMARK-IN, 520-QMARK-OUT,
+001278                                     520-FSTOP-IN, 520-FSTOP-OUT)
+001279                                         TO 250-SUBSTITUTE-WORK
+001280             MOVE 250-SUBSTITUTE-WORK    TO 210-USER-INPUT-LC
+warning: sending field larger than receiving field
+001281        ****************************************************************
+001282        *    REMOVE MULTIPLE TRAILING QUESTION MARKS, EXCLAMATION      *
+001283        *    POINTS, AND PERIODS (FULL STOPS).                         *
+001284        ****************************************************************
+001285             MOVE FUNCTION SUBSTITUTE
+001286                 (210-USER-INPUT-LC, 520-QMARK-IN, 520-QMARK-OUT,
+001287                                     520-XMARK-IN, 520-QMARK-OUT,
+001288                                     520-FSTOP-IN, 520-FSTOP-OUT)
+001289                                         TO 250-SUBSTITUTE-WORK
+001290             MOVE 250-SUBSTITUTE-WORK    TO 210-USER-INPUT-LC
+warning: sending field larger than receiving field
+001291             MOVE FUNCTION SUBSTITUTE
+001292                 (210-USER-INPUT-LC, 520-QMARK-IN, 520-QMARK-OUT,
+001293                                     520-XMARK-IN, 520-QMARK-OUT,
+001294                                     520-FSTOP-IN, 520-FSTOP-OUT)
+001295                                         TO 250-SUBSTITUTE-WORK
+001296             MOVE 250-SUBSTITUTE-WORK    TO 210-USER-INPUT-LC
+warning: sending field larger than receiving field
+001297             .
+001298
+001299        ****************************************************************
+001300        *    1 2 0 0 - R E S T O R E - S T R I N G - H I .             *
+001301        ****************************************************************
+001302        *    AFTER COMPLETING THE KEYWORD SEARCH, RESTORE THE "HI"     *
+001303        *    STRING IN THE USER INPUT.                                 *
+001304        ****************************************************************
+001305
+001306         1200-RESTORE-STRING-HI.
+001307
+001308             MOVE FUNCTION SUBSTITUTE
+001309                 (210-USER-INPUT-LC, 520-THING-OUT, 520-THING-IN,
+001310                                     520-HIGH-OUT,  520-HIGH-IN,
+001311                                     520-SHI-OUT,   520-SHI-IN,
+001312                                     520-CHI-OUT,   520-CHI-IN,
+001313                                     520-HIT-OUT,   520-HIT-IN,
+001314                                     520-OUR-OUT,   520-OUR-IN)
+001315                                         TO 250-SUBSTITUTE-WORK
+001316             MOVE 250-SUBSTITUTE-WORK    TO 210-USER-INPUT-LC
+warning: sending field larger than receiving field
+001317             .
+001318
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0027
+
+LINE    PG/LN  A...B............................................................
+
+001319        ****************************************************************
+001320        *    2 0 0 0 - T R A N S L A T E - U S E R - I N P U T .       *
+001321        ****************************************************************
+001322        *    PERFORM PRONOUN REPLACEMENT AND CONJUGATION ON THE USER   *
+001323        *    INPUT SO IT WILL SOUND FAIRLY NORMAL WHEN APPENDED TO     *
+001324        *    THE DOCTOR'S REPLY.                                       *
+001325        ****************************************************************
+001326
+001327         2000-TRANSLATE-USER-INPUT.
+001328
+001329             MOVE 210-USER-INPUT-LC (400-HOLD-OFFSET:)
+001330                                         TO 230-TRANSLATED-INPUT.
+001331
+001332             MOVE FUNCTION SUBSTITUTE
+001333                 (230-TRANSLATED-INPUT, 520-ARE-IN,  520-AM-OUT,
+001334                                        520-WERE-IN, 520-WAS-OUT
+001335                                        520-YOU-IN,  520-I-FIX,
+001336                                        520-YOUR-IN, 520-MY-FIX,
+001337                                        520-MY-IN,   520-YOUR-FIX,
+001338                                        520-IVE-IN,  520-YOUVE-OUT,
+001339                                        520-IM-IN,   520-YOURE-OUT,
+001340                                        520-I-AM-IN, 520-YOURE-OUT,
+001341                                        520-ME-IN,   520-YOU-FIX,
+001342                                        520-I-IN,    520-YOU-FIX,
+001343                                        520-YOURE-IN 520-IM-FIX,
+001344                                    520-YOU-ARE-IN   520-I-AM-FIX,
+001345                                    520-YOURSELF-IN, 520-MYSELF-OUT)
+001346                                         TO 250-SUBSTITUTE-WORK.
+001347
+001348             MOVE 250-SUBSTITUTE-WORK TO 230-TRANSLATED-INPUT.
+warning: sending field larger than receiving field
+001349
+001350             MOVE FUNCTION SUBSTITUTE
+001351                 (230-TRANSLATED-INPUT, 520-I-FIX,     520-I-OUT,
+001352                                        520-IM-FIX,    520-IM-OUT,
+001353                                        520-I-AM-FIX,  520-I-AM-OUT,
+001354                                        520-MY-FIX,    520-MY-OUT,
+001355                                        520-YOUR-FIX,  520-YOUR-OUT,
+001356                                        520-YOU-FIX,   520-YOU-OUT)
+001357                                         TO 250-SUBSTITUTE-WORK.
+001358
+001359             MOVE 250-SUBSTITUTE-WORK    TO 230-TRANSLATED-INPUT
+warning: sending field larger than receiving field
+001360             .
+001361
+001362        ****************************************************************
+001363        *    3 0 0 0 - B U I L D - K E Y W O R D - R E P L Y .         *
+001364        ****************************************************************
+001365        *    BUILD THE REPLY BASED ON THE KEYWORD FOUND IN THE USER    *
+001366        *    INPUT.  NOTE THERE ARE A VARIABLE NUMBER OF POSSIBLE      *
+001367        *    REPLIES FOR EACH KEYWORD, AND SOME REPLIES INCLUDE TEXT   *
+001368        *    ECHOED FROM THE USER INPUT.                               *
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0028
+
+LINE    PG/LN  A...B............................................................
+
+001369        ****************************************************************
+001370
+001371         3000-BUILD-KEYWORD-REPLY.
+001372
+001373             SET 560-L                   TO 400-HOLD-500-K
+001374             ADD +1                      TO 560-REPLY-LAST-USED (560-L)
+warning: ADD statement not terminated by END-ADD
+001375             IF 560-REPLY-LAST-USED (560-L) > 560-REPLY-HI (560-L)
+001376                 MOVE 560-REPLY-LO (560-L) TO 560-REPLY-LAST-USED (560-L)
+001377             END-IF
+001378
+001379             SET 540-R                    TO 560-REPLY-LAST-USED (560-L)
+001380             MOVE 540-REPLY (540-R)       TO 240-REPLY
+001381             MOVE 540-REPLY-LENGTH (540-R)    TO 400-SUB
+001382             IF 240-REPLY (400-SUB:1) = 300-ASTERISK
+001383                 MOVE SPACE               TO 240-REPLY (400-SUB:1)
+001384                 MOVE 230-TRANSLATED-INPUT
+warning: sending field larger than receiving field
+001385                                          TO 240-REPLY (400-SUB:)
+001386                 PERFORM 3100-FIX-MORE-BAD-GRAMMAR
+001387                 MOVE ZERO                TO 400-SPACES-COUNT
+001388                 INSPECT 240-REPLY TALLYING 400-SPACES-COUNT
+001389                     FOR TRAILING SPACES
+001390        ****************************************************************
+001391        *        MERGE USER INPUT INTO THE REPLY AND THEN CORRECT      *
+001392        *        ENDING PUNCTUATION FOR "?" OR "." (FULL-STOP).        *
+001393        ****************************************************************
+001394                 IF  400-SPACES-COUNT > ZERO
+001395                 AND 400-SPACES-COUNT < (LENGTH OF 240-REPLY) - 1
+001396                     COMPUTE 400-OFFSET =
+001397                         (LENGTH OF 240-REPLY) - 400-SPACES-COUNT + 1
+001398                     END-COMPUTE
+001399                     IF 560-REPLY-LAST-USED (560-L) = 02 OR 04 OR 05
+001400                     OR 08 OR 18 OR 24 OR 33 OR 39 OR 81
+001401                         MOVE "."         TO 240-REPLY (400-OFFSET:1)
+001402                     ELSE
+001403                         MOVE "?"         TO 240-REPLY (400-OFFSET:1)
+001404                     END-IF
+001405                 END-IF
+001406             END-IF
+001407
+001408             DISPLAY 240-REPLY
+warning: DISPLAY statement not terminated by END-DISPLAY
+001409             .
+001410
+001411        ****************************************************************
+001412        *    3 1 0 0 - F I X - M O R E - B A D - G R A M M A R .       *
+001413        ****************************************************************
+001414        *    HERE ARE SOME MORE FIXUPS FOR GRAMMAR PROBLEMS.  BUT IT   *
+001415        *    DOESN'T SOLVE ALL OF THEM.                                *
+001416        ****************************************************************
+001417
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0029
+
+LINE    PG/LN  A...B............................................................
+
+001418         3100-FIX-MORE-BAD-GRAMMAR.
+001419
+001420             MOVE FUNCTION SUBSTITUTE (240-REPLY,
+001421                 " you want I ",            " you want me ",
+001422                 " you got I ",             " you got me ",
+001423                 " to make I ",             " to make me ",
+001424                 " you been I ",            " you been me ",
+001425                 " you be I ",              " you be me ",
+001426                 " to be I ",               " to be me ",
+001427                 " soon got I ",            " soon got me ",
+001428                 " never got I ",           " never got me ",
+001429                 " sometimes also want I ", " sometimes also want me ",
+001430                 " normal to be I ",        " normal to be me ",
+001431                 " enjoy being I ",         " enjoy being me ",
+001432                 " can't make I ",          " can't make me ",
+001433                 " can now make I ",        " can now make me ",
+001434                 " I are ",                 " I am ",
+001435                 " you am ",                " you are ",
+001436                 " with I ",                " with me")
+001437                                         TO 250-SUBSTITUTE-WORK.
+001438
+001439             MOVE 250-SUBSTITUTE-WORK TO 240-REPLY.
+warning: sending field larger than receiving field
+001440
+001441         END PROGRAM ELIZA.
+001442  >>>>>>> .r513
+error: invalid indicator '>' at column 7
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0030
+
+NAME                           DEFINED                REFERENCES
+
+PROGRAM ELIZA
+
+100-PROGRAM-FLAGS              46     referenced by child
+100-EOF-FLAG                   47      *470    *477
+88-100-ALL-DONE                48       472     477
+100-KEYWORD-FLAG               49      *507    *520    *531
+88-100-KEYWORD-FOUND           50       511     514     520     531
+88-100-KEYWORD-NOT-FOUND       51       507     528
+200-USER-INPUT                 53      *473     474
+210-USER-INPUT-LC              55      *475     476     480     483     517
+                                        549    *559     565    *569     571
+                                       *575     588    *595     608
+220-LAST-USER-INPUT            57       480    *484
+230-TRANSLATED-INPUT           59      *609     612    *627     630    *638
+                                        663
+240-REPLY                      61      *659     661    *662    *664     667
+                                        674     676    *680    *682     687
+                                        699    *718
+250-SUBSTITUTE-WORK            63      *558     559    *568     569    *574
+                                        575    *594     595    *625     627
+                                       *636     638    *716     718
+300-PROGRAM-CONSTANTS          65     referenced by child
+300-MAX-KEYWORD-ENTRIES        66       513     529
+300-MAX-SCAN-LEN               67       510
+300-SHUT                       68       476
+300-ASTERISK                   69       661
+400-PROGRAM-COUNTERS           71     referenced by child
+400-HOLD-KW-LEN                72      *516     517     522
+400-SCAN-LEN                   73       523
+400-HOLD-500-K                 74      *519    *530     652
+400-HOLD-OFFSET                75       486    *508     521     608
+400-OFFSET                     76       675     680     682
+400-SUB                        77       509     510     517     522     523
+                                       *660     661     662     664
+400-SPACES-COUNT               78      *666     667     673     674     676
+500-KEYWORD-TABLE-DATA         80     not referenced
+500-KEYWORD-TABLE              118    referenced by child
+500-KEYWORD-ENTRY              119    referenced by child
+500-KW-LEN                     121      515
+500-KEYWORD                    122      518
+520-TRANSLATION-CONSTANTS      124    referenced by child
+520-THING-IN                   125      549     588
+520-HIGH-IN                    126      550     589
+520-SHI-IN                     127      551     590
+520-CHI-IN                     128      552     591
+520-HIT-IN                     129      553     592
+520-OUR-IN                     130      554     593
+520-QMARK-IN                   131      555     565     571
+520-XMARK-IN                   132      556     566     572
+520-FSTOP-IN                   133      557     567     573
+520-THING-OUT                  135      549     588
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0031
+
+NAME                           DEFINED                REFERENCES
+
+520-HIGH-OUT                   136      550     589
+520-SHI-OUT                    137      551     590
+520-CHI-OUT                    138      552     591
+520-HIT-OUT                    139      553     592
+520-OUR-OUT                    140      554     593
+520-QMARK-OUT                  141      555     556     565     566     571
+                                        572
+520-FSTOP-OUT                  142      557     567     573
+520-ARE-IN                     144      612
+520-WERE-IN                    145      613
+520-YOU-IN                     146      614
+520-YOUR-IN                    147      615
+520-MY-IN                      148      616
+520-IVE-IN                     149      617
+520-IM-IN                      150      618
+520-I-AM-IN                    151      619
+520-ME-IN                      152      620
+520-I-IN                       153      621
+520-YOURE-IN                   154      622
+520-YOU-ARE-IN                 155      623
+520-YOURSELF-IN                156      624
+520-AM-OUT                     158      612
+520-WAS-OUT                    159      613
+520-I-FIX                      160      614     630
+520-IM-FIX                     161      622     631
+520-I-AM-FIX                   162      623     632
+520-MY-FIX                     163      615     633
+520-YOUR-FIX                   164      616     634
+520-YOUVE-OUT                  165      617
+520-YOURE-OUT                  166      618     619
+520-YOU-FIX                    167      620     621     635
+520-MYSELF-OUT                 168      624
+520-I-OUT                      170      630
+520-IM-OUT                     171      631
+520-I-AM-OUT                   172      632
+520-MY-OUT                     173      633
+520-YOUR-OUT                   174      634
+520-YOU-OUT                    175      635
+540-REPLY-TABLE-DATA           178    not referenced
+540-REPLY-TABLE                392    referenced by child
+540-REPLY-ENTRY                393    referenced by child
+540-REPLY-LENGTH               395      660
+540-REPLY                      396      659
+560-REPLY-LOCATER-DATA         399    not referenced
+560-REPLY-LOCATER-TABLE        437    referenced by child
+560-REPLY-LOCATER-ENTRY        438    referenced by child
+560-REPLY-LO                   439      655
+560-REPLY-HI                   440      654
+560-REPLY-LAST-USED            441      653     654    *655     658     678
+600-PROGRAM-MESSAGES           443    referenced by child
+600-REPLY-LIST                 444    not referenced
+600-REPLY-DATA                 446    not referenced
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0032
+
+NAME                           DEFINED                REFERENCES
+
+600-INITIAL-MESSAGE            448      471
+600-GOODBYE-MESSAGE            451      478
+600-NO-REPEAT-MSG              454      481
+
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0033
+
+LABEL                          DEFINED                REFERENCES
+
+PROGRAM ELIZA
+
+E ELIZA                        467
+P 0000-MAINLINE                467    not referenced
+P 1000-SCAN-FOR-KEYWORD        503      485
+P 1100-MASK-STRING-HI          546      505
+P 1200-RESTORE-STRING-HI       585      534
+P 2000-TRANSLATE-USER-INPUT    606      487
+P 3000-BUILD-KEYWORD-REPLY     650      489
+P 3100-FIX-MORE-BAD-GRAMMAR    697      665
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0034
+
+NAME                           DEFINED                REFERENCES
+
+PROGRAM ELIZA
+
+100-PROGRAM-FLAGS              767    referenced by child
+100-EOF-FLAG                   768     *1191   *1198
+88-100-ALL-DONE                769      1193    1198
+100-KEYWORD-FLAG               770     *1228   *1241   *1252
+88-100-KEYWORD-FOUND           771      1232    1235    1241    1252
+88-100-KEYWORD-NOT-FOUND       772      1228    1249
+200-USER-INPUT                 774     *1194    1195
+210-USER-INPUT-LC              776     *1196    1197    1201    1204    1238
+                                        1270   *1280    1286   *1290    1292
+                                       *1296    1309   *1316    1329
+220-LAST-USER-INPUT            778      1201   *1205
+230-TRANSLATED-INPUT           780     *1330    1333   *1348    1351   *1359
+                                        1384
+240-REPLY                      782     *1380    1382   *1383   *1385    1388
+                                        1395    1397   *1401   *1403    1408
+                                        1420   *1439
+250-SUBSTITUTE-WORK            784     *1279    1280   *1289    1290   *1295
+                                        1296   *1315    1316   *1346    1348
+                                       *1357    1359   *1437    1439
+300-PROGRAM-CONSTANTS          786    referenced by child
+300-MAX-KEYWORD-ENTRIES        787      1234    1250
+300-MAX-SCAN-LEN               788      1231
+300-SHUT                       789      1197
+300-ASTERISK                   790      1382
+400-PROGRAM-COUNTERS           792    referenced by child
+400-HOLD-KW-LEN                793     *1237    1238    1243
+400-SCAN-LEN                   794      1244
+400-HOLD-500-K                 795     *1240   *1251    1373
+400-HOLD-OFFSET                796      1207   *1229    1242    1329
+400-OFFSET                     797      1396    1401    1403
+400-SUB                        798      1230    1231    1238    1243    1244
+                                       *1381    1382    1383    1385
+400-SPACES-COUNT               799     *1387    1388    1394    1395    1397
+500-KEYWORD-TABLE-DATA         801    not referenced
+500-KEYWORD-TABLE              839    referenced by child
+500-KEYWORD-ENTRY              840    referenced by child
+500-KW-LEN                     842      1236
+500-KEYWORD                    843      1239
+520-TRANSLATION-CONSTANTS      845    referenced by child
+520-THING-IN                   846      1270    1309
+520-HIGH-IN                    847      1271    1310
+520-SHI-IN                     848      1272    1311
+520-CHI-IN                     849      1273    1312
+520-HIT-IN                     850      1274    1313
+520-OUR-IN                     851      1275    1314
+520-QMARK-IN                   852      1276    1286    1292
+520-XMARK-IN                   853      1277    1287    1293
+520-FSTOP-IN                   854      1278    1288    1294
+520-THING-OUT                  856      1270    1309
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0035
+
+NAME                           DEFINED                REFERENCES
+
+520-HIGH-OUT                   857      1271    1310
+520-SHI-OUT                    858      1272    1311
+520-CHI-OUT                    859      1273    1312
+520-HIT-OUT                    860      1274    1313
+520-OUR-OUT                    861      1275    1314
+520-QMARK-OUT                  862      1276    1277    1286    1287    1292
+                                        1293
+520-FSTOP-OUT                  863      1278    1288    1294
+520-ARE-IN                     865      1333
+520-WERE-IN                    866      1334
+520-YOU-IN                     867      1335
+520-YOUR-IN                    868      1336
+520-MY-IN                      869      1337
+520-IVE-IN                     870      1338
+520-IM-IN                      871      1339
+520-I-AM-IN                    872      1340
+520-ME-IN                      873      1341
+520-I-IN                       874      1342
+520-YOURE-IN                   875      1343
+520-YOU-ARE-IN                 876      1344
+520-YOURSELF-IN                877      1345
+520-AM-OUT                     879      1333
+520-WAS-OUT                    880      1334
+520-I-FIX                      881      1335    1351
+520-IM-FIX                     882      1343    1352
+520-I-AM-FIX                   883      1344    1353
+520-MY-FIX                     884      1336    1354
+520-YOUR-FIX                   885      1337    1355
+520-YOUVE-OUT                  886      1338
+520-YOURE-OUT                  887      1339    1340
+520-YOU-FIX                    888      1341    1342    1356
+520-MYSELF-OUT                 889      1345
+520-I-OUT                      891      1351
+520-IM-OUT                     892      1352
+520-I-AM-OUT                   893      1353
+520-MY-OUT                     894      1354
+520-YOUR-OUT                   895      1355
+520-YOU-OUT                    896      1356
+540-REPLY-TABLE-DATA           899    not referenced
+540-REPLY-TABLE                1113   referenced by child
+540-REPLY-ENTRY                1114   referenced by child
+540-REPLY-LENGTH               1116     1381
+540-REPLY                      1117     1380
+560-REPLY-LOCATER-DATA         1120   not referenced
+560-REPLY-LOCATER-TABLE        1158   referenced by child
+560-REPLY-LOCATER-ENTRY        1159   referenced by child
+560-REPLY-LO                   1160     1376
+560-REPLY-HI                   1161     1375
+560-REPLY-LAST-USED            1162     1374    1375   *1376    1379    1399
+600-PROGRAM-MESSAGES           1164   referenced by child
+600-REPLY-LIST                 1165   not referenced
+600-REPLY-DATA                 1167   not referenced
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0036
+
+NAME                           DEFINED                REFERENCES
+
+600-INITIAL-MESSAGE            1169     1192
+600-GOODBYE-MESSAGE            1172     1199
+600-NO-REPEAT-MSG              1175     1202
+
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0037
+
+LABEL                          DEFINED                REFERENCES
+
+PROGRAM ELIZA
+
+E ELIZA                        1188
+P 0000-MAINLINE                1188   not referenced
+P 1000-SCAN-FOR-KEYWORD        1224     1206
+P 1100-MASK-STRING-HI          1267     1226
+P 1200-RESTORE-STRING-HI       1306     1255
+P 2000-TRANSLATE-USER-INPUT    1327     1208
+P 3000-BUILD-KEYWORD-REPLY     1371     1210
+P 3100-FIX-MORE-BAD-GRAMMAR    1418     1386
+
+GnuCOBOL 2.2.0          eliza.cbl            Thu Oct 12 21:22:20 2017  Page 0038
+
+Error/Warning summary:
+
+eliza.cbl: 1: error: invalid indicator '<' at column 7
+eliza.cbl: 721: error: invalid indicator '|' at column 7
+eliza.cbl: 722: error: invalid indicator '=' at column 7
+eliza.cbl: 1442: error: invalid indicator '>' at column 7
+eliza.cbl: 469: warning: DISPLAY statement not terminated by END-DISPLAY
+eliza.cbl: 471: warning: DISPLAY statement not terminated by END-DISPLAY
+eliza.cbl: 473: warning: ACCEPT statement not terminated by END-ACCEPT
+eliza.cbl: 478: warning: DISPLAY statement not terminated by END-DISPLAY
+eliza.cbl: 481: warning: DISPLAY statement not terminated by END-DISPLAY
+eliza.cbl: 519: warning: some digits may be truncated
+eliza.cbl: 521: warning: COMPUTE statement not terminated by END-COMPUTE
+eliza.cbl: 523: warning: COMPUTE statement not terminated by END-COMPUTE
+eliza.cbl: 559: warning: sending field larger than receiving field
+eliza.cbl: 569: warning: sending field larger than receiving field
+eliza.cbl: 575: warning: sending field larger than receiving field
+eliza.cbl: 595: warning: sending field larger than receiving field
+eliza.cbl: 627: warning: sending field larger than receiving field
+eliza.cbl: 638: warning: sending field larger than receiving field
+eliza.cbl: 653: warning: ADD statement not terminated by END-ADD
+eliza.cbl: 663: warning: sending field larger than receiving field
+eliza.cbl: 687: warning: DISPLAY statement not terminated by END-DISPLAY
+eliza.cbl: 718: warning: sending field larger than receiving field
+eliza.cbl: 725: error: redefinition of program ID 'ELIZA'
+eliza.cbl: 1190: warning: DISPLAY statement not terminated by END-DISPLAY
+eliza.cbl: 1192: warning: DISPLAY statement not terminated by END-DISPLAY
+eliza.cbl: 1194: warning: ACCEPT statement not terminated by END-ACCEPT
+eliza.cbl: 1199: warning: DISPLAY statement not terminated by END-DISPLAY
+eliza.cbl: 1202: warning: DISPLAY statement not terminated by END-DISPLAY
+eliza.cbl: 1240: warning: some digits may be truncated
+eliza.cbl: 1242: warning: COMPUTE statement not terminated by END-COMPUTE
+eliza.cbl: 1244: warning: COMPUTE statement not terminated by END-COMPUTE
+eliza.cbl: 1280: warning: sending field larger than receiving field
+eliza.cbl: 1290: warning: sending field larger than receiving field
+eliza.cbl: 1296: warning: sending field larger than receiving field
+eliza.cbl: 1316: warning: sending field larger than receiving field
+eliza.cbl: 1348: warning: sending field larger than receiving field
+eliza.cbl: 1359: warning: sending field larger than receiving field
+eliza.cbl: 1374: warning: ADD statement not terminated by END-ADD
+eliza.cbl: 1384: warning: sending field larger than receiving field
+eliza.cbl: 1408: warning: DISPLAY statement not terminated by END-DISPLAY
+eliza.cbl: 1439: warning: sending field larger than receiving field
+
+36 warnings in compilation group
+5 errors in compilation group
