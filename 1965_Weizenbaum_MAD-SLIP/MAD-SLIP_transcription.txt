@@ -265,7 +265,7 @@ START       TREAD.(MTLIST.(INPUT),0)                                            
 NOTYET      W'R S .L. 0                                                         000610
                 SEQLR.(S,F)                                                     000620
                 T'O NOTYET                                                      000630
-               0'E                                                              000640
+               O'E                                                              000640
                 WORD=SEQLR.(S,F)                                                000650
                 W'R WORD .E. $.$ .OR. WORD .E. $,$ .OR. WORD .E. $BUT$          000660
                     W'R IT .E. 0                                                000670
@@ -308,7 +308,7 @@ PLCKEY              IT=READER                                                   
                     PREDNC=NEXT                                                 001040
                     NEXT=SEQLR.(READER,FR)                                      001050
                     T'O PLCKEY                                                  001060
-                   0'E                                                          001070
+                   O'E                                                          001070
                     T'O NOTYET                                                  001080
                 E'L                                                             001090
                 T'O NOTYET                                                      001100
@@ -369,7 +369,7 @@ FNDHIT                  TRANS=SEQLR.(ESRDR,ESF)                                 
                             TRANS=SEQLR.(ESRDR,ESF)                             001650
                             SUBST.(1,POINTR)                                    001660
                             T'O HIT                                             001670
-                           0'E                                                  001680
+                           O'E                                                  001680
                             SUBST.(POINT+1,POINTR)                              001690
                             T'O HIT                                             001700
                         E'L                                                     001710
