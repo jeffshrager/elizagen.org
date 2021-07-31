@@ -3,6 +3,7 @@ $s changed to "s
 ' abbreviations written out
 continued lines (with a 1 in column 7?) wrapped together
 line numbering removed
+Added lisp-like comments (;;; ;; and ;)
 
             EXTERNAL FUNCTION (KEY,MYTRAN) 
             NORMAL MODE IS INTEGER 
@@ -89,8 +90,9 @@ READ(6)     OBJCT=SEQLR.(S,F)
                 NEWTOP.(POPTOP.(INPUT),LSPNTR.(S)) 
             End Conditional 
             Transfer To CHANGE 
-           R* * * * * * * * * * END OF MODIFICATION ROUTINE 
             End Function 
+
+           R* * * * * * * * * * END OF MODIFICATION ROUTINE 
 
         TPRIN 
             EXTERNAL FUNCTION (LST) 
@@ -231,7 +233,9 @@ MLST        LIST.(MYTRAN(I))
             LIST.(MYLIST) 
             Through KEYLST, FOR I=0,1, 1 > 32 
 KEYLST      LIST.(KEY(I)) 
+
            R* * * * * * * * * * READ NEW SCRIPT 
+
 BEGIN       MTLIST.(INPUT) 
             NODLST.(INPUT) 
             LISTRD.(INPUT,SCRIPT) 
@@ -253,7 +257,9 @@ MEM             LSSCPY.(POPTOP.(INPUT),MYTRAN(I))
                 NEWBOT.(LSSCPY.(INPUT,LIST.(9)),KEY(HASH.(TOP.(INPUT),5))) 
                 Transfer To BEGIN 
             End Conditional 
+
            R* * * * * * * * * * BEGIN MAJOR LOOP 
+
 START       TREAD.(MTLIST.(INPUT),0) 
             KEYWRD=0 
             PREDNC=0 
@@ -317,7 +323,9 @@ PLCKEY              IT=READER
                     Transfer To NOTYET 
                 End Conditional 
                 Transfer To NOTYET 
+
                R* * * * * * * * * * END OF MAJOR LOOP 
+
 ENDTXT          Whenever IT = 0 
                     Whenever LIMIT = 4 AND LISTMT.(MYLIST) <> 0 
                         OUT=POPTOP.(MYLIST) 
@@ -335,7 +343,9 @@ ENDTXT          Whenever IT = 0
                     Transfer To MATCH 
                    Otherwise 
                     SEQLL.(IT,FR) 
+
                R* * * * * * * * * * MATCHING ROUTINE 
+
 MATCH               ES=SEQLR.(IT,FR) 
                     Whenever TOP.(ES) = "=" 
                         S=SEQRDR.(ES) 
@@ -356,6 +366,12 @@ SCANI                       ES=SEQLR.(S,F)
                         End Conditional 
                     End Conditional 
                     Whenever FR > 0, Transfer To NOMATCH(LIMIT) 
+
+;;; A lot of the core work is done by the complex SLIP matching and
+;;; rebuilding functions YMATCH and ASSMBL (see the latter at HIT)
+;;; These are described on pages 62L28-29 of the SLIP manual:
+;;;    https://drive.google.com/file/d/1XtF7EM1KhwMPKsp5t6F0gwN-8LsNDPOl
+
 TRY                 Whenever YMATCH.(TOP.(ES),INPUT,MTLIST.(TEST)) = 0,Transfer To MATCH 
                     ESRDR=SEQRDR.(ES) 
                     SEQLR.(ESRDR,ESF) 
@@ -379,14 +395,18 @@ FNDHIT                  TRANS=SEQLR.(ESRDR,ESF)
                             Transfer To HIT 
                         End Conditional 
                     End Conditional 
-HIT                 TXTPRT.(ASSMBL.(TRANS,TEST,MTLIST.(OUTPUT)),0) 
+HIT                 TXTPRT.(ASSMBL.(TRANS,TEST,MTLIST.(OUTPUT)),0)  ;; See above, re SLIP functions YMATCH and ASSMBL
                     Transfer To START 
                 End Conditional 
+
                R* * * * * * * * * * INSERT NEW KEYWORD LIST 
+
 NEWLST          POPTOP.(INPUT) 
                 NEWBOT.(LSSCPY.(INPUT,LIST.(9)),KEY(HASH.(TOP.(INPUT),5))) 
                 Transfer To START 
+
                R* * * * * * * * * * DUMP REVISED SCRIPT 
+
 ENDPLA          PRINT COMMENT "WHAT IS TO BE THE NUMBER OF THE NEW SCRIPT" 
                 READ FORMAT SNUMB,SCRIPT 
                 LPRINT.(INPUT,SCRIPT) 
@@ -403,7 +423,9 @@ POPMOR          Whenever LISTMT.(KEY(I)) = 0, Transfer To WRITE
 WRITE           CONTINUE 
                 LPRINT.(MTLIST.(INPUT),SCRIPT) 
                 EXIT. 
+
                R* * * * * * * * * * SCRIPT ERROR EXIT 
+
 NOMATCH(1)      PRINT COMMENT "PLEASE CONTINUE " 
                 Transfer To START 
 NOMATCH(2)      PRINT COMMENT "HMMM " 
