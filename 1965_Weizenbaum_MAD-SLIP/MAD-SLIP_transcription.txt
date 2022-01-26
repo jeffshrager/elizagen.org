@@ -8,7 +8,7 @@
             LIST.(INPUT)                                                        000040
             V'S G(1)=$TYPE$,$SUBST$,$APPEND$,$ADD$,                             000050
            1$START$,$RANK$,$DISPLA$                                             000060
-            V'S $NUMB = $ I3 *$                                                 000070
+            V'S SNUMB = $ I3 *$                                                 000070
             FIT=0                                                               000080
 CHANGE      PRINT COMMENT $PLEASE INSTRUCT ME$                                  001400
             LISTRD.(MTLIST.(INPUT),0)                                           001410

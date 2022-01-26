@@ -10,7 +10,7 @@ Added lisp-like comments (;;; ;; and ;)
             ENTRY TO CHANGE. 
             LIST.(INPUT) 
             Vector Values G(1)="TYPE","SUBST","APPEND","ADD","START","RANK","DISPLA" 
-            Vector Values "NUMB = " I3 *" 
+            Vector Values SNUMB = " I3 *" 
             FIT=0 
 CHANGE      PRINT COMMENT "PLEASE INSTRUCT ME" 
             LISTRD.(MTLIST.(INPUT),0) 
