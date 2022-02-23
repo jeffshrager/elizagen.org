@@ -223,7 +223,7 @@ NUMBER      K=A*262144                                                          
 MLST        LIST.(MYTRAN(I))                                                    000160
             MINE=0                                                              000170
             LIST.(MYLIST)                                                       000180
-            T'H KEYLST, FOR I=0,1, 1 .G. 32                                     000220
+            T'H KEYLST, FOR I=0,1, I .G. 32                                     000220
 KEYLST      LIST.(KEY(I))                                                       000230
            R* * * * * * * * * * READ NEW SCRIPT                                 000240
 BEGIN       MTLIST.(INPUT)                                                      000250
@@ -284,7 +284,7 @@ NOTYET      W'R S .L. 0                                                         
                 SCANER=SEQRDR.(KEY(I))                                          000800
                 SF=0                                                            000810
                 T'H SEARCH, FOR J=0,0, SF .G. 0                                 000820
-                CAND= SEQLR.(SCANRE,SF)                                         000830
+                CAND= SEQLR.(SCANER,SF)                                         000830
                 W'R SF .G. 0, T'O NOTYET                                        000840
 SEARCH          W'R TOP.(CAND) .E. WORD, T'O KEYFND                             000850
 KEYFND          READER=TESTS.(CAND,S)                                           000860
