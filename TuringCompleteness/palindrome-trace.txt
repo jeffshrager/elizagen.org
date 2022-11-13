@@ -1,0 +1,290 @@
+ELIZA CAN DECIDE IF A STRING OF LETTERS IS A PALINDROME. TYPE THE WORD PALP FOLLOWED BY A STRING OF A AND B LETTERS, WITH SPACES BETWEEN EACH LETTER. ELIZA WILL RESPOND TRUE IF THE STRING IS A PALINDROME, OTHERWISE ELIZA RESPONDS FALSE. EG. TYPE PALP A B B A AND ELIZA WILL RESPOND TRUE.
+
+palp a
+TRUE
+
+*
+  LIMIT: 2
+  memory stack:
+  keystack: PALP(0)
+    keyword: PALP
+    input: PALP A
+    matching decomposition: PALP A 0
+      matching reassembly: ( PRE ( * A * 3 ) ( =Q0 ) )
+  keystack: Q0(0)
+    keyword: Q0
+    input: * A *
+    matching decomposition: * 0
+      matching reassembly: ( PRE ( _ * 2 ) ( =Q0 ) )
+  keystack: Q0(0)
+    keyword: Q0
+    input: _ * A *
+    matching decomposition: 0 *
+      matching reassembly: ( PRE ( 1 * _ ) ( =Q0 ) )
+  keystack: Q0(0)
+    keyword: Q0
+    input: _ * A * _
+    matching decomposition: 0 1 * A * 1 0
+      matching reassembly: ( PRE ( 1 2 _ * 6 * 7 ) ( =Q1 ) )
+  keystack: Q1(0)
+    keyword: Q1
+    input: _ _ * _ *
+    matching decomposition: 0 *
+      matching reassembly: ( PRE ( 1 * _ ) ( =Q1 ) )
+  keystack: Q1(0)
+    keyword: Q1
+    input: _ _ * _ * _
+    matching decomposition: 0 1 * _ * 1 0
+      matching reassembly: ( PRE ( 1 * 2 * _ 6 7 ) ( =Q2 ) )
+  keystack: Q2(0)
+    keyword: Q2
+    input: _ * _ * _ _
+    matching decomposition: 0 1 * _ * 1 0
+      matching reassembly: =QACCEPT
+  keystack: QACCEPT(0)
+    keyword: QACCEPT
+    input: _ * _ * _ _
+    matching decomposition: 0
+      matching reassembly: TRUE
+
+palp a b
+FALSE
+
+*
+  LIMIT: 3
+  memory stack:
+  keystack: PALP(0)
+    keyword: PALP
+    input: PALP A B
+    matching decomposition: PALP A 0
+      matching reassembly: ( PRE ( * A * 3 ) ( =Q0 ) )
+  keystack: Q0(0)
+    keyword: Q0
+    input: * A * B
+    matching decomposition: * 0
+      matching reassembly: ( PRE ( _ * 2 ) ( =Q0 ) )
+  keystack: Q0(0)
+    keyword: Q0
+    input: _ * A * B
+    matching decomposition: 0 1 * A * 1 0
+      matching reassembly: ( PRE ( 1 2 _ * 6 * 7 ) ( =Q1 ) )
+  keystack: Q1(0)
+    keyword: Q1
+    input: _ _ * B *
+    matching decomposition: 0 *
+      matching reassembly: ( PRE ( 1 * _ ) ( =Q1 ) )
+  keystack: Q1(0)
+    keyword: Q1
+    input: _ _ * B * _
+    matching decomposition: 0 1 * B * 1 0
+      matching reassembly: ( PRE ( 1 2 B * 6 * 7 ) ( =Q1 ) )
+  keystack: Q1(0)
+    keyword: Q1
+    input: _ _ B * _ *
+    matching decomposition: 0 *
+      matching reassembly: ( PRE ( 1 * _ ) ( =Q1 ) )
+  keystack: Q1(0)
+    keyword: Q1
+    input: _ _ B * _ * _
+    matching decomposition: 0 1 * _ * 1 0
+      matching reassembly: ( PRE ( 1 * 2 * _ 6 7 ) ( =Q2 ) )
+  keystack: Q2(0)
+    keyword: Q2
+    input: _ _ * B * _ _
+    matching decomposition: 0 1 * B * 1 0
+      matching reassembly: =QREJECT
+  keystack: QREJECT(0)
+    keyword: QREJECT
+    input: _ _ * B * _ _
+    matching decomposition: 0
+      matching reassembly: FALSE
+
+palp a b a
+TRUE
+
+*
+  LIMIT: 4
+  memory stack:
+  keystack: PALP(0)
+    keyword: PALP
+    input: PALP A B A
+    matching decomposition: PALP A 0
+      matching reassembly: ( PRE ( * A * 3 ) ( =Q0 ) )
+  keystack: Q0(0)
+    keyword: Q0
+    input: * A * B A
+    matching decomposition: * 0
+      matching reassembly: ( PRE ( _ * 2 ) ( =Q0 ) )
+  keystack: Q0(0)
+    keyword: Q0
+    input: _ * A * B A
+    matching decomposition: 0 1 * A * 1 0
+      matching reassembly: ( PRE ( 1 2 _ * 6 * 7 ) ( =Q1 ) )
+  keystack: Q1(0)
+    keyword: Q1
+    input: _ _ * B * A
+    matching decomposition: 0 1 * B * 1 0
+      matching reassembly: ( PRE ( 1 2 B * 6 * 7 ) ( =Q1 ) )
+  keystack: Q1(0)
+    keyword: Q1
+    input: _ _ B * A *
+    matching decomposition: 0 *
+      matching reassembly: ( PRE ( 1 * _ ) ( =Q1 ) )
+  keystack: Q1(0)
+    keyword: Q1
+    input: _ _ B * A * _
+    matching decomposition: 0 1 * A * 1 0
+      matching reassembly: ( PRE ( 1 2 A * 6 * 7 ) ( =Q1 ) )
+  keystack: Q1(0)
+    keyword: Q1
+    input: _ _ B A * _ *
+    matching decomposition: 0 *
+      matching reassembly: ( PRE ( 1 * _ ) ( =Q1 ) )
+  keystack: Q1(0)
+    keyword: Q1
+    input: _ _ B A * _ * _
+    matching decomposition: 0 1 * _ * 1 0
+      matching reassembly: ( PRE ( 1 * 2 * _ 6 7 ) ( =Q2 ) )
+  keystack: Q2(0)
+    keyword: Q2
+    input: _ _ B * A * _ _
+    matching decomposition: 0 1 * A * 1 0
+      matching reassembly: ( PRE ( 1 * 2 * _ 6 7 ) ( =Q3 ) )
+  keystack: Q3(0)
+    keyword: Q3
+    input: _ _ * B * _ _ _
+    matching decomposition: 0 1 * B * 1 0
+      matching reassembly: ( PRE ( 1 * 2 * B 6 7 ) ( =Q3 ) )
+  keystack: Q3(0)
+    keyword: Q3
+    input: _ * _ * B _ _ _
+    matching decomposition: 0 1 * _ * 1 0
+      matching reassembly: ( PRE ( 1 2 _ * 6 * 7 ) ( =Q0 ) )
+  keystack: Q0(0)
+    keyword: Q0
+    input: _ _ * B * _ _ _
+    matching decomposition: 0 1 * B * 1 0
+      matching reassembly: ( PRE ( 1 2 _ * 6 * 7 ) ( =Q4 ) )
+  keystack: Q4(0)
+    keyword: Q4
+    input: _ _ _ * _ * _ _
+    matching decomposition: 0 1 * _ * 1 0
+      matching reassembly: ( PRE ( 1 * 2 * _ 6 7 ) ( =Q5 ) )
+  keystack: Q5(0)
+    keyword: Q5
+    input: _ _ * _ * _ _ _
+    matching decomposition: 0 1 * _ * 1 0
+      matching reassembly: =QACCEPT
+  keystack: QACCEPT(0)
+    keyword: QACCEPT
+    input: _ _ * _ * _ _ _
+    matching decomposition: 0
+      matching reassembly: TRUE
+
+palp a b b a
+TRUE
+
+*
+  LIMIT: 1
+  memory stack:
+  keystack: PALP(0)
+    keyword: PALP
+    input: PALP A B B A
+    matching decomposition: PALP A 0
+      matching reassembly: ( PRE ( * A * 3 ) ( =Q0 ) )
+  keystack: Q0(0)
+    keyword: Q0
+    input: * A * B B A
+    matching decomposition: * 0
+      matching reassembly: ( PRE ( _ * 2 ) ( =Q0 ) )
+  keystack: Q0(0)
+    keyword: Q0
+    input: _ * A * B B A
+    matching decomposition: 0 1 * A * 1 0
+      matching reassembly: ( PRE ( 1 2 _ * 6 * 7 ) ( =Q1 ) )
+  keystack: Q1(0)
+    keyword: Q1
+    input: _ _ * B * B A
+    matching decomposition: 0 1 * B * 1 0
+      matching reassembly: ( PRE ( 1 2 B * 6 * 7 ) ( =Q1 ) )
+  keystack: Q1(0)
+    keyword: Q1
+    input: _ _ B * B * A
+    matching decomposition: 0 1 * B * 1 0
+      matching reassembly: ( PRE ( 1 2 B * 6 * 7 ) ( =Q1 ) )
+  keystack: Q1(0)
+    keyword: Q1
+    input: _ _ B B * A *
+    matching decomposition: 0 *
+      matching reassembly: ( PRE ( 1 * _ ) ( =Q1 ) )
+  keystack: Q1(0)
+    keyword: Q1
+    input: _ _ B B * A * _
+    matching decomposition: 0 1 * A * 1 0
+      matching reassembly: ( PRE ( 1 2 A * 6 * 7 ) ( =Q1 ) )
+  keystack: Q1(0)
+    keyword: Q1
+    input: _ _ B B A * _ *
+    matching decomposition: 0 *
+      matching reassembly: ( PRE ( 1 * _ ) ( =Q1 ) )
+  keystack: Q1(0)
+    keyword: Q1
+    input: _ _ B B A * _ * _
+    matching decomposition: 0 1 * _ * 1 0
+      matching reassembly: ( PRE ( 1 * 2 * _ 6 7 ) ( =Q2 ) )
+  keystack: Q2(0)
+    keyword: Q2
+    input: _ _ B B * A * _ _
+    matching decomposition: 0 1 * A * 1 0
+      matching reassembly: ( PRE ( 1 * 2 * _ 6 7 ) ( =Q3 ) )
+  keystack: Q3(0)
+    keyword: Q3
+    input: _ _ B * B * _ _ _
+    matching decomposition: 0 1 * B * 1 0
+      matching reassembly: ( PRE ( 1 * 2 * B 6 7 ) ( =Q3 ) )
+  keystack: Q3(0)
+    keyword: Q3
+    input: _ _ * B * B _ _ _
+    matching decomposition: 0 1 * B * 1 0
+      matching reassembly: ( PRE ( 1 * 2 * B 6 7 ) ( =Q3 ) )
+  keystack: Q3(0)
+    keyword: Q3
+    input: _ * _ * B B _ _ _
+    matching decomposition: 0 1 * _ * 1 0
+      matching reassembly: ( PRE ( 1 2 _ * 6 * 7 ) ( =Q0 ) )
+  keystack: Q0(0)
+    keyword: Q0
+    input: _ _ * B * B _ _ _
+    matching decomposition: 0 1 * B * 1 0
+      matching reassembly: ( PRE ( 1 2 _ * 6 * 7 ) ( =Q4 ) )
+  keystack: Q4(0)
+    keyword: Q4
+    input: _ _ _ * B * _ _ _
+    matching decomposition: 0 1 * B * 1 0
+      matching reassembly: ( PRE ( 1 2 B * 6 * 7 ) ( =Q4 ) )
+  keystack: Q4(0)
+    keyword: Q4
+    input: _ _ _ B * _ * _ _
+    matching decomposition: 0 1 * _ * 1 0
+      matching reassembly: ( PRE ( 1 * 2 * _ 6 7 ) ( =Q5 ) )
+  keystack: Q5(0)
+    keyword: Q5
+    input: _ _ _ * B * _ _ _
+    matching decomposition: 0 1 * B * 1 0
+      matching reassembly: ( PRE ( 1 * 2 * _ 6 7 ) ( =Q3 ) )
+  keystack: Q3(0)
+    keyword: Q3
+    input: _ _ * _ * _ _ _ _
+    matching decomposition: 0 1 * _ * 1 0
+      matching reassembly: ( PRE ( 1 2 _ * 6 * 7 ) ( =Q0 ) )
+  keystack: Q0(0)
+    keyword: Q0
+    input: _ _ _ * _ * _ _ _
+    matching decomposition: 0 1 * _ * 1 0
+      matching reassembly: =QACCEPT
+  keystack: QACCEPT(0)
+    keyword: QACCEPT
+    input: _ _ _ * _ * _ _ _
+    matching decomposition: 0
+      matching reassembly: TRUE
+
