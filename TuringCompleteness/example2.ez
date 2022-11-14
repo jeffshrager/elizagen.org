@@ -1,0 +1,100 @@
+; "II. As a slightly more difficult example we can construct a machine
+; to compute the sequence 001011011101111011111... ."
+; Turing's Example II, On Computable Numbers, Nov. 12, 1936, page 234
+
+
+(TYPE EX2)
+
+(EX2
+    ((0)
+        (PRE (E E * O * _ O) (=QO))))
+
+
+; Q=current state
+; R=read this symbol at head
+; W=write this symbol at head (blank means don't write anything)
+; M=move head left (L) or right (R), or blank for don't move head
+; Q'=new state
+;
+; In state Q, when the symbol at the head is R, then write W, move M
+; and set the new state to Q'
+
+                                                        ; Q   R  W  M  Q'
+(QO
+    ((* 0) (PRE (_ * 2) (=QO)))
+    ((0 *) (PRE (1 * _) (=QO)))
+    ((0 1 * O * 1 0) (=QQ))                             ; QO  O        QQ
+    ((0 1 * I * 1 0) (PRE (1   2   I * 6 * 7) (=QO1)))) ; QO  I     R  QO1
+
+(QO1
+    ((* 0) (PRE (_ * 2) (=QO1)))
+    ((0 *) (PRE (1 * _) (=QO1)))
+    ((0 1 * 1 * 1 0) (PRE (1 * 2 * X   6   7) (=QO2)))) ; QO1 ?  X  L  QO2
+
+(QO2
+    ((* 0) (PRE (_ * 2) (=QO2)))
+    ((0 *) (PRE (1 * _) (=QO2)))
+    ((0 1 * 1 * 1 0) (PRE (1 * 2 * 4   6   7) (=QO3)))) ; QO2 ?     L  QO3
+
+(QO3
+    ((* 0) (PRE (_ * 2) (=QO3)))
+    ((0 *) (PRE (1 * _) (=QO3)))
+    ((0 1 * 1 * 1 0) (PRE (1 * 2 * 4   6   7) (=QO))))  ; QO3 ?     L  QO
+
+
+(QQ
+    ((* 0) (PRE (_ * 2) (=QQ)))
+    ((0 *) (PRE (1 * _) (=QQ)))
+    ((0 1 * _ * 1 0) (PRE (1 * 2 * I   6   7) (=QP)))   ; QQ  _  I  L  QP
+    ((0 1 * 1 * 1 0) (PRE (1   2   4 * 6 * 7) (=QQ1)))) ; QQ  ?     R  QQ1
+
+(QQ1
+    ((* 0) (PRE (_ * 2) (=QQ1)))
+    ((0 *) (PRE (1 * _) (=QQ1)))
+    ((0 1 * 1 * 1 0) (PRE (1   2   4 * 6 * 7) (=QQ))))  ; QQ1  ?    R  QQ
+
+
+(QP
+    ((* 0) (PRE (_ * 2) (=QP)))
+    ((0 *) (PRE (1 * _) (=QP)))
+    ((0 1 * X * 1 0) (PRE (1   2   _ * 6 * 7) (=QQ)))   ; QP  X  _  R  QQ
+    ((0 1 * E * 1 0) (PRE (1   2   E * 6 * 7) (=QF)))   ; QP  E  _  R  QF
+    ((0 1 * _ * 1 0) (PRE (1 * 2 * _   6   7) (=QP1)))) ; QP  _     L  QP1
+
+(QP1
+    ((* 0) (PRE (_ * 2) (=QP1)))
+    ((0 *) (PRE (1 * _) (=QP1)))
+    ((0 1 * 1 * 1 0) (PRE (1 * 2 * 4   6   7) (=QP))))  ; QP1  ?    L  QP
+
+
+(QF
+    ((* 0) (PRE (_ * 2) (=QF)))
+    ((0 *) (PRE (1 * _) (=QF)))
+    ((0 1 * _ * 1 0) (PRE (1 * 2 * O   6   7) (=QF1)))  ; QF  _  O  L  QF1
+    ((0 1 * 1 * 1 0) (PRE (1   2   4 * 6 * 7) (=QF2)))) ; QF  ?     R  QF2
+
+(QF1
+    ((* 0) (PRE (_ * 2) (=QF1)))
+    ((0 *) (PRE (1 * _) (=QF1)))
+    ((0 1 * 1 * 1 0) (PRE (1 * 2 * 4   6   7) (=QO))))  ; QP1  ?    L  QO
+
+(QF2
+    ((* 0) (PRE (_ * 2) (=QF2)))
+    ((0 *) (PRE (1 * _) (=QF2)))
+    ((0 1 * 1 * 1 0) (PRE (1   2   4 * 6 * 7) (=QF))))  ; QF2  ?    R  QF
+
+
+
+(NONE
+    ((0)
+        (TRY TYPING EX2)))
+
+(TURING
+    ((0)
+        (MACHINE)))
+
+(MEMORY TURING
+    (0 = TURING MACHINE)
+    (0 = TURING MACHINE)
+    (0 = TURING MACHINE)
+    (0 = TURING MACHINE))

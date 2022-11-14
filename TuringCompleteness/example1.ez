@@ -1,0 +1,54 @@
+; "I. A machine can be constructed to compute the sequence 010101... ."
+; Turing's Example I, On Computable Numbers, Nov. 12, 1936, page 233
+
+
+(TYPE EX1)
+
+(EX1
+    ((0)
+        (PRE (* _ *) (=B))))
+
+
+; Q=current state
+; R=read this symbol at head
+; W=write this symbol at head (blank means don't write anything)
+; M=move head left (L) or right (R), or blank for don't move head
+; Q'=new state
+;
+; In state Q, when the symbol at the head is R, then write W, move M
+; and set the new state to Q'
+
+                                                      ; Q   R  W  M  Q'
+(B
+    ((* 0) (PRE (_ * 2) (=B)))
+    ((0 *) (PRE (1 * _) (=B)))
+    ((0 1 * _ * 1 0) (PRE (1   2   O * 6 * 7) (=C)))) ; B   _  O  R  C
+
+(C
+    ((* 0) (PRE (_ * 2) (=C)))
+    ((0 *) (PRE (1 * _) (=C)))
+    ((0 1 * _ * 1 0) (PRE (1   2   _ * 6 * 7) (=E)))) ; C   _     R  E
+
+(E
+    ((* 0) (PRE (* _ 2) (=E)))
+    ((0 *) (PRE (1 * _) (=E)))
+    ((0 1 * _ * 1 0) (PRE (1   2   I * 6 * 7) (=F)))) ; E   _  I  R  F
+
+(F
+    ((* 0) (PRE (_ * 2) (=F)))
+    ((0 *) (PRE (1 * _) (=F)))
+    ((0 1 * _ * 1 0) (PRE (1   2   _ * 6 * 7) (=B)))) ; F   _     R  B
+
+(NONE
+    ((0)
+        (TRY TYPING EX1)))
+
+(TURING
+    ((0)
+        (MACHINE)))
+
+(MEMORY TURING
+    (0 = TURING MACHINE)
+    (0 = TURING MACHINE)
+    (0 = TURING MACHINE)
+    (0 = TURING MACHINE))
