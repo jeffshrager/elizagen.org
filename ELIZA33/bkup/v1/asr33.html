@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>audio test</title>
+  <script>
+
+    const okchars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ., ";
+
+    // In order to permit rapid key pressing, we need multiple instances
+    // of the audio, otherwise it'll skip. 
+    var whichkey = 0;
+    const nkeys = 10;
+    // (I tried to do this with a comprehesion but couldn't figure out how.)
+    const keypresses = Array(nkeys).fill().map(() => new Audio("asr33keypress.wav"));
+
+    var keylocs = [];
+
+    const typingspeed = 100;
+
+    function playkeypress(){
+	keypresses[whichkey++].play();
+	if (whichkey == nkeys) whichkey = 0;
+    }
+
+    function typeWriter(text, index) {
+      if (index < text.length) {
+	playkeypress();
+        let nextchar = text.charAt(index);
+        document.getElementById('textField').value += nextchar;
+        setTimeout(function() {
+          typeWriter(text, index + 1);
+        }, typingspeed); 
+      }
+    }
+
+    var input = "";
+
+    function ELIZAresponse(input) {
+        return("\nYou wrote: " + input+"\n");
+    }
+
+    function reactKey(key) {
+	const keycode = key.keyCode;
+	const char = String.fromCharCode(keycode);
+        if (okchars.includes(char)){
+          playkeypress();
+	  flashKey(char);
+	  input += char;
+  	  document.getElementById('textField').value += char;
+	} else
+	    if(keycode == 13) {
+              typeWriter(ELIZAresponse(input),0);
+              input = "";
+  	 } else {}
+	}
+
+    document.onkeydown = function(key){reactKey(key);}
+
+    document.addEventListener("DOMContentLoaded", function() {
+    var canvas = document.getElementById('myCanvas');
+    var ctx = canvas.getContext('2d');
+    var y = 10;
+    for (row of ["QWERTYUIOP","ASDFGHJKL","ZXCVBNM,."]){
+        y = y + 60;
+        var x = 10+(y/4);
+        for (letter of row) {
+            x = x + 50;
+            var radius = 20;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            ctx.fillStyle = 'rgba(4, 10, 100, 0.5)'; // Semi-transparent circles
+            ctx.fill();
+            ctx.font = `${radius}px Arial`; // Adjust font size based on radius
+            ctx.fillStyle = 'white'; // Letter color
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(letter, x, y);
+	    keylocs.push([letter,x,y]);
+    }
+    }
+    // !!!!!!!! This doesn't work because there's a "no autoplay" blocker that doesn't
+    // let you play audio before the used interacts with the web page!
+    // typeWriter("Welcome! What can I do for you today?",0);
+    // Adding a "Start ELIZA" button is one way to fix this.
+    })
+
+    function flashKey(letter) {
+        // Some of this can be made global, but it has to be done after domload, and I'm lazy.
+        var canvas = document.getElementById('myCanvas');
+        var ctx = canvas.getContext('2d');
+        var flashInterval = 100; // Interval in milliseconds
+        var flashTimes = 1; // Number of times to flash
+        var currentFlash = 0;
+        
+        var intervalId = setInterval(function() {
+            var key = keylocs.find(k => k[0] === letter);
+            if (!key) {
+                clearInterval(intervalId); // Stop if key not found
+                return;
+            }
+
+            if (currentFlash % 2 === 0) {
+                // Draw circle in a different color to "flash"
+                ctx.beginPath();
+                ctx.arc(key[1], key[2], key[3], 0, 2 * Math.PI);
+                ctx.fillStyle = 'yellow'; // Flash color
+                ctx.fill();
+
+                // Redraw letter
+                ctx.font = `${key[3]}px Arial`;
+                ctx.fillStyle = 'black'; // Letter color for visibility
+                ctx.fillText(key[0], key[1], key[2]);
+            } else {
+                // Redraw original circle and letter
+                ctx.beginPath();
+                ctx.arc(key[1], key[2], key[3], 0, 2 * Math.PI);
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.fill();
+                
+                // Redraw letter
+                ctx.fillStyle = 'white';
+                ctx.fillText(key[0], key[1], key[2]);
+            }
+
+            currentFlash++;
+            if (currentFlash >= flashTimes * 2) {
+                clearInterval(intervalId); // Stop flashing
+            }
+        }, flashInterval);
+    }
+
+</script>
+</head>
+<body>
+    <textarea id="textField" style="width: 600px; height: 300px" readonly> </textarea>
+    <br>
+    <canvas id="myCanvas" width="600" height="400" style="border:1px solid #000000;">
+</body>
+</html>

@@ -1,0 +1,3073 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>audio test</title>
+
+  <script>
+
+/*  Joseph Weizenbaum created ELIZA sixty years ago and described its
+    operation in a paper published in the January 1966 edition of
+    Communications of the Association of Computing Machinery.  This
+    webpage is an attempt to recreate the experience of talking to ELIZA.
+    We believe that the responses to user inputs are exactly the same
+    as Weizenbaum's 1966 ELIZA running his DOCTOR script would have been.
+
+    The Github repo for this code is https://github.com/anthay/ELIZA
+    The website for the best book about ELIZA is at findingeliza.org
+    There is lots more about ELIZA at elizagen.org
+*/
+
+
+/*
+    0.95 Anthony Hay        2024-01-14  Add *full; fix font colour bug
+    0.94 Max Hay            2024-01-04  Improve console focus gain
+    0.93 Anthony Hay        2023-12-16  Recreate bug in SLIP YMATCH
+    0.91 Anthony Hay        2023-11-21  Add *fontsize
+    0.90 Anthony Hay        2023-11-17  Add *load, *tracepre, *maxtran, *clear
+    0.00 Ant & Max Hay      2023-10-31  Initial version (with thanks to
+                                        Mark C. Marino & ChatGPT4 for help
+                                        with the initial conversion from C++)
+*/
+const VERSION = '0.95';
+
+
+//////// //       //// ////////    ///    //        ///////   //////   ////  //////  
+//       //        //       //    // //   //       //     // //    //   //  //    // 
+//       //        //      //    //   //  //       //     // //         //  //       
+//////   //        //     //    //     // //       //     // //   ////  //  //       
+//       //        //    //     ///////// //       //     // //    //   //  //       
+//       //        //   //      //     // //       //     // //    //   //  //    // 
+//////// //////// //// //////// //     // ////////  ///////   //////   ////  //////  
+
+
+const HOLLERITH_UNDEFINED = 0xFF; // (must be > 63)
+const HOLLERITHENCODING_TABLE_SIZE = 256;
+
+// This table maps ordinary character code units to their Hollerith
+// encoding, or HOLLERITH_UNDEFINED if that character does not exist
+// in the Hollerith character set.
+const hollerithEncoding = (() => {
+    // Define the static BCD array
+    const bcd = [
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 0, '=', '\'', 0, 0, 0,
+        '+', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 0, '.', ')',  0, 0, 0,
+        '-', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 0, '$', '*',  0, 0, 0,
+        ' ', '/', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 0, ',', '(',  0, 0, 0
+    ];
+
+    let toBcd = Array(HOLLERITHENCODING_TABLE_SIZE).fill(HOLLERITH_UNDEFINED);
+    for (let c = 0; c < 64; c++) {
+        if (bcd[c]) {
+            toBcd[bcd[c].charCodeAt(0)] = c;
+        }
+    }
+    return toBcd;
+})();
+
+// Return true iff given c is in the Hollerith character set
+function hollerithDefined(c) {
+    const code = c.charCodeAt(0);
+    if (code >= HOLLERITHENCODING_TABLE_SIZE)
+        return false;
+    return hollerithEncoding[code] !== HOLLERITH_UNDEFINED;
+}
+
+
+function utf32ArrayFromString(s) {
+    console.assert(typeof(s) === "string");
+    let result = [];
+    for (let i = 0; i < s.length; ) {
+        const u = s.charCodeAt(i++);
+        if (u < 0xd800)
+            result.push(u);
+        else if (u > 0xdfff)
+            result.push(u);
+        else {
+            console.assert(i < s.length);
+            const v = s.charCodeAt(i++);
+            result.push(0x10000 + (u - 0xd800) * 0x400 + (v - 0xdc00));
+        }
+    }
+    return result;
+}
+
+
+// return given string with non-Hollerith characters replaced
+// by Hollerith alternatives, where possible, or '-' otherwise
+function filterBcd(s) {
+    let result = "";
+    const nonBcdReplacementChar = '-';
+    const utf32 = utf32ArrayFromString(s);
+    for (let c32 of utf32) {
+        switch (c32) {
+        case 0x2018:        // 'LEFT SINGLE QUOTATION MARK' (U+2018)
+        case 0x2019:        // 'RIGHT SINGLE QUOTATION MARK' (U+2019)
+        case 0x0022:        // 'QUOTATION MARK' (U+0022)
+        case 0x0060:        // 'GRAVE ACCENT' (U+0060) [backtick]
+        case 0x00AB:        // 'LEFT-POINTING DOUBLE ANGLE QUOTATION MARK' (U+00AB)
+        case 0x00BB:        // 'RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK' (U+00BB)
+        case 0x201A:        // 'SINGLE LOW-9 QUOTATION MARK' (U+201A)
+        case 0x201B:        // 'SINGLE HIGH-REVERSED-9 QUOTATION MARK' (U+201B)
+        case 0x201C:        // 'LEFT DOUBLE QUOTATION MARK' (U+201C)
+        case 0x201D:        // 'RIGHT DOUBLE QUOTATION MARK' (U+201D)
+        case 0x201E:        // 'DOUBLE LOW-9 QUOTATION MARK' (U+201E)
+        case 0x201F:        // 'DOUBLE HIGH-REVERSED-9 QUOTATION MARK' (U+201F)
+        case 0x2039:        // 'SINGLE LEFT-POINTING ANGLE QUOTATION MARK' (U+2039)
+        case 0x203A:        // 'SINGLE RIGHT-POINTING ANGLE QUOTATION MARK' (U+203A)
+            result += '\''; //   => 'APOSTROPHE' (U+0027)
+            continue;
+        default:
+            break;
+        }
+        if (c32 > 127) {
+            result += nonBcdReplacementChar;
+            continue;
+        }
+        const c = String.fromCodePoint(c32).toUpperCase();
+        if (c == '?' || c == '!')
+            result += '.';
+        else if (!hollerithDefined(c))
+            result += nonBcdReplacementChar;
+        else
+            result += c;
+    }
+    return result;
+}
+
+
+// Return true iff given c is delimiter (see delimiter())
+function delimiterCharacter(c) {
+    return c === ',' || c === '.';
+}
+
+
+// Return true iff given s is an ELIZA delimiter
+function delimiter(s) {
+    console.assert(typeof(s) === "string");
+    return s === "BUT" || (s.length === 1 && delimiterCharacter(s[0]));
+}
+
+
+// Split given string s into a list of "words"; delimiters are words
+// e.g. split("one   two, three.") -> ["one", "two", ",", "three", "."]
+function split(s) {
+    console.assert(typeof(s) === "string");
+    let result = [];
+    let word = "";
+    for (let ch of s) {
+        if (delimiterCharacter(ch) || ch === ' ') {
+            if (word) {
+                result.push(word);
+                word = "";
+            }
+            if (ch !== ' ') {
+                result.push(ch);
+            }
+        } else {
+            word += ch;
+        }
+    }
+    if (word) {
+        result.push(word);
+    }
+    return result;
+}
+
+
+// Join given words into one space separated string
+// e.g. join(["one", "two", "", "3"]) -> "one two 3"
+function join(words) {
+    console.assert(Array.isArray(words));
+    return words.filter(str => str.trim() !== "").join(" ");
+}
+
+
+// Return numeric value of given s or -1, e.g. toInt("2") -> 2, toInt("two") -> -1
+function toInt(s) {
+    console.assert(typeof(s) === "string");
+    let result = 0;
+    for (let c of s) {
+        if (!isNaN(c)) { // Check if character is a digit
+            result = 10 * result + parseInt(c);
+        } else {
+            return -1;
+        }
+    }
+    return result;
+}
+
+
+// e.g. inlist("DEPRESSED", "(*SAD HAPPY DEPRESSED)") -> true
+// e.g. inlist("FATHER", "(/FAMILY)") -> true (assuming tags("FAMILY") -> "... FATHER ...")
+function inlist(word, wordlist, tags) {
+    console.assert(typeof(word) === "string");
+    console.assert(typeof(wordlist) === "string");
+    console.assert(tags instanceof Map);
+    if (wordlist.endsWith(')')) {
+        wordlist = wordlist.slice(0, -1);
+    }
+    if (wordlist.startsWith('(')) {
+        wordlist = wordlist.substring(1);
+    }
+    wordlist = wordlist.trim();
+
+    if (wordlist.startsWith('*')) { // (*SAD HAPPY DEPRESSED)
+        // without bug:
+        //return wordlist.substring(1).trim().split(' ').includes(word);
+
+        // to recreate bug apparently in original SLIP YMATCH:
+        const t = wordlist.substring(1).trim().split(' ');
+        const word6 = word.substring(0, 6);
+        for (const w of t) {
+            for (let i = 0; i < w.length; i += 6) {
+                if (w.substring(i, i + 6) === word6)
+                    return true;
+            }
+        }
+        return false;
+    }
+    else if (wordlist.startsWith('/')) { // (/NOUN FAMILY)
+        const t = wordlist.substring(1).trim().split(' ');
+        for (const tag of t) {
+            if (tags.has(tag)) {
+                if (tags.get(tag).includes(word)) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+
+/*  return true iff words match pattern; if they match, matchingComponents
+    are the actual matched words, one for each element of pattern
+
+    e.g. match(tags, [0, YOU, (* WANT NEED), 0], [YOU, NEED, NICE, FOOD], mc) -> true
+      with mc = [<empty>, YOU, NEED, NICE FOOD]
+
+    Note that grouped words in pattern, such as (* WANT NEED), must be presented
+    as a single stringlist entry. */
+function match(tags, p, w) {
+    let pattern = p.slice();
+    let words = w.slice();
+
+    let matchingComponents = [];
+    if (pattern.length === 0) {
+        return [words.length === 0, matchingComponents];
+    }
+
+    let patword = pattern.shift();
+    let n = toInt(patword);
+
+    if (n < 0) { // patword is e.g. "ARE" or "(*SAD HAPPY DEPRESSED)"
+        if (words.length === 0) {
+            return [false]; // patword cannot match nothing
+        }
+        let currentWord = words.shift();
+        if (patword.startsWith('(')) {
+            // patword is a group, is currentWord in that group?
+            if (!inlist(currentWord, patword, tags)) {
+                return [false]; // patword cannot match nothing
+            }
+        } else if (patword !== currentWord) {
+            return [false]; // patword is a single word and it doesn't match
+        }
+
+        // so far so good; can we match remainder of pattern with remainder of words?
+        let [success, mc] = match(tags, pattern, words);
+        if (success) {
+            matchingComponents.push(currentWord);
+            matchingComponents.push(...mc);
+            return [true, matchingComponents];
+        }
+    } else if (n === 0) { // 0 matches zero or more of any words
+        let component = [];
+        let mc;
+        while (true) {
+            [success, mc] = match(tags, pattern, words);
+            if (success) {
+                matchingComponents.push(join(component));
+                matchingComponents.push(...mc);
+                return [true, matchingComponents];
+            }
+            if (words.length === 0) {
+                return [false];
+            }
+            component.push(words.shift());
+        }
+    } else { // match exactly n of any words [page 38 (a)]
+        if (words.length < n) {
+            return [false];
+        }
+        let component = [];
+        for (let i = 0; i < n; i++) {
+            component.push(words.shift());
+        }
+        let [success, mc] = match(tags, pattern, words);
+        if (success) {
+            matchingComponents.push(join(component));
+            matchingComponents.push(...mc);
+            return [true, matchingComponents];
+        }
+    }
+    return [false];
+}
+
+
+// return words constructed from given reassemblyRule and components
+// e.g. reassemble([ARE, YOU, 1], [MAD, ABOUT YOU]) -> [ARE, YOU, MAD]
+function reassemble(reassemblyRule, components) {
+    console.assert(Array.isArray(reassemblyRule));
+    console.assert(Array.isArray(components));
+    let result = [];
+    for (let r of reassemblyRule) {
+        let n = toInt(r);
+        if (n < 0) {
+            result.push(r);
+        } else if (n === 0 || n > components.length) {
+            result.push("THINGY"); // script error: index out of range (in the style of HMMM)
+        } else {
+            let expanded = split(components[n - 1]);
+            result = result.concat(expanded);
+        }
+    }
+    return result;
+}
+
+
+// recreate the SLIP HASH function: return an n-bit hash value for
+// the given 36-bit datum d, for values of n in range 0..15
+function hash(d, n) {
+    console.assert(0 <= n && n <= 15)
+
+    d &= BigInt("0x7FFFFFFFF");
+    d *= d;
+    d >>= 35n - BigInt(Math.floor(n / 2));
+    return Number(d & (BigInt(1) << BigInt(n)) - 1n);
+}
+
+
+// return the 36-bit Hollerith encoding of the word s, appropriately
+// space padded, or the last chunk of the word if over 6 characters long
+function lastChunkAsBcd(s) {
+    let result = BigInt(0);
+
+    const append = (c) => {
+        console.assert(hollerithDefined(c));
+        result = (result << BigInt(6) | BigInt(hollerithEncoding[c.charCodeAt(0)]));
+    };
+
+    let count = 0;
+    if (s) {
+        for (let c of s.slice(Math.floor((s.length - 1) / 6) * 6)) {
+            append(c);
+            count++;
+        }
+    }
+    while (count++ < 6) {
+        append(' ');
+    }
+
+    return result;
+}
+
+
+
+const SPECIAL_RULE_NONE = "zNONE";
+
+const ACTION_INAPPLICABLE = 0; // no transformation could be performed
+const ACTION_COMPLETE     = 1; // transformation of input is complete
+const ACTION_NEWKEY       = 2; // request caller try next keyword in keystack
+const ACTION_LINKKEY      = 3; // request caller try returned keyword
+
+const TRACE_PREFIX = ' | ';
+
+
+// decomposition and associated reassembly rules
+class Transform {
+    constructor(decomposition = [], reassemblyRules = []) {
+        this.decomposition = decomposition;
+        this.reassemblyRules = reassemblyRules;
+        this.nextReassemblyRule = 0;
+    }
+};
+
+
+class RuleKeyword {
+    constructor(keyword = "", wordSubstitution = "", precedence = 0, tags = [], linkKeyword = "") {
+        this.keyword = keyword;
+        this.wordSubstitution = wordSubstitution;
+        this.precedence = precedence;
+        this.tags = tags;
+        this.linkKeyword = linkKeyword;
+        this.transforms = [];
+        this.trace = '';
+    }
+    setKeyword(keyword) {
+        this.keyword = keyword;
+    }
+    addTransformationRule(decomposition, reassemblyRules) {
+        this.transforms.push(new Transform(decomposition, reassemblyRules));
+    }
+    getPrecedence() {
+        return this.precedence;
+    }
+    getKeyword() {
+        return this.keyword;
+    }
+    applyWordSubstitution(word) {
+        if (!this.wordSubstitution || word !== this.keyword)
+            return word;
+        return this.wordSubstitution;
+    }
+    dlistTags() {
+        return this.tags;
+    }
+    hasTransformation() {
+        return this.transforms.length > 0 || !!this.linkKeyword;
+    }
+    applyTransformation(words, tags) {
+        this.trace =
+            TRACE_PREFIX + 'keyword: ' + this.keyword + '\n' +
+            TRACE_PREFIX + 'input: ' + join(words) + '\n';
+        let constituents = [];
+
+        let r = 0;
+        while (r < this.transforms.length) {
+            [success, constituents] = match(tags, this.transforms[r].decomposition, words);
+            if (success)
+                break;
+            r++;
+        }
+
+        if (r === this.transforms.length) {
+            if (this.linkKeyword.length === 0) {
+                this.trace += TRACE_PREFIX + 'ill-formed script? No decomposition rule matches\n';
+                return [ACTION_INAPPLICABLE]; // [page 39 (f)] should not happen?
+            }
+
+            this.trace += TRACE_PREFIX + 'reference to equivalence class: ' + this.linkKeyword + '\n';
+            return [ACTION_LINKKEY, words, this.linkKeyword];
+        }
+
+        let rule = this.transforms[r];
+        const reassemblyRule = rule.reassemblyRules[rule.nextReassemblyRule];
+
+        this.trace += TRACE_PREFIX + 'matching decompose pattern: ' + join(rule.decomposition) + '\n';
+        this.trace += TRACE_PREFIX + 'decomposition parts: ';
+        for (let id = 0; id < constituents.length; ++id) {
+            if (id)
+                this.trace += ', ';
+            this.trace += (id + 1) + ':"' + constituents[id] + '"';
+        }
+        this.trace += '\n';
+        this.trace += TRACE_PREFIX + 'selected reassemble rule: ' + join(reassemblyRule) + '\n';
+
+        rule.nextReassemblyRule++;
+        if (rule.nextReassemblyRule === rule.reassemblyRules.length) {
+            rule.nextReassemblyRule = 0;
+        }
+
+        if (reassemblyRule.length === 1 && reassemblyRule[0] === "NEWKEY") {
+            return [ACTION_NEWKEY];
+        }
+
+        if (reassemblyRule.length === 2 && reassemblyRule[0] === '=') {
+            return [ACTION_LINKKEY, words, reassemblyRule[1]];
+        }
+
+        // is it the special-case reassembly rule '( PRE ( reassembly ) ( =reference ) )'
+        // (note: this is the only reassemblyRule that is still in a list)
+        if (reassemblyRule.length !== 0 && reassemblyRule[0] === "(") {
+            console.assert(reassemblyRule[1] === "PRE");
+            console.assert(reassemblyRule[2] === "(");
+            let reassembly = [];
+            let i = 3;
+            while (reassemblyRule[i] !== ")") {
+                reassembly.push(reassemblyRule[i++]);
+            }
+            i += 3; // skip ')', '(' and '='
+            let link = reassemblyRule[i];
+            words = reassemble(reassembly, constituents);
+            return [ACTION_LINKKEY, words, link];
+        }
+
+        words = reassemble(reassemblyRule, constituents);
+        return [ACTION_COMPLETE, words];
+    }
+    toString() {
+        let sexp = "(";
+        sexp += (this.keyword === SPECIAL_RULE_NONE) ? "NONE" : this.keyword;
+
+        if (this.wordSubstitution !== "") {
+            sexp += " = " + this.wordSubstitution;
+        }
+
+        if (this.tags.length > 0) {
+            sexp += " DLIST(/" + join(this.tags) + ")";
+        }
+
+        if (this.precedence > 0) {
+            sexp += " " + this.precedence;
+        }
+
+        for (const k of this.transforms) {
+            sexp += "\n    ((" + join(k.decomposition) + ")";
+            for (const r of k.reassemblyRules) {
+                if (r.length !== 0 && r[0] == "(")
+                    sexp += "\n        " + join(r); // it's a PRE rule
+                else
+                    sexp += "\n        (" + join(r) + ")";
+            }
+            sexp += ")";
+        }
+
+        if (this.linkKeyword) {
+            sexp += "\n    (=" + this.linkKeyword + ")";
+        }
+
+        sexp += ")\n";
+        return sexp;
+    }
+    traceText() {
+        return this.trace;
+    }
+}
+
+
+class RuleMemory {
+    constructor(keyword = "") {
+        this.keyword = keyword;
+        this.transforms = [];
+        this.memories = [];
+        this.trace = '';
+    }
+    setKeyword(keyword) {
+        this.keyword = keyword;
+    }
+    addTransformationRule(decomposition, reassemblyRules) {
+        this.transforms.push(new Transform(decomposition, reassemblyRules));
+    }
+    empty() {
+        return !this.keyword || this.transforms.length === 0;
+    }
+    createMemory(keyword, words, tags) {
+        if (keyword !== this.keyword || words.length === 0) {
+            return;
+        }
+
+        // JW says rules are selected at random [page 41 (f)]
+        // But the ELIZA code shows that rules are actually selected via a HASH
+        // function on the last word of the user's input text.
+        console.assert(this.transforms.length === 4);
+        let transformation = this.transforms[hash(lastChunkAsBcd(words[words.length - 1]), 2)];
+        const [success, constituents] = match(tags, transformation.decomposition, words);
+        if (!success)
+            return;
+
+        const newMemory = join(reassemble(transformation.reassemblyRules[0], constituents));
+        this.trace += TRACE_PREFIX + "new memory: " + newMemory + '\n';
+        this.memories.push(newMemory);
+    }
+    memoryExists() {
+        return this.memories.length > 0;
+    }
+    recallMemory() {
+        return this.memories.length ? this.memories.shift() : "";
+    }
+    toString() {
+        let sexp = "(MEMORY ";
+        sexp += this.keyword;
+        for (const k of this.transforms) {
+            sexp += "\n    (" + join(k.decomposition);
+            sexp += " = " + join(k.reassemblyRules[0]) + ")";
+        }
+        sexp += ")\n";
+        return sexp;
+    }
+    traceMemoryStack() {
+        let s = '';
+        if (this.memories.length === 0)
+            s += TRACE_PREFIX + 'memory queue: &lt;empty&gt;\n';
+        else {
+            s += TRACE_PREFIX + 'memory queue:\n';
+            for (const m of this.memories)
+                s += TRACE_PREFIX + '  ' + m + '\n';
+        }
+        return s;
+    }
+    clearTrace() {
+        this.trace = '';
+    }
+    traceText() {
+        return this.trace;
+    }
+}
+
+
+// collect all tags from any of the given rules that have them into a tagmap
+function collectTags(rules) {
+    let tags = new Map();
+    for (const [key, value] of rules) {
+        let keywordTags = value.tags;
+        for (const t of keywordTags) {
+            if (!tags.has(t))
+                tags.set(t, []);
+            tags.get(t).push(key);
+        }
+    }
+    return tags;
+}
+
+
+class nullTracer {
+    beginResponse(words) {}
+    limit(n, builtInMsg) {}
+    discardSubclause(words) {}
+    wordSubstitution(word, substitute) {}
+    subclauseComplete(subclause, keystack, rules) {}
+    memoryStack(t) {}
+    createMemory(t) {}
+    usingMemory(s) {}
+    preTransform(keyword, words) {}
+    transform(t, s) {}
+    unknownKey(keyword, useNomatchMessage) {}
+    decompFailed(useNomatchMessage) {}
+    newkeyFailed() {}
+    usingNone(s) {}
+    text() {
+        return '';
+    }
+    script() {
+        return '';
+    }
+}
+
+class preTracer extends nullTracer {
+    constructor (write) {
+        super();
+        this.print = write;
+    }
+    beginResponse(words) {}
+    limit(n, builtInMsg) {}
+    discardSubclause(words) {}
+    wordSubstitution(word, substitute) {}
+    subclauseComplete(subclause, keystack, rules) {}
+    memoryStack(t) {}
+    createMemory(t) {}
+    usingMemory(s) {}
+    preTransform(keyword, words) {
+        this.print(join(words) + '   :' + keyword);
+    }
+    transform(t, s) {}
+    unknownKey(keyword, useNomatchMessage) {}
+    decompFailed(useNomatchMessage) {}
+    newkeyFailed() {}
+    usingNone(s) {}
+    text() {
+        return '';
+    }
+    script() {
+        return '';
+    }
+}
+
+
+class Tracer extends nullTracer {
+    constructor() {
+        super();
+        this.txt = '';
+        this.scrip = '';
+        this.prefix = " | ";
+        this.wordSubstitutions = '';
+    }
+    beginResponse(words) {
+        this.txt = this.prefix + "input: " + join(words) + '\n';
+        this.scrip = '';
+        this.wordSubstitutions = '';
+    }
+    limit(n, builtInMsg) {
+        this.txt += this.prefix + "LIMIT: " + n + ' (' + builtInMsg + ')\n';
+    }
+    discardSubclause(words) {
+        this.txt += this.prefix + "word substitutions made: "
+            + (this.wordSubstitutions.length === 0 ? '&lt;none&gt;' : this.wordSubstitutions) + '\n';
+        this.txt += this.prefix + "no keywords found in subclause: " + join(words) + '\n';
+        this.wordSubstitutions = '';
+    }
+    wordSubstitution(word, substitute) {
+        if (substitute != word) {
+            if (this.wordSubstitutions.length !== 0)
+                this.wordSubstitutions += ', ';
+            this.wordSubstitutions += word + '/' + substitute;
+        }
+    }
+    subclauseComplete(subclause, keystack, rules) {
+        this.txt += this.prefix + "word substitutions made: "
+            + (this.wordSubstitutions.length === 0 ? '&lt;none&gt;' : this.wordSubstitutions) + '\n';
+        if (keystack.length === 0) {
+            if (subclause.length !== 0)
+                this.txt += this.prefix + "no keywords found in subclause: "
+                    + subclause + '\n'
+        }
+        else {
+            this.txt += this.prefix + "keyword found in subclause: " + subclause + '\n';
+            this.txt += this.prefix + "keyword stack(precedence):";
+            let comma = false;
+            for (let keyword of keystack) {
+                this.txt += (comma ? ', ' : ' ') + keyword + '(';
+                if (rules.has(keyword)) {
+                    let rule = rules.get(keyword);
+                    if (rule.hasTransformation())
+                        this.txt += rule.precedence;
+                    else
+                        this.txt += "&lt;internal error: no transform associated with this keyword&gt;";
+                }
+                else
+                    this.txt += "&lt;internal error: unknown keyword&gt;";
+                this.txt += ')';
+                comma = true;
+            }
+            this.txt += '\n';
+        }
+    }
+    memoryStack(t) {
+        this.txt += t;
+    }
+    createMemory(t) {
+        this.txt += t;
+    }
+    usingMemory(s) {
+        this.txt += TRACE_PREFIX + 'LIMIT=4, so response is the oldest unused memory\n';
+        this.scrip += s;
+    }
+    transform(t, s) {
+        this.txt += t;
+        this.scrip += s;
+    }
+    unknownKey(keyword, useNomatchMessage) {
+        this.txt += TRACE_PREFIX + 'ill-formed script? "' + keyword + '" is not a keyword\n';
+        if (useNomatchMessage)
+            this.txt += TRACE_PREFIX + 'response is the built-in NOMATCH[LIMIT] message\n';
+    }
+    decompFailed(useNomatchMessage) {
+        this.txt += TRACE_PREFIX + 'ill-formed script? No decomposition rule matched input\n';
+        if (useNomatchMessage)
+            this.txt += TRACE_PREFIX + 'response is the built-in NOMATCH[LIMIT] message\n';
+    }
+    newkeyFailed(responseSource) {
+        this.txt += TRACE_PREFIX + 'keyword stack empty; response is a ' + responseSource + ' message\n';
+    }
+    usingNone(s) {
+        this.txt += TRACE_PREFIX + 'response is the next remark from the NONE rule\n';
+        this.scrip += s;
+    }
+    text() {
+        return this.txt;
+    }
+    script() {
+        return this.scrip;
+    }
+}
+
+
+
+                //////// //       //// ////////    ///                    
+                //       //        //       //    // //                   
+                //       //        //      //    //   //                  
+///////////     //////   //        //     //    //     //     /////////// 
+                //       //        //    //     /////////                 
+                //       //        //   //      //     //                 
+                //////// //////// //// //////// //     //                 
+
+function delay() {
+    return new Promise((resolve, reject)=> {
+        setTimeout(() => {
+            resolve();
+        }, 0);
+    });
+}
+
+let globalInterruptElizaResponse = false;
+class Eliza {
+    constructor(rules, memoryRule, tracer, transformationLimit = 1000) {
+        this.rules = rules;
+        this.memoryRule = memoryRule;
+        this.tracer = tracer;
+        this.tags = collectTags(this.rules);
+        this.limit = 1; // (this is Weizenbaum's "a certain counting mechanism")
+        this.noMatchMessages = ["PLEASE CONTINUE", "HMMM", "GO ON , PLEASE", "I SEE"];
+        this.transformationLimit = transformationLimit;
+    }
+
+    // return ELIZA's response to the given input string
+    async response(input) {
+        console.assert(typeof(input) === "string");
+        let words = split(filterBcd(input));
+        this.tracer.beginResponse(words);
+
+        this.limit = (this.limit % 4) + 1;
+        this.tracer.limit(this.limit, this.noMatchMessages[this.limit - 1]);
+
+        let keystack = [];
+        let topRank = 0;
+        for (let i = 0; i < words.length; i++) {
+            let word = words[i];
+
+            if (delimiter(word)) {
+                if (keystack.length === 0) {
+                    this.tracer.discardSubclause(words.slice(0, i + 1));
+                    words = words.slice(i + 1);
+                    i = -1;
+                    continue;
+                } else {
+                    words = words.slice(0, i);
+                    break;
+                }
+            }
+
+            if (this.rules.has(word)) {
+                let rule = this.rules.get(word);
+                if (rule.hasTransformation()) {
+                    if (rule.precedence > topRank) {
+                        keystack.unshift(word);
+                        topRank = rule.precedence;
+                    } else {
+                        keystack.push(word);
+                    }
+                }
+                let substitute = rule.applyWordSubstitution(word);
+                this.tracer.wordSubstitution(word, substitute);
+                words[i] = substitute;
+            }
+        }
+        this.tracer.subclauseComplete(join(words), keystack, this.rules);
+
+        this.memoryRule.clearTrace();
+        this.tracer.memoryStack(this.memoryRule.traceMemoryStack());
+        if (keystack.length === 0) {
+            if (this.limit === 4 && this.memoryRule.memoryExists()) {
+                this.tracer.usingMemory(this.memoryRule.toString());
+                return this.memoryRule.recallMemory();
+            }
+        }
+
+        let transformationCount = 0;
+        globalInterruptElizaResponse = false;
+        while (keystack.length > 0) {
+            await delay();
+            if (globalInterruptElizaResponse) {
+                globalInterruptElizaResponse = false;
+                return '--ELIZA response creation interrupted--';
+            }
+            const topKeyword = keystack.shift();
+            this.tracer.preTransform(topKeyword, words);
+
+            if (!this.rules.has(topKeyword)) {
+                this.tracer.unknownKey(topKeyword, true);
+                return this.noMatchMessages[this.limit - 1];
+            }
+
+            if (this.transformationLimit !== 0 && transformationCount++ > this.transformationLimit) {
+                return `--transformation limit reached (*maxtran ${this.transformationLimit})--`;
+            }
+
+            const rule = this.rules.get(topKeyword);
+            this.memoryRule.createMemory(topKeyword, words, this.tags);
+            this.tracer.createMemory(this.memoryRule.traceText());
+
+            const [ action, response, link ] = rule.applyTransformation(words, this.tags);
+            this.tracer.transform(rule.traceText(), rule.toString());
+            if (action === ACTION_COMPLETE) {
+                return join(response);
+            }
+
+            if (action === ACTION_INAPPLICABLE) {
+                this.tracer.decompFailed(true);
+                return this.noMatchMessages[this.limit - 1];
+            }
+
+            if (action === ACTION_LINKKEY) {
+                words = response;
+                keystack.unshift(link);
+            }
+            else if (keystack.length === 0) {
+                this.tracer.newkeyFailed('NONE');
+                //return this.noMatchMessages[this.limit - 1]; TBD
+                break;
+            }
+        }
+
+        const noneRule = this.rules.get(SPECIAL_RULE_NONE);
+        const [ action, response ] = noneRule.applyTransformation(words, this.tags);
+        console.assert(action === ACTION_COMPLETE);
+        this.tracer.usingNone(noneRule.toString());
+        return join(response);
+    }
+}
+
+
+ //////// //       //// ////////    ///     //////   //////  ////////  //// ////////  //////// 
+ //       //        //       //    // //   //    // //    // //     //  //  //     //    //    
+ //       //        //      //    //   //  //       //       //     //  //  //     //    //    
+ //////   //        //     //    //     //  //////  //       ////////   //  ////////     //    
+ //       //        //    //     /////////       // //       //   //    //  //           //    
+ //       //        //   //      //     // //    // //    // //    //   //  //           //    
+ //////// //////// //// //////// //     //  //////   //////  //     // //// //           //    
+
+
+const CACM_1966_01_DOCTOR_SCRIPT = 
+`;
+; Joseph Weizenbaum's DOCTOR script for ELIZA
+;
+; This is a verbatim transcription of the script on page 44 of the
+; January 1966 edition of Communications of the ACM, with the following
+; caveats:
+;
+; a) Whitespace has been added to help reveal the structure of the script.
+; b) In the CACM paper six lines were printed twice adjacent to each
+;    other (with exactly 34 lines between each duplicate), making the
+;    structure nonsensical. These duplicates have been commented out of
+;    this transcription.
+; c) There were no comments in the script in the CACM paper.
+;
+
+(HOW DO YOU DO.  PLEASE TELL ME YOUR PROBLEM)
+
+START
+
+(SORRY
+    ((0)
+        (PLEASE DON'T APOLIGIZE)
+        (APOLOGIES ARE NOT NECESSARY)
+        (WHAT FEELINGS DO YOU HAVE WHEN YOU APOLOGIZE)
+        (I'VE TOLD YOU THAT APOLOGIES ARE NOT REQUIRED)))
+
+(DONT = DON'T)
+(CANT = CAN'T)
+(WONT = WON'T)
+
+(REMEMBER 5
+    ((0 YOU REMEMBER 0)
+         (DO YOU OFTEN THINK OF 4)
+         (DOES THINKING OF 4 BRING ANYTHING ELSE TO MIND)
+         (WHAT ELSE DO YOU REMEMBER)
+         (WHY DO YOU REMEMBER 4 JUST NOW)
+         (WHAT IN THE PRESENT SITUATION REMINDS YOU OF 4)
+         (WHAT IS THE CONNECTION BETWEEN ME AND 4))
+    ((0 DO I REMEMBER 0)
+         (DID YOU THINK I WOULD FORGET 5)
+         (WHY DO YOU THINK I SHOULD RECALL 5 NOW)
+         (WHAT ABOUT 5)
+         (=WHAT)
+         (YOU MENTIONED 5))
+    ((0)
+         (NEWKEY)))
+
+(IF 3
+    ((0 IF 0)
+        (DO YOU THINK ITS LIKELY THAT 3)
+        (DO YOU WISH THAT 3)
+        (WHAT DO YOU THINK ABOUT 3)
+        (REALLY, 2 3)))
+; duplicate line removed: (WHAT DO YOU THINK ABOUT 3) (REALLY, 2 3)))
+
+(DREAMT 4
+    ((0 YOU DREAMT 0)
+        (REALLY, 4)
+        (HAVE YOU EVER FANTASIED 4 WHILE YOU WERE AWAKE)
+        (HAVE YOU DREAMT 4 BEFORE)
+        (=DREAM)
+        (NEWKEY)))
+
+(DREAMED = DREAMT 4
+    (=DREAMT))
+
+(DREAM 3
+    ((0)
+        (WHAT DOES THAT DREAM SUGGEST TO YOU)
+        (DO YOU DREAM OFTEN)
+        (WHAT PERSONS APPEAR IN YOUR DREAMS)
+        (DON'T YOU BELIEVE THAT DREAM HAS SOMETHING TO DO WITH YOUR PROBLEM)
+        (NEWKEY)))
+
+(DREAMS = DREAM 3
+    (=DREAM))
+
+(HOW
+    (=WHAT))
+(WHEN
+    (=WHAT))
+(ALIKE 10
+    (=DIT))
+(SAME 10
+    (=DIT))
+(CERTAINLY
+    (=YES))
+
+(FEEL DLIST(/BELIEF))
+(THINK DLIST(/BELIEF))
+(BELIEVE DLIST(/BELIEF))
+(WISH DLIST(/BELIEF))
+
+(MEMORY MY
+    (0 YOUR 0 = LETS DISCUSS FURTHER WHY YOUR 3)
+    (0 YOUR 0 = EARLIER YOU SAID YOUR 3)
+    (0 YOUR 0 = BUT YOUR 3)
+    (0 YOUR 0 = DOES THAT HAVE ANYTHING TO DO WITH THE FACT THAT YOUR 3))
+
+(NONE
+    ((0)
+        (I AM NOT SURE I UNDERSTAND YOU FULLY)
+        (PLEASE GO ON)
+        (WHAT DOES THAT SUGGEST TO YOU)
+        (DO YOU FEEL STRONGLY ABOUT DISCUSSING SUCH THINGS)))
+
+(PERHAPS
+    ((0)
+        (YOU DON'T SEEM QUITE CERTAIN)
+        (WHY THE UNCERTAIN TONE)
+        (CAN'T YOU BE MORE POSITIVE)
+        (YOU AREN'T SURE)
+        (DON'T YOU KNOW)))
+
+(MAYBE
+    (=PERHAPS))
+
+(NAME 15
+    ((0)
+        (I AM NOT INTERESTED IN NAMES)
+        (I'VE TOLD YOU BEFORE, I DON'T CARE ABOUT NAMES - PLEASE CONTINUE)))
+; duplicate line removed: PLEASE CONTINUE)) )
+
+(DEUTSCH
+    (=XFREMD))
+(FRANCAIS
+    (=XFREMD))
+(ITALIANO
+    (=XFREMD))
+(ESPANOL
+    (=XFREMD))
+
+(XFREMD
+    ((0)
+        (I AM SORRY, I SPEAK ONLY ENGLISH)))
+
+(HELLO
+    ((0)
+        (HOW DO YOU DO.  PLEASE STATE YOUR PROBLEM)))
+
+(COMPUTER 50
+    ((0)
+        (DO COMPUTERS WORRY YOU)
+        (WHY DO YOU MENTION COMPUTERS)
+        (WHAT DO YOU THINK MACHINES HAVE TO DO WITH YOUR PROBLEM)
+        (DON'T YOU THINK COMPUTERS CAN HELP PEOPLE)
+        (WHAT ABOUT MACHINES WORRIES YOU)
+        (WHAT DO YOU THINK ABOUT MACHINES)))
+
+(MACHINE 50
+    (=COMPUTER))
+(MACHINES 50
+    (=COMPUTER))
+(COMPUTERS 50
+    (=COMPUTER))
+
+(AM = ARE
+    ((0 ARE YOU 0)
+        (DO YOU BELIEVE YOU ARE 4)
+        (WOULD YOU WANT TO BE 4)
+        (YOU WISH I WOULD TELL YOU YOU ARE 4)
+        (WHAT WOULD IT MEAN IF YOU WERE 4)
+        (=WHAT))
+    ((0)
+        (WHY DO YOU SAY 'AM')
+        (I DON'T UNDERSTAND THAT)))
+
+(ARE
+    ((0 ARE I 0)
+        (WHY ARE YOU INTERESTED IN WHETHER I AM 4 OR NOT)
+        (WOULD YOU PREFER IF I WEREN'T 4)
+        (PERHAPS I AM 4 IN YOUR FANTASIES)
+        (DO YOU SOMETIMES THINK I AM 4)
+        (=WHAT))
+    ((0 ARE 0)
+        (DID YOU THINK THEY MIGHT NOT BE 3)
+        (WOULD YOU LIKE IT IF THEY WERE NOT 3)
+        (WHAT IF THEY WERE NOT 3)
+        (POSSIBLY THEY ARE 3)))
+
+(YOUR = MY
+    ((0 MY 0)
+        (WHY ARE YOU CONCERNED OVER MY 3)
+        (WHAT ABOUT YOUR OWN 3)
+        (ARE YOU WORRIED ABOUT SOMEONE ELSES 3)
+        (REALLY, MY 3)))
+
+(WAS 2
+    ((0 WAS YOU 0)
+        (WHAT IF YOU WERE 4)
+        (DO YOU THINK YOU WERE 4)
+        (WERE YOU 4)
+        (WHAT WOULD IT MEAN IF YOU WERE 4)
+        (WHAT DOES ' 4 ' SUGGEST TO YOU)
+        (=WHAT))
+    ((0 YOU WAS 0)
+        (WERE YOU REALLY)
+        (WHY DO YOU TELL ME YOU WERE 4 NOW)
+; duplicate line removed: (WERE YOU REALLY) (WHY DO YOU TELL ME YOU WERE 4 NOW)
+        (PERHAPS I ALREADY KNEW YOU WERE 4))
+    ((0 WAS I 0)
+        (WOULD YOU LIKE TO BELIEVE I WAS 4)
+        (WHAT SUGGESTS THAT I WAS 4)
+        (WHAT DO YOU THINK)
+        (PERHAPS I WAS 4)
+        (WHAT IF I HAD BEEN 4))
+    ((0)
+        (NEWKEY)))
+
+(WERE = WAS
+    (=WAS))
+(ME = YOU)
+
+(YOU'RE = I'M
+    ((0 I'M 0)
+        (PRE (I ARE 3) (=YOU))))
+
+(I'M = YOU'RE
+    ((0 YOU'RE 0)
+        (PRE (YOU ARE 3) (=I))))
+
+(MYSELF = YOURSELF)
+(YOURSELF = MYSELF)
+
+(MOTHER DLIST(/NOUN FAMILY))
+(MOM = MOTHER DLIST(/ FAMILY))
+(DAD = FATHER DLIST(/ FAMILY))
+(FATHER DLIST(/NOUN FAMILY))
+(SISTER DLIST(/FAMILY))
+(BROTHER DLIST(/FAMILY))
+(WIFE DLIST(/FAMILY))
+(CHILDREN DLIST(/FAMILY))
+
+(I = YOU
+    ((0 YOU (* WANT NEED) 0)
+        (WHAT WOULD IT MEAN TO YOU IF YOU GOT 4)
+        (WHY DO YOU WANT 4)
+        (SUPPOSE YOU GOT 4 SOON)
+        (WHAT IF YOU NEVER GOT 4)
+        (WHAT WOULD GETTING 4 MEAN TO YOU)
+        (WHAT DOES WANTING 4 HAVE TO DO WITH THIS DISCUSSION))
+    ((0 YOU ARE 0 (*SAD UNHAPPY DEPRESSED SICK ) 0)
+        (I AM SORRY TO HEAR YOU ARE 5)
+        (DO YOU THINK COMING HERE WILL HELP YOU NOT TO BE 5)
+        (I'M SURE ITS NOT PLEASANT TO BE 5)
+        (CAN YOU EXPLAIN WHAT MADE YOU 5))
+    ((0 YOU ARE 0 (*HAPPY ELATED GLAD BETTER) 0)
+        (HOW HAVE I HELPED YOU TO BE 5)
+        (HAS YOUR TREATMENT MADE YOU 5)
+        (WHAT MAKES YOU 5 JUST NOW)
+        (CAN YOU EXPLAIN WHY YOU ARE SUDDENLY 5))
+    ((0 YOU WAS 0)
+        (=WAS))
+; duplicate line removed: ((0 YOU WAS 0) (=WAS))
+    ((0 YOU (/BELIEF) YOU 0)
+        (DO YOU REALLY THINK SO)
+        (BUT YOU ARE NOT SURE YOU 5)
+        (DO YOU REALLY DOUBT YOU 5))
+    ((0 YOU 0 (/BELIEF) 0 I 0)
+        (=YOU))
+    ((0 YOU ARE 0)
+        (IS IT BECAUSE YOU ARE 4 THAT YOU CAME TO ME)
+        (HOW LONG HAVE YOU BEEN 4)
+        (DO YOU BELIEVE IT NORMAL TO BE 4)
+        (DO YOU ENJOY BEING 4))
+    ((0 YOU (* CAN'T CANNOT) 0)
+        (HOW DO YOU KNOW YOU CAN'T 4)
+        (HAVE YOU TRIED)
+        (PERHAPS YOU COULD 4 NOW)
+        (DO YOU REALLY WANT TO BE ABLE TO 4))
+    ((0 YOU DON'T 0)
+        (DON'T YOU REALLY 4)
+        (WHY DON'T YOU 4)
+        (DO YOU WISH TO BE ABLE TO 4)
+        (DOES THAT TROUBLE YOU))
+    ((0 YOU FEEL 0)
+        (TELL ME MORE ABOUT SUCH FEELINGS)
+        (DO YOU OFTEN FEEL 4)
+        (DO YOU ENJOY FEELING 4)
+        (OF WHAT DOES FEELING 4 REMIND YOU))
+    ((0 YOU 0 I 0)
+        (PERHAPS IN YOUR FANTASY WE 3 EACH OTHER)
+        (DO YOU WISH TO 3 ME)
+        (YOU SEEM TO NEED TO 3 ME)
+        (DO YOU 3 ANYONE ELSE))
+    ((0)
+        (YOU SAY 1)
+        (CAN YOU ELABORATE ON THAT)
+        (DO YOU SAY 1 FOR SOME SPECIAL REASON)
+        (THAT'S QUITE INTERESTING)))
+
+(YOU = I
+    ((0 I REMIND YOU OF 0)
+        (= DIT))
+    ((0 I ARE 0)
+        (WHAT MAKES YOU THINK I AM 4)
+        (DOES IT PLEASE YOU TO BELIEVE I AM 4)
+        (DO YOU SOMETIMES WISH YOU WERE 4)
+        (PERHAPS YOU WOULD LIKE TO BE 4))
+    ((0 I 0 YOU)
+        (WHY DO YOU THINK I 3 YOU)
+        (YOU LIKE TO THINK I 3 YOU - DON'T YOU)
+        (WHAT MAKES YOU THINK I 3 YOU)
+        (REALLY, I 3 YOU)
+        (DO YOU WISH TO BELIEVE I 3 YOU)
+; duplicate line removed: (REALLY, I 3 YOU) (DO YOU WISH TO BELIEVE I 3 YOU)
+        (SUPPOSE I DID 3 YOU - WHAT WOULD THAT MEAN)
+        (DOES SOMEONE ELSE BELIEVE I 3 YOU))
+    ((0 I 0)
+        (WE WERE DISCUSSING YOU - NOT ME)
+        (OH, I 3)
+        (YOU'RE NOT REALLY TALKING ABOUT ME - ARE YOU)
+        (WHAT ARE YOUR FEELINGS NOW)))
+
+(YES
+    ((0)
+        (YOU SEEM QUITE POSITIVE)
+        (YOU ARE SURE)
+        (I SEE)
+        (I UNDERSTAND)))
+
+(NO
+    ((0)
+        (ARE YOU SAYING 'NO' JUST TO BE NEGATIVE)
+        (YOU ARE BEING A BIT NEGATIVE)
+        (WHY NOT)
+        (WHY 'NO')))
+
+(MY = YOUR 2
+    ((0 YOUR 0 (/FAMILY) 0)
+        (TELL ME MORE ABOUT YOUR FAMILY)
+        (WHO ELSE IN YOUR FAMILY 5)
+        (YOUR 4)
+        (WHAT ELSE COMES TO MIND WHEN YOU THINK OF YOUR 4))
+    ((0 YOUR 0)
+        (YOUR 3)
+        (WHY DO YOU SAY YOUR 3)
+        (DOES THAT SUGGEST ANYTHING ELSE WHICH BELONGS TO YOU)
+        (IS IT IMPORTANT TO YOU THAT 2 3)))
+
+(CAN
+    ((0 CAN I 0)
+        (YOU BELIEVE I CAN 4 DON'T YOU)
+        (=WHAT)
+        (YOU WANT ME TO BE ABLE TO 4)
+        (PERHAPS YOU WOULD LIKE TO BE ABLE TO 4 YOURSELF))
+    ((0 CAN YOU 0)
+        (WHETHER OR NOT YOU CAN 4 DEPENDS ON YOU MORE THAN ON ME)
+        (DO YOU WANT TO BE ABLE TO 4)
+        (PERHAPS YOU DON'T WANT TO 4)
+        (=WHAT)))
+
+(WHAT
+    ((0)
+        (WHY DO YOU ASK)
+        (DOES THAT QUESTION INTEREST YOU)
+        (WHAT IS IT YOU REALLY WANT TO KNOW)
+        (ARE SUCH QUESTIONS MUCH ON YOUR MIND)
+        (WHAT ANSWER WOULD PLEASE YOU MOST)
+        (WHAT DO YOU THINK)
+        (WHAT COMES TO YOUR MIND WHEN YOU ASK THAT)
+        (HAVE YOU ASKED SUCH QUESTIONS BEFORE)
+        (HAVE YOU ASKED ANYONE ELSE)))
+
+(BECAUSE
+    ((0)
+        (IS THAT THE REAL REASON)
+        (DON'T ANY OTHER REASONS COME TO MIND)
+        (DOES THAT REASON SEEM TO EXPLAIN ANYTHING ELSE)
+        (WHAT OTHER REASONS MIGHT THERE BE)))
+
+(WHY
+    ((0 WHY DON'T I 0)
+        (DO YOU BELIEVE I DON'T 5)
+        (PERHAPS I WILL 5 IN GOOD TIME)
+        (SHOULD YOU 5 YOURSELF)
+        (YOU WANT ME TO 5)
+        (=WHAT))
+; duplicate line removed: (=WHAT))
+    ((0 WHY CAN'T YOU 0)
+        (DO YOU THINK YOU SHOULD BE ABLE TO 5)
+        (DO YOU WANT TO BE ABLE TO 5)
+        (DO YOU BELIEVE THIS WILL HELP YOU TO 5)
+        (HAVE YOU ANY IDEA WHY YOU CAN'T 5)
+        (=WHAT))
+    (=WHAT))
+
+(EVERYONE 2
+    ((0 (* EVERYONE EVERYBODY NOBODY NOONE) 0)
+        (REALLY, 2)
+        (SURELY NOT 2)
+        (CAN YOU THINK OF ANYONE IN PARTICULAR)
+        (WHO, FOR EXAMPLE)
+        (YOU ARE THINKING OF A VERY SPECIAL PERSON)
+        (WHO, MAY I ASK)
+        (SOMEONE SPECIAL PERHAPS)
+        (YOU HAVE A PARTICULAR PERSON IN MIND, DON'T YOU)
+        (WHO DO YOU THINK YOU'RE TALKING ABOUT)))
+
+(EVERYBODY 2
+    (= EVERYONE))
+(NOBODY 2
+    (= EVERYONE))
+(NOONE 2
+    (= EVERYONE))
+
+(ALWAYS 1
+    ((0)
+        (CAN YOU THINK OF A SPECIFIC EXAMPLE)
+        (WHEN)
+        (WHAT INCIDENT ARE YOU THINKING OF)
+        (REALLY, ALWAYS)))
+
+(LIKE 10
+    ((0 (*AM IS ARE WAS) 0 LIKE 0)
+        (=DIT))
+    ((0)
+        (NEWKEY)))
+
+(DIT
+    ((0)
+        (IN WHAT WAY)
+        (WHAT RESEMBLANCE DO YOU SEE)
+        (WHAT DOES THAT SIMILARITY SUGGEST TO YOU)
+        (WHAT OTHER CONNECTIONS DO YOU SEE)
+        (WHAT DO YOU SUPPOSE THAT RESEMBLANCE MEANS)
+        (WHAT IS THE CONNECTION, DO YOU SUPPOSE)
+        (COULD THERE REALLY BE SOME CONNECTION)
+        (HOW)))
+
+()
+
+; --- End of ELIZA script ---
+`;
+
+
+class Script {
+    constructor() {
+        // ELIZA's opening remarks e.g. "HOW DO YOU DO.  PLEASE TELL ME YOUR PROBLEM"
+        this.helloMessage = [];
+
+        // maps keywords -> transformation rules
+        this.rules = new Map();
+
+        // the one and only special case MEMORY rule
+        this.memoryRule = new RuleMemory();
+    }
+};
+
+
+function scriptToString(s) {
+    let txt = "(" + join(s.helloMessage) + ")\n";
+    const rules = new Map([...s.rules.entries()].sort());
+    for (const [key, value] of rules) {
+        txt += value.toString();
+    }
+    txt += s.memoryRule.toString();
+    return txt;
+}
+
+
+class Token {
+    constructor(t = 'eof', value = '') {
+        this.t = t;
+        this.value = value;
+    }
+    symbol(v) {
+        if (v) {
+            return this.t === 'symbol' && this.value === v;
+        }
+        return this.t === 'symbol';
+    }
+    number() {
+        return this.t === 'number';
+    }
+    open() {
+        return this.t === 'open_bracket';
+    }
+    close() {
+        return this.t === 'close_bracket';
+    }
+    eof() {
+        return this.t === 'eof';
+    }
+    equals(rhs) {
+        return this.t === rhs.t && this.value === rhs.value;
+    }
+}
+
+class Tokenizer {
+    constructor(scriptText) {
+        this.scriptText = scriptText;
+        this.script = new Script;
+        this.t = new Token();
+        this.got_token = false;
+        this.buf = [];
+        this.bufptr = 0;
+        this.line_number = 1;
+    }
+    peektok() {
+        if (this.got_token) {
+            return this.t;
+        }
+        this.got_token = true;
+        return this.t = this.readtok();
+    }
+    nexttok() {
+        if (this.got_token) {
+            this.got_token = false;
+            return this.t;
+        }
+        return this.readtok();
+    }
+    readtok() {
+        let ch = '';
+        for (;;) {
+            do { // skip whitespace
+                if (this.eof())
+                    return new Token('eof');
+                ch = this.nextch();
+                if (this.is_newline(ch))
+                    this.consume_newline(ch);
+            } while (this.is_whitespace(ch));
+            if (ch != ';')
+                break;
+            do { // skip comment
+                if (this.eof())
+                    return new Token('eof');
+                ch = this.nextch();
+            } while (!this.is_newline(ch));
+            this.consume_newline(ch);
+        }
+
+        if (ch == '(')
+            return new Token('open_bracket');
+
+        if (ch == ')')
+            return new Token('close_bracket');
+
+        if (ch == '=')
+            return new Token('symbol', '=');
+
+        if (this.is_digit(ch)) {
+            let t = new Token('number');
+            t.value += ch;
+            while (!this.eof()) {
+                ch = this.peekch();
+                if (!this.is_digit(ch)) {
+                    break;
+                }
+                t.value += ch;
+                this.nextch();
+            }
+            return t;
+        }
+
+        // anything else is a symbol
+        let t = new Token('symbol');
+        t.value += ch;
+        while (!this.eof()) {
+            ch = this.peekch();
+            if (this.non_symbol(ch) || ch === '=') {
+                break;
+            }
+            t.value += ch;
+            ch = this.nextch();
+        }
+        return t;
+    }
+    eof() {
+        return this.bufptr === this.scriptText.length;
+    }
+    nextch() {
+        console.assert(!this.eof());
+        return this.scriptText[this.bufptr++];
+    }
+    peekch() {
+        console.assert(!this.eof());
+        return this.scriptText[this.bufptr];
+    }
+    is_whitespace(ch) {
+        return ch <= ' ' || ch == '\x7F';
+        // this must hold: is_newline(ch) implies is_whitespace(ch)
+    }
+    is_newline(ch) {
+        return ch === '\x0A'     // LF
+            || ch === '\x0B'     // VT
+            || ch === '\x0C'     // FF
+            || ch === '\x0D';    // CR
+    }
+    consume_newline(ch) {
+        if (ch === '\x0D' && !this.eof() && this.peekch(ch) === '\x0A') {
+            this.nextch(ch); // CR/LF is one line ending
+        }
+        this.line_number++;
+    }
+    is_digit(ch) {
+        return ch.length == 1 && ch >= '0' && ch <= '9';
+    }
+    non_symbol(ch) {
+        return ch === '(' || ch === ')' || ch === ';' || this.is_whitespace(ch);
+    }
+}
+
+
+class ElizaScriptReader {
+    constructor(scriptText) {
+        this.tok = new Tokenizer(scriptText);
+        this.script = new Script;
+
+        this.script.helloMessage = this.rdlist();
+        if (this.tok.peektok().symbol("START")) {
+            this.tok.nexttok();
+        }
+
+        while (this.readRule())
+            ;
+
+        // Check if the script meets the minimum requirements
+        if (!this.script.rules.has(SPECIAL_RULE_NONE)) {
+            throw new Error("Script error: no NONE rule specified; see Jan 1966 CACM page 41");
+        }
+        if (!this.script.memoryRule.keyword) {
+            throw new Error("Script error: no MEMORY rule specified; see Jan 1966 CACM page 41");
+        }
+        if (!this.script.rules.has(this.script.memoryRule.keyword)) {
+            throw new Error(`Script error: MEMORY rule keyword '${this.script.memoryRule.keyword}' is not also a keyword in its own right; see Jan 1966 CACM page 41`);
+        }
+    }
+
+    readRule() {
+        let t = this.tok.nexttok();
+        if (t.eof()) {
+            return false;
+        }
+        if (!t.open()) {
+            throw new Error(this.errormsg("expected '('"));
+        }
+        t = this.tok.peektok();
+        if (t.close()) {
+            this.tok.nexttok();
+            return true;
+        }
+        if (!t.symbol()) {
+            throw new Error(this.errormsg("expected keyword|MEMORY|NONE"));
+        }
+        if (t.value === "MEMORY") {
+            return this.readMemoryRule();
+        }
+        return this.readKeywordRule();
+    }
+
+    readKeywordRule() {
+        let keyword, keywordSubstitution = "";
+        let precedence = 0;
+        let tags = [];
+        let transformation = [];
+        let className = "";
+
+        let t = this.tok.nexttok();
+        keyword = t.value;
+        if (keyword === "NONE") {
+            keyword = SPECIAL_RULE_NONE;
+        }
+        if (this.script.rules.has(keyword)) {
+            throw new Error(this.errormsg(`keyword rule already specified for keyword '${keyword}'`));
+        }
+        if (this.tok.peektok().close()) {
+            throw new Error(this.errormsg(`keyword '${keyword}' has no associated body`));
+        }
+
+        for (t = this.tok.nexttok(); !t.close(); t = this.tok.nexttok()) {
+            if (t.symbol("=")) {
+                t = this.tok.nexttok();
+                if (!t.symbol()) {
+                    throw new Error(this.errormsg("expected keyword"));
+                }
+                keywordSubstitution = t.value;
+            } else if (t.number()) {
+                precedence = parseInt(t.value);
+            } else if (t.symbol("DLIST")) {
+                t = this.tok.nexttok();
+                if (t.eof() || !t.open())
+                    throw new Error(this.errormsg("expected '('"));
+                t = this.tok.nexttok();
+                if (!t.symbol() || !t.value.startsWith('/'))
+                    throw new Error(this.errormsg("expected '/'"));
+                if (t.value.length > 1) {
+                    let tag = t.value.substring(1);
+                    tags = this.rdlist(false);
+                    tags.unshift(tag);
+                }
+                else {
+                    tags = this.rdlist(false);
+                }
+            } else if (t.open()) {
+                t = this.tok.peektok();
+                if (t.symbol("=")) {
+                    this.tok.nexttok();
+                    t = this.tok.nexttok();
+                    if (!t.symbol()) {
+                        throw new Error(this.errormsg("expected equivalence class name"));
+                    }
+                    className = t.value;
+
+                    if (!this.tok.nexttok().close()) {
+                        throw new Error(this.errormsg("expected ')'"));
+                    }
+                    if (!this.tok.peektok().close()) {
+                        throw new Error(this.errormsg("expected ')'"));
+                    }
+                } else {
+                    let trans = {
+                        decomposition: this.rdlist(),
+                        reassembly: []
+                    };
+                    if (trans.decomposition.length == 0)
+                        throw new Error(this.errormsg("decompose pattern cannot be empty"));
+                    while (this.tok.peektok().open()) {
+                        trans.reassembly.push(this.readReassembly());
+                    }
+                    if (!this.tok.nexttok().close()) {
+                        throw new Error(this.errormsg("expected ')'"));
+                    }
+                    transformation.push(trans);
+                }
+            } else {
+                throw new Error(this.errormsg("malformed rule"));
+            }
+        }
+
+        let r = new RuleKeyword(keyword, keywordSubstitution, precedence, tags, className);
+        for (let tr of transformation) {
+            r.addTransformationRule(tr.decomposition, tr.reassembly);
+        }
+        this.script.rules.set(keyword, r);
+
+        return true;
+    }
+
+    readReassembly() {
+        if (!this.tok.nexttok().open()) {
+            throw new Error(this.errormsg("expected '('"));
+        }
+
+        if (!this.tok.peektok().symbol("PRE")) {
+            return this.rdlist(false);
+        }
+
+        // It's a PRE reassembly, e.g. (PRE (I ARE 3) (=YOU))
+        this.tok.nexttok(); // skip "PRE"
+        const pre = ["(", "PRE"];
+        const reconstruct = this.rdlist();
+        const reference = this.rdlist();
+        if (reference.length !== 2 || reference[0] !== '=') {
+            throw new Error(this.errormsg("expected '(=reference)' in PRE rule"));
+        }
+        
+        pre.push("(", ...reconstruct, ")");
+        pre.push("(", ...reference, ")");
+        pre.push(")");
+
+        if (!this.tok.nexttok().close()) {
+            throw new Error(this.errormsg("expected ')'"));
+        }
+
+        return pre;
+    }
+
+    readMemoryRule() {
+        let t = this.tok.nexttok();
+        console.assert(t.symbol("MEMORY"));
+
+        t = this.tok.nexttok();
+        if (!t.symbol()) {
+            throw new Error(this.errormsg("expected keyword to follow MEMORY"));
+        }
+
+        if (this.script.memoryRule.keyword) {
+            throw new Error(this.errormsg("multiple MEMORY rules specified"));
+        }
+
+        this.script.memoryRule.keyword = t.value;
+
+        for (let i = 0; i < 4; ++i) {
+            if (!this.tok.nexttok().open()) {
+                throw new Error(this.errormsg("expected '('"));
+            }
+
+            const decomposition = [];
+            for (t = this.tok.nexttok(); !t.symbol("=") && !t.eof(); t = this.tok.nexttok()) {
+                decomposition.push(t.value);
+            }
+            if (decomposition.length === 0) {
+                throw new Error(this.errormsg("expected 'decompose_terms = reassemble_terms'"));
+            }
+            if (!t.symbol("=")) {
+                throw new Error(this.errormsg("expected '='"));
+            }
+
+            const reassembly = [];
+            for (t = this.tok.nexttok(); !t.close() && !t.eof(); t = this.tok.nexttok()) {
+                reassembly.push(t.value);
+            }
+            if (reassembly.length === 0) {
+                throw new Error(this.errormsg("expected 'decompose_terms = reassemble_terms'"));
+            }
+            if (!t.close()) {
+                throw new Error(this.errormsg("expected ')'"));
+            }
+            const reassembly_rules = [];
+            reassembly_rules.push(reassembly);
+
+            this.script.memoryRule.addTransformationRule(decomposition, reassembly_rules);
+        }
+
+        if (!this.tok.nexttok().close()) {
+            throw new Error(this.errormsg("expected ')'"));
+        }
+
+        return true;
+    }
+
+    errormsg(msg) {
+        return `Script error on line ${this.tok.line_number}: ${msg}`;
+    }
+
+    rdlist(prior = true) {
+        let s = [];
+        let t = this.tok.nexttok();
+        if (prior) {
+            if (!t.open()) {
+                throw new Error(this.errormsg("expected '('"));
+            }
+            t = this.tok.nexttok();
+        }
+        while (!t.close()) {
+            if (t.symbol() || t.number()) {
+                s.push(t.value);
+            } else if (t.open()) {
+                let sublist = "";
+                t = this.tok.nexttok();
+                while (!t.close()) {
+                    if (!t.symbol()) {
+                        throw new Error(this.errormsg("expected symbol"));
+                    }
+                    if (sublist.length > 0) {
+                        sublist += ' ';
+                    }
+                    sublist += t.value;
+                    t = this.tok.nexttok();
+                }
+                s.push(`(${sublist})`);
+            } else {
+                throw new Error(this.errormsg("expected ')'"));
+            }
+            t = this.tok.nexttok();
+        }
+        return s;
+    }
+}
+
+
+function readScript(scriptText) {
+    try {
+        const scriptReader = new ElizaScriptReader(scriptText);
+        return ['success', scriptReader.script];
+    }
+    catch(e) {
+        return [e.message];
+    }
+}
+
+
+
+ //////// //       //// ////////    ///    //////// ////////  //////  //////// 
+ //       //        //       //    // //      //    //       //    //    //    
+ //       //        //      //    //   //     //    //       //          //    
+ //////   //        //     //    //     //    //    //////    //////     //    
+ //       //        //    //     /////////    //    //             //    //    
+ //       //        //   //      //     //    //    //       //    //    //    
+ //////// //////// //// //////// //     //    //    ////////  //////     //    
+
+
+// return true iff arrays a and b contain the same elements in the same order
+function equal(a, b) {
+    console.assert(Array.isArray(a));
+    console.assert(Array.isArray(b));
+
+    if (a.length !== b.length) {
+        return false;
+    }
+    for (let i = 0; i < a.length; i++) {
+        if (a[i] !== b[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+function testEqual() {
+    console.assert(equal([], []));
+    console.assert(equal(["a"], ["a"]));
+    console.assert(!equal(["a"], ["b"]));
+    console.assert(!equal([], ["b"]));
+    console.assert(equal(["a", "b"], ["a", "b"]));
+    console.assert(!equal(["a", "b"], ["b", "a"]));
+    console.assert(!equal(["a", "b"], ["a"]));
+    console.assert(!equal(["a", "b"], ["b"]));
+    console.assert(!equal(["a", "b"], []));
+    console.assert(equal(["a", 2], ["a", 2]));
+}
+
+
+function testfilterBcd() {
+    console.assert(filterBcd("") === "");
+    console.assert(filterBcd("HELLO") === "HELLO");
+    console.assert(filterBcd("Hello! How are you?") === "HELLO. HOW ARE YOU.");
+    console.assert(filterBcd("Æmilia, Æsop & Phœbë") === "-MILIA, -SOP - PH-B-");
+
+    // 'RIGHT SINGLE QUOTATION MARK' (U+2019)
+    console.assert(filterBcd("I’m depressed") === "I'M DEPRESSED");
+
+    const allValidBCD = "0123456789=\'+ABCDEFGHI.)-JKLMNOPQR$* /STUVWXYZ,(";
+    console.assert(filterBcd(allValidBCD) === allValidBCD);
+}
+
+
+function testSplit() {
+    console.assert(equal(split(""), []));
+    console.assert(equal(split("eliza"), ["eliza"]));
+    const r1 = [ "one", "two", ",", "three", ",", ",", "don't", "." ];
+    console.assert(equal(split("one   two, three,, don't."), r1));
+    console.assert(equal(split(" one two, three,, don't. "), r1));
+}
+
+
+function testJoin() {
+    console.assert(join( [] ) === "");
+    console.assert(join( ["ELIZA"] ) === "ELIZA");
+    console.assert(join( ["one", "two", "", "3"] ) === "one two 3");
+    let wordlist = ["", "", "", "99", "RED", "BALLOONS"];
+    console.assert(join( wordlist ) === "99 RED BALLOONS");
+    console.assert(equal(wordlist, ["", "", "", "99", "RED", "BALLOONS"]));
+}
+
+
+function testToInt() {
+    console.assert(toInt("0") === 0);
+    console.assert(toInt("1") === 1);
+    console.assert(toInt("2023") === 2023);
+    console.assert(toInt("-42") === -1);
+    console.assert(toInt("int") === -1);
+}
+
+
+function testInlist() {
+    const tags = (() => {
+        let tm = new Map();
+        tm.set("FAMILY", ["MOTHER", "FATHER", "SISTER", "BROTHER", "WIFE", "CHILDREN"]);
+        tm.set("NOUN", ["MOTHER", "FATHER", "FISH", "FOUL"]);
+        return tm;
+    })();
+
+    /* "A decomposition rule may contain a matching constituent of the form
+        (/TAG1 TAG2 ...) which will match and isolate a word in the subject
+        text having any one of the mentioned tags." [page 41] */
+
+    console.assert(inlist("MOTHER",     "(/FAMILY)",        tags) === true);
+    console.assert(inlist("FATHER",     "(/FAMILY)",        tags) === true);
+    console.assert(inlist("SISTER",     "(/FAMILY)",        tags) === true);
+    console.assert(inlist("BROTHER",    "( / FAMILY )",     tags) === true);
+    console.assert(inlist("WIFE",       "(/FAMILY)",        tags) === true);
+    console.assert(inlist("CHILDREN",   "(/FAMILY)",        tags) === true);
+    console.assert(inlist("FISH",       "(/FAMILY)",        tags) === false);
+    console.assert(inlist("FOUL",       "(/FAMILY)",        tags) === false);
+
+    console.assert(inlist("MOTHER",     "(/NOUN)",          tags) === true);
+    console.assert(inlist("FATHER",     "(/NOUN)",          tags) === true);
+    console.assert(inlist("SISTER",     "(/NOUN)",          tags) === false);
+    console.assert(inlist("BROTHER",    "(/NOUN)",          tags) === false);
+    console.assert(inlist("WIFE",       "(/NOUN)",          tags) === false);
+    console.assert(inlist("CHILDREN",   "(/NOUN)",          tags) === false);
+    console.assert(inlist("FISH",       "(/NOUN)",          tags) === true);
+    console.assert(inlist("FOUL",       "(/NOUN)",          tags) === true);
+
+    console.assert(inlist("MOTHER",     "(/NOUN FAMILY)",   tags) === true);
+    console.assert(inlist("FATHER",     "(/NOUN FAMILY)",   tags) === true);
+    console.assert(inlist("SISTER",     "(/NOUN FAMILY)",   tags) === true);
+    console.assert(inlist("BROTHER",    "(/NOUN FAMILY)",   tags) === true);
+    console.assert(inlist("WIFE",       "(/NOUN FAMILY)",   tags) === true);
+    console.assert(inlist("CHILDREN",   "(/NOUN FAMILY)",   tags) === true);
+    console.assert(inlist("FISH",       "(/NOUN FAMILY)",   tags) === true);
+    console.assert(inlist("FOUL",       "(/ NOUN  FAMILY )",tags) === true);
+
+    console.assert(inlist("MOTHER",     "(/NONEXISTANTTAG)",tags) === false);
+    console.assert(inlist("MOTHER",     "(/NON FAMILY TAG)",tags) === true);
+
+    console.assert(inlist("DEPRESSED",  "(/NOUN FAMILY)",           tags) === false);
+    console.assert(inlist("SAD",        "(*SAD HAPPY DEPRESSED)",   tags) === true);
+    console.assert(inlist("HAPPY",      "(*SAD HAPPY DEPRESSED)",   tags) === true);
+    console.assert(inlist("DEPRESSED",  "(*SAD HAPPY DEPRESSED)",   tags) === true);
+    console.assert(inlist("SAD",        "( * SAD HAPPY DEPRESSED )",tags) === true);
+    console.assert(inlist("HAPPY",      "( * SAD HAPPY DEPRESSED )",tags) === true);
+    console.assert(inlist("DEPRESSED",  "( * SAD HAPPY DEPRESSED )",tags) === true);
+    console.assert(inlist("DRUNK",      "( * SAD HAPPY DEPRESSED )",tags) === false);
+
+    console.assert(inlist("WONDER",     "(*HAPPY ELATED EXCITED GOOD WONDERFUL)", tags) === true);
+    console.assert(inlist("FUL",        "(*HAPPY ELATED EXCITED GOOD WONDERFUL)", tags) === true);
+    console.assert(inlist("D",          "(*HAPPY ELATED EXCITED GOOD WONDERFUL)", tags) === true);
+
+    let word = "NOW";
+    let wordlist = "(*YOU SEE IT)";
+    console.assert(inlist(word, wordlist, tags) === false);
+    console.assert(word === "NOW");
+    console.assert(wordlist === "(*YOU SEE IT)");
+}
+
+
+function testMatch() {
+    const tags = new Map();
+
+    // test [0, YOU, (*WANT NEED), 0] matches [YOU, NEED, NICE, FOOD]
+    let words = [ "YOU", "NEED", "NICE", "FOOD" ];
+    let pattern = [ "0", "YOU", "(*WANT NEED)", "0" ];
+    let expected = [ "", "YOU", "NEED", "NICE FOOD" ];
+    let [success, matchingComponents] = match(tags, pattern, words);
+    console.assert(success === true);
+    console.assert(equal(words, [ "YOU", "NEED", "NICE", "FOOD" ]));
+    console.assert(equal(pattern, [ "0", "YOU", "(*WANT NEED)", "0" ]));
+    console.assert(equal(matchingComponents, expected));
+
+    // test [0, 0, YOU, (*WANT NEED), 0] matches [YOU, WANT, NICE, FOOD]
+    words = [ "YOU", "WANT", "NICE", "FOOD" ];
+    pattern = [ "0", "0", "YOU", "(*WANT NEED)", "0" ];
+    expected = [ "", "", "YOU", "WANT", "NICE FOOD" ];
+    [success, matchingComponents] = match(tags, pattern, words);
+    console.assert(success === true);
+    console.assert(equal(words, [ "YOU", "WANT", "NICE", "FOOD" ]));
+    console.assert(equal(pattern, [ "0", "0", "YOU", "(*WANT NEED)", "0" ]));
+    console.assert(equal(matchingComponents, expected));
+
+    // test [1, (*WANT NEED), 0] matches [YOU, WANT, NICE, FOOD]
+    words = [ "YOU", "WANT", "NICE", "FOOD" ];
+    pattern = [ "1", "(*WANT NEED)", "0" ];
+    expected = [ "YOU", "WANT", "NICE FOOD" ];
+    [success, matchingComponents] = match(tags, pattern, words);
+    console.assert(success === true);
+    console.assert(equal(words, [ "YOU", "WANT", "NICE", "FOOD" ]));
+    console.assert(equal(pattern, [ "1", "(*WANT NEED)", "0" ]));
+    console.assert(equal(matchingComponents, expected));
+
+    // test [1, (*WANT NEED), 1] doesn't match [YOU, WANT, NICE, FOOD]
+    words = [ "YOU", "WANT", "NICE", "FOOD" ];
+    pattern = [ "1", "(*WANT NEED)", "1" ];
+    [success, matchingComponents] = match(tags, pattern, words);
+    console.assert(success === false);
+
+    // test [1, (*WANT NEED), 2] matches [YOU, WANT, NICE, FOOD]
+    words = [ "YOU", "WANT", "NICE", "FOOD" ];
+    pattern = [ "1", "(*WANT NEED)", "2" ];
+    expected = [ "YOU", "WANT", "NICE FOOD" ];
+    [success, matchingComponents] = match(tags, pattern, words);
+    console.assert(success === true);
+    console.assert(equal(words, [ "YOU", "WANT", "NICE", "FOOD" ]));
+    console.assert(equal(pattern, [ "1", "(*WANT NEED)", "2" ]));
+    console.assert(equal(matchingComponents, expected));
+
+    // test (0 YOUR 0 (* FATHER MOTHER) 0) matches
+    // (CONSIDER YOUR AGED MOTHER AND FATHER TOO)
+    /* "The above input text would have been decomposed precisely as stated
+        above by the decomposition rule: (0 YOUR 0 (*FATHER MOTHER) 0) which,
+        by virtue of the presence of "*" in the sublist structure seen above,
+        would have isolated either the word "FATHER" or "MOTHER" (in that
+        order) in the input text, whichever occurred first after the first
+        appearance of the word "YOUR". -- Weizenbaum 1966, page 42
+       What does "in that order" mean? */
+    words = [ "CONSIDER", "YOUR", "AGED", "MOTHER", "AND", "FATHER", "TOO" ];
+    pattern = [ "0", "YOUR", "0", "(* FATHER MOTHER)", "0" ];
+    expected = [ "CONSIDER", "YOUR", "AGED", "MOTHER", "AND FATHER TOO" ];
+    [success, matchingComponents] = match(tags, pattern, words);
+    console.assert(success === true);
+    console.assert(equal(words, [ "CONSIDER", "YOUR", "AGED", "MOTHER", "AND", "FATHER", "TOO" ]));
+    console.assert(equal(pattern, [ "0", "YOUR", "0", "(* FATHER MOTHER)", "0" ]));
+    console.assert(equal(matchingComponents, expected));
+
+    // patterns don't require literals
+    words = [ "FIRST", "AND", "LAST", "TWO", "WORDS" ];
+    pattern = [ "2", "0", "2" ];
+    expected = [ "FIRST AND", "LAST", "TWO WORDS" ];
+    [success, matchingComponents] = match(tags, pattern, words);
+    console.assert(success === true);
+    console.assert(equal(words, [ "FIRST", "AND", "LAST", "TWO", "WORDS" ]));
+    console.assert(equal(pattern, [ "2", "0", "2" ]));
+    console.assert(equal(matchingComponents, expected));
+
+    // pointless but not prohibited
+    words = [ "THE", "NAME", "IS", "BOND", "JAMES", "BOND", "OR", "007", "IF", "YOU", "PREFER" ];
+    pattern = [ "0", "0", "7" ];
+    expected = [ "", "THE NAME IS BOND", "JAMES BOND OR 007 IF YOU PREFER" ];
+    [success, matchingComponents] = match(tags, pattern, words);
+    console.assert(success === true);
+    console.assert(equal(words, [ "THE", "NAME", "IS", "BOND", "JAMES", "BOND", "OR", "007", "IF", "YOU", "PREFER" ]));
+    console.assert(equal(pattern, [ "0", "0", "7" ]));
+    console.assert(equal(matchingComponents, expected));
+
+    // how are ambiguous matches resolved?
+    words = [ "ITS", "MARY", "ITS", "NOT", "MARY", "IT", "IS", "MARY", "TOO" ];
+    pattern = [ "0", "ITS", "0", "MARY", "1" ];
+    expected = [ "", "ITS", "MARY ITS NOT MARY IT IS", "MARY", "TOO" ];
+    [success, matchingComponents] = match(tags, pattern, words);
+    console.assert(success === true);
+    console.assert(equal(words, [ "ITS", "MARY", "ITS", "NOT", "MARY", "IT", "IS", "MARY", "TOO" ]));
+    console.assert(equal(pattern, [ "0", "ITS", "0", "MARY", "1" ]));
+    console.assert(equal(matchingComponents, expected));
+
+    // how are ambiguous matches resolved? ("I know that you know I hate you and I like you too") 
+    words = [ "YOU", "KNOW", "THAT", "I", "KNOW", "YOU", "HATE", "I", "AND", "YOU", "LIKE", "I", "TOO"];
+    pattern = [ "0", "YOU", "0", "I", "0" ]; // from the I rule in the DOCTOR script
+    expected = [ "", "YOU", "KNOW THAT", "I", "KNOW YOU HATE I AND YOU LIKE I TOO" ];
+    [success, matchingComponents] = match(tags, pattern, words);
+    console.assert(success === true);
+    console.assert(equal(words, [ "YOU", "KNOW", "THAT", "I", "KNOW", "YOU", "HATE", "I", "AND", "YOU", "LIKE", "I", "TOO"]));
+    console.assert(equal(pattern, [ "0", "YOU", "0", "I", "0" ]));
+    console.assert(equal(matchingComponents, expected));
+
+    // A test pattern from the YMATCH function description in the SLIP manual
+    words = [ "MARY", "HAD", "A", "LITTLE", "LAMB", "ITS", "PROBABILITY", "WAS", "ZERO" ];
+    pattern = [ "MARY", "2", "2", "ITS", "1", "0" ];
+    expected = [ "MARY", "HAD A", "LITTLE LAMB", "ITS", "PROBABILITY", "WAS ZERO" ];
+    [success, matchingComponents] = match(tags, pattern, words);
+    console.assert(success === true);
+    console.assert(equal(words, [ "MARY", "HAD", "A", "LITTLE", "LAMB", "ITS", "PROBABILITY", "WAS", "ZERO" ]));
+    console.assert(equal(pattern, [ "MARY", "2", "2", "ITS", "1", "0" ]));
+    console.assert(equal(matchingComponents, expected));
+
+    // A test pattern from the RULE function description in the SLIP manual
+    words = [ "MARY", "HAD", "A", "LITTLE", "LAMB", "ITS", "PROBABILITY", "WAS", "ZERO" ];
+    pattern = [ "1", "0", "2", "ITS", "0" ];
+    expected = [ "MARY", "HAD A", "LITTLE LAMB", "ITS", "PROBABILITY WAS ZERO" ];
+    [success, matchingComponents] = match(tags, pattern, words);
+    console.assert(success === true);
+    console.assert(equal(words, [ "MARY", "HAD", "A", "LITTLE", "LAMB", "ITS", "PROBABILITY", "WAS", "ZERO" ]));
+    console.assert(equal(pattern, [ "1", "0", "2", "ITS", "0" ]));
+    console.assert(equal(matchingComponents, expected));
+}
+
+
+function testReassemble() {
+    // A test pattern from the ASSMBL function description in the SLIP manual
+    // (using above matchingComponents list)
+    const matchingComponents = [
+        "MARY", "HAD A", "LITTLE LAMB", "ITS", "PROBABILITY", "WAS ZERO"
+    ];
+
+    let reassemblyRule = [ "DID", "1", "HAVE", "A", "3" ];
+    let expected = [ "DID", "MARY", "HAVE", "A", "LITTLE", "LAMB" ];
+    console.assert(equal(reassemble(reassemblyRule, matchingComponents), expected));
+    console.assert(equal(reassemblyRule, [ "DID", "1", "HAVE", "A", "3" ]));
+
+    reassemblyRule = [ "1", "1", "1" ];
+    expected = [ "MARY", "MARY", "MARY" ];
+    console.assert(equal(reassemble(reassemblyRule, matchingComponents), expected));
+    console.assert(equal(reassemblyRule, [ "1", "1", "1" ]));
+
+    reassemblyRule = [ "1", "-1", "1" ];
+    expected = [ "MARY", "-1", "MARY" ];
+    console.assert(equal(reassemble(reassemblyRule, matchingComponents), expected));
+    console.assert(equal(reassemblyRule, [ "1", "-1", "1" ]));
+
+    reassemblyRule = [ "1", "0", "1" ];
+    expected = [ "MARY", "THINGY", "MARY" ];
+    console.assert(equal(reassemble(reassemblyRule, matchingComponents), expected));
+    console.assert(equal(reassemblyRule, [ "1", "0", "1" ]));
+
+    reassemblyRule = [ "1", "6", "1" ];
+    expected = [ "MARY", "WAS", "ZERO", "MARY" ];
+    console.assert(equal(reassemble(reassemblyRule, matchingComponents), expected));
+    console.assert(equal(reassemblyRule, [ "1", "6", "1" ]));
+
+    reassemblyRule = [ "1", "7", "1" ];
+    expected = [ "MARY", "THINGY", "MARY" ];
+    console.assert(equal(reassemble(reassemblyRule, matchingComponents), expected));
+    console.assert(equal(reassemblyRule, [ "1", "7", "1" ]));
+}
+
+
+function testHash() {
+    console.assert(hash(BigInt("0o214366217062"),  7) === 14);
+    console.assert(hash(BigInt("0o302551256060"),  2) === 3);
+    console.assert(hash(BigInt("0o423124626060"),  2) === 1);
+    console.assert(hash(BigInt("0o633144256060"),  2) === 0);
+    console.assert(hash(BigInt("0o777777777777"),  7) === 0x70);
+    console.assert(hash(BigInt("0o777777777777"), 15) === 0x7F00);
+    console.assert(hash(BigInt("0x555555555"),    15) === 0x46E3);
+    console.assert(hash(BigInt("0xF0F0F0F0F"),    15) === 0x7788);
+    console.assert(hash(BigInt("0o214366217062"), 15) === 0x70EE);
+    console.assert(hash(BigInt("0o633144256060"), 15) === 0x252E);
+    console.assert(hash(BigInt("0"),               7) === 0);
+}
+
+
+function testLastChunkAsBcd() {
+    console.assert(lastChunkAsBcd("")               === BigInt("0o606060606060"));
+    console.assert(lastChunkAsBcd("X")              === BigInt("0o676060606060"));
+    console.assert(lastChunkAsBcd("HERE")           === BigInt("0o302551256060"));
+    console.assert(lastChunkAsBcd("ALWAYS")         === BigInt("0o214366217062"));
+    console.assert(lastChunkAsBcd("INVENTED")       === BigInt("0o252460606060"));
+    console.assert(lastChunkAsBcd("123456ABCDEF")   === BigInt("0o212223242526"));
+}
+
+
+const CACM_1966_CONVERSATION = [
+
+    // --- exact conversation quoted in Weizenbaum's 1966 CACM paper ---
+
+    "Men are all alike.",
+    "IN WHAT WAY",
+
+    "They're always bugging us about something or other.",
+    "CAN YOU THINK OF A SPECIFIC EXAMPLE",
+
+    "Well, my boyfriend made me come here.",
+    "YOUR BOYFRIEND MADE YOU COME HERE",
+
+    "He says I'm depressed much of the time.",
+    "I AM SORRY TO HEAR YOU ARE DEPRESSED",
+
+    "It's true. I am unhappy.",
+    "DO YOU THINK COMING HERE WILL HELP YOU NOT TO BE UNHAPPY",
+
+    "I need some help, that much seems certain.",
+    "WHAT WOULD IT MEAN TO YOU IF YOU GOT SOME HELP",
+
+    "Perhaps I could learn to get along with my mother.",
+    "TELL ME MORE ABOUT YOUR FAMILY",
+
+    "My mother takes care of me.",
+    "WHO ELSE IN YOUR FAMILY TAKES CARE OF YOU",
+
+    "My father.",
+    "YOUR FATHER",
+
+    "You are like my father in some ways.",
+    "WHAT RESEMBLANCE DO YOU SEE",
+
+    "You are not very aggressive but I think you don't want me to notice that.",
+    "WHAT MAKES YOU THINK I AM NOT VERY AGGRESSIVE",
+
+    "You don't argue with me.",
+    "WHY DO YOU THINK I DON'T ARGUE WITH YOU",
+
+    "You are afraid of me.",
+    "DOES IT PLEASE YOU TO BELIEVE I AM AFRAID OF YOU",
+
+    "My father is afraid of everybody.",
+    "WHAT ELSE COMES TO MIND WHEN YOU THINK OF YOUR FATHER",
+
+    "Bullies.",
+    "DOES THAT HAVE ANYTHING TO DO WITH THE FACT THAT YOUR BOYFRIEND MADE YOU COME HERE"
+
+    // --- end of 1966 CACM paper conversation ---
+];
+
+
+function testScript() {
+
+    const script_text =
+`(OPENING REMARKS)
+(K00 = SUBSTITUTEWORD)
+(K01 DLIST(/TAG1 TAG2))
+(K10
+    (=REFERENCE))
+(K11 99
+    (=REFERENCE))
+(K12 DLIST(/TAG1 TAG2)
+    (=REFERENCE))
+(K13 = SUBSTITUTEWORD
+    (=REFERENCE))
+(K14 DLIST(/TAG1 TAG2) 99
+    (=REFERENCE))
+(K15 = SUBSTITUTEWORD 99
+    (=REFERENCE))
+(K16 = SUBSTITUTEWORD DLIST(/TAG1 TAG2)
+    (=REFERENCE))
+(K17 = SUBSTITUTEWORD DLIST(/TAG1 TAG2) 99
+    (=REFERENCE))
+(K20
+    ((DECOMPOSE (/TAG1 TAG2) PATTERN)
+        (REASSEMBLE RULE)))
+(K21 99
+    ((DECOMPOSE (*GOOD BAD UGLY) PATTERN)
+        (REASSEMBLE RULE)))
+(K22 DLIST(/TAG1 TAG2)
+    ((DECOMPOSE (*GOOD BAD) (/TAG2 TAG3) PATTERN)
+        (REASSEMBLE RULE)))
+(K23 = SUBSTITUTEWORD
+    ((DECOMPOSE PATTERN)
+        (REASSEMBLE RULE)))
+(K24 DLIST(/TAG1 TAG2) 99
+    ((DECOMPOSE PATTERN)
+        (REASSEMBLE RULE)))
+(K25 = SUBSTITUTEWORD 99
+    ((DECOMPOSE PATTERN)
+        (REASSEMBLE RULE)))
+(K26 = SUBSTITUTEWORD DLIST(/TAG1)
+    ((DECOMPOSE PATTERN)
+        (REASSEMBLE RULE)))
+(K27 = SUBSTITUTEWORD DLIST(/TAG1 TAG2) 99
+    ((DECOMPOSE PATTERN)
+        (REASSEMBLE RULE)))
+(K30
+    ((DECOMPOSE PATTERN)
+        (REASSEMBLE RULE))
+    (=REFERENCE))
+(K31 99
+    ((DECOMPOSE PATTERN)
+        (REASSEMBLE RULE))
+    (=REFERENCE))
+(K32 DLIST(/TAG1 TAG2 TAG3)
+    ((DECOMPOSE PATTERN)
+        (REASSEMBLE RULE))
+    (=REFERENCE))
+(K33 = SUBSTITUTEWORD
+    ((DECOMPOSE PATTERN)
+        (REASSEMBLE RULE))
+    (=REFERENCE))
+(K34 DLIST(/TAG1 TAG2) 99
+    ((DECOMPOSE PATTERN)
+        (REASSEMBLE RULE))
+    (=REFERENCE))
+(K35 = SUBSTITUTEWORD 99
+    ((DECOMPOSE PATTERN)
+        (REASSEMBLE RULE))
+    (=REFERENCE))
+(K36 = SUBSTITUTEWORD DLIST(/TAG1 TAG2)
+    ((DECOMPOSE PATTERN)
+        (REASSEMBLE RULE))
+    (=REFERENCE))
+(K37 = SUBSTITUTEWORD DLIST(/TAG1 TAG2) 99
+    ((DECOMPOSE PATTERN)
+        (REASSEMBLE RULE))
+    (=REFERENCE))
+(K38 = SUBSTITUTEWORD DLIST(/TAG1 TAG2) 99
+    ((DECOMPOSE PATTERN 1)
+        (REASSEMBLE RULE A1)
+        (REASSEMBLE RULE B1)
+        (REASSEMBLE RULE C1))
+    ((DECOMPOSE PATTERN 2)
+        (REASSEMBLE RULE A2)
+        (REASSEMBLE RULE B2)
+        (REASSEMBLE RULE C2)
+        (REASSEMBLE RULE D2))
+    (=REFERENCE))
+(NONE
+    ((0)
+        (ANY NUMBER OF, BUT AT LEAST ONE, CONTEXT-FREE MESSAGES)
+        (I SEE)
+        (PLEASE GO ON)))
+(MEMORY K10
+    (0 = A)
+    (0 = B)
+    (0 = C)
+    (0 = D))
+`;
+
+    let [status, s] = readScript(script_text);
+    console.assert(status === 'success');
+    if (status !== 'success') {
+        return;
+    }
+    console.assert(s.rules.size === 28);
+    console.assert(scriptToString(s) === script_text);
+
+    let tags = collectTags(s.rules);
+    console.assert(tags.size === 3);
+    console.assert(join(tags.get("TAG1")) === "K01 K12 K14 K16 K17 K22 K24 K26 K27 K32 K34 K36 K37 K38");
+    console.assert(join(tags.get("TAG2")) === "K01 K12 K14 K16 K17 K22 K24 K27 K32 K34 K36 K37 K38");
+    console.assert(join(tags.get("TAG3")) === "K32");
+
+
+    [status, s] = readScript('');
+    console.assert(status === "Script error on line 1: expected '('");
+    [status, s] = readScript('(');
+    console.assert(status === "Script error on line 1: expected ')'");
+    [status, s] = readScript('()');
+    console.assert(status === "Script error: no NONE rule specified; see Jan 1966 CACM page 41");
+    [status, s] = readScript('()\n(');
+    console.assert(status === "Script error on line 2: expected keyword|MEMORY|NONE");
+    [status, s] = readScript('()\n(NONE');
+    console.assert(status === "Script error on line 2: malformed rule");
+    [status, s] = readScript('()\n(NONE\n(');
+    console.assert(status === "Script error on line 3: expected '('");
+    [status, s] = readScript('()\n(NONE\n((');
+    console.assert(status === "Script error on line 3: expected ')'");
+    [status, s] = readScript('()\n(NONE\n(())');
+    console.assert(status === "Script error on line 3: decompose pattern cannot be empty");
+    [status, s] = readScript('()\n(NONE\n((0)()');
+    console.assert(status === "Script error on line 3: expected ')'");
+    [status, s] = readScript('()\n(NONE\n((0)()');
+    console.assert(status === "Script error on line 3: expected ')'");
+    [status, s] = readScript('()\n(NONE\n((0)())');
+    console.assert(status === "Script error on line 3: malformed rule");
+    [status, s] = readScript('()\n(NONE\n((0)()))');
+    console.assert(status === "Script error: no MEMORY rule specified; see Jan 1966 CACM page 41");
+    [status, s] = readScript('()\n(NONE\n((0)()))\r\n(MEMORY');
+    console.assert(status === "Script error on line 4: expected keyword to follow MEMORY");
+    [status, s] = readScript('()\n(NONE\n((0)()))\r\n(MEMORY KEY');
+    console.assert(status === "Script error on line 4: expected '('");
+    [status, s] = readScript('()\n(NONE\n((0)()))\r\n(MEMORY KEY(');
+    console.assert(status === "Script error on line 4: expected 'decompose_terms = reassemble_terms'");
+    [status, s] = readScript('()\n(NONE\n((0)()))\r\n(MEMORY KEY(0');
+    console.assert(status === "Script error on line 4: expected '='");
+    [status, s] = readScript('()\n(NONE\n((0)()))\r\n(MEMORY KEY(0 =');
+    console.assert(status === "Script error on line 4: expected 'decompose_terms = reassemble_terms'");
+    [status, s] = readScript('()\n(NONE\n((0)()))\r\n(MEMORY KEY(0 = BUT YOUR 1');
+    console.assert(status === "Script error on line 4: expected ')'");
+    [status, s] = readScript('()\n(NONE\n((0)()))\r\n(MEMORY KEY(0 = BUT YOUR 1)');
+    console.assert(status === "Script error on line 4: expected '('");
+    [status, s] = readScript('()\n(NONE\n((0)()))\r\n(MEMORY KEY(0 = BUT YOUR 1)(0 = B)(0 = C)(0 = D)');
+    console.assert(status === "Script error on line 4: expected ')'");
+    [status, s] = readScript('()\n(NONE\n((0)()))\r\n(MEMORY KEY(0 = BUT YOUR 1)(0 = B)(0 = C)(0 = D))');
+    console.assert(status === "Script error: MEMORY rule keyword 'KEY' is not also a keyword in its own right; see Jan 1966 CACM page 41");
+    [status, s] = readScript('()\n(NONE\n((0)()))\r\n(MEMORY KEY(0 = BUT YOUR 1)(0 = B)(0 = C)(0 = D))\n(KEY((0)(TEST)))');
+    console.assert(status === "success");
+    [status, s] = readScript('()\n(NONE\n((0)()))\r\n(MEMORY KEY(0 = BUT YOUR 1)(0 = B)(0 = C)(0 = D))\n(KEY((0)(TEST)))\n(K2)');
+    console.assert(status === "Script error on line 6: keyword 'K2' has no associated body");
+    [status, s] = readScript('()\n(NONE\n((0)()))\r\n(MEMORY KEY(0 = BUT YOUR 1)(0 = B)(0 = C)(0 = D))\n(KEY((0)(TEST)))\n(K2=KEY)');
+    console.assert(status === "success");
+}
+
+
+async function testDoctor() {
+
+// ORIGINAL_1966_CACM_SCRIPT_BUT_REORDERED is logically identical to the
+// script in the 1966 CACM paper Appendix, but the ordering and whitespace
+// is different so that it can be checked against the output of
+// scriptToString().
+
+const ORIGINAL_1966_CACM_SCRIPT_BUT_REORDERED =
+`(HOW DO YOU DO. PLEASE TELL ME YOUR PROBLEM)
+(ALIKE 10
+    (=DIT))
+(ALWAYS 1
+    ((0)
+        (CAN YOU THINK OF A SPECIFIC EXAMPLE)
+        (WHEN)
+        (WHAT INCIDENT ARE YOU THINKING OF)
+        (REALLY, ALWAYS)))
+(AM = ARE
+    ((0 ARE YOU 0)
+        (DO YOU BELIEVE YOU ARE 4)
+        (WOULD YOU WANT TO BE 4)
+        (YOU WISH I WOULD TELL YOU YOU ARE 4)
+        (WHAT WOULD IT MEAN IF YOU WERE 4)
+        (= WHAT))
+    ((0)
+        (WHY DO YOU SAY 'AM')
+        (I DON'T UNDERSTAND THAT)))
+(ARE
+    ((0 ARE I 0)
+        (WHY ARE YOU INTERESTED IN WHETHER I AM 4 OR NOT)
+        (WOULD YOU PREFER IF I WEREN'T 4)
+        (PERHAPS I AM 4 IN YOUR FANTASIES)
+        (DO YOU SOMETIMES THINK I AM 4)
+        (= WHAT))
+    ((0 ARE 0)
+        (DID YOU THINK THEY MIGHT NOT BE 3)
+        (WOULD YOU LIKE IT IF THEY WERE NOT 3)
+        (WHAT IF THEY WERE NOT 3)
+        (POSSIBLY THEY ARE 3)))
+(BECAUSE
+    ((0)
+        (IS THAT THE REAL REASON)
+        (DON'T ANY OTHER REASONS COME TO MIND)
+        (DOES THAT REASON SEEM TO EXPLAIN ANYTHING ELSE)
+        (WHAT OTHER REASONS MIGHT THERE BE)))
+(BELIEVE DLIST(/BELIEF))
+(BROTHER DLIST(/FAMILY))
+(CAN
+    ((0 CAN I 0)
+        (YOU BELIEVE I CAN 4 DON'T YOU)
+        (= WHAT)
+        (YOU WANT ME TO BE ABLE TO 4)
+        (PERHAPS YOU WOULD LIKE TO BE ABLE TO 4 YOURSELF))
+    ((0 CAN YOU 0)
+        (WHETHER OR NOT YOU CAN 4 DEPENDS ON YOU MORE THAN ON ME)
+        (DO YOU WANT TO BE ABLE TO 4)
+        (PERHAPS YOU DON'T WANT TO 4)
+        (= WHAT)))
+(CANT = CAN'T)
+(CERTAINLY
+    (=YES))
+(CHILDREN DLIST(/FAMILY))
+(COMPUTER 50
+    ((0)
+        (DO COMPUTERS WORRY YOU)
+        (WHY DO YOU MENTION COMPUTERS)
+        (WHAT DO YOU THINK MACHINES HAVE TO DO WITH YOUR PROBLEM)
+        (DON'T YOU THINK COMPUTERS CAN HELP PEOPLE)
+        (WHAT ABOUT MACHINES WORRIES YOU)
+        (WHAT DO YOU THINK ABOUT MACHINES)))
+(COMPUTERS 50
+    (=COMPUTER))
+(DAD = FATHER DLIST(/FAMILY))
+(DEUTSCH
+    (=XFREMD))
+(DIT
+    ((0)
+        (IN WHAT WAY)
+        (WHAT RESEMBLANCE DO YOU SEE)
+        (WHAT DOES THAT SIMILARITY SUGGEST TO YOU)
+        (WHAT OTHER CONNECTIONS DO YOU SEE)
+        (WHAT DO YOU SUPPOSE THAT RESEMBLANCE MEANS)
+        (WHAT IS THE CONNECTION, DO YOU SUPPOSE)
+        (COULD THERE REALLY BE SOME CONNECTION)
+        (HOW)))
+(DONT = DON'T)
+(DREAM 3
+    ((0)
+        (WHAT DOES THAT DREAM SUGGEST TO YOU)
+        (DO YOU DREAM OFTEN)
+        (WHAT PERSONS APPEAR IN YOUR DREAMS)
+        (DON'T YOU BELIEVE THAT DREAM HAS SOMETHING TO DO WITH YOUR PROBLEM)
+        (NEWKEY)))
+(DREAMED = DREAMT 4
+    (=DREAMT))
+(DREAMS = DREAM 3
+    (=DREAM))
+(DREAMT 4
+    ((0 YOU DREAMT 0)
+        (REALLY, 4)
+        (HAVE YOU EVER FANTASIED 4 WHILE YOU WERE AWAKE)
+        (HAVE YOU DREAMT 4 BEFORE)
+        (= DREAM)
+        (NEWKEY)))
+(ESPANOL
+    (=XFREMD))
+(EVERYBODY 2
+    (=EVERYONE))
+(EVERYONE 2
+    ((0 (* EVERYONE EVERYBODY NOBODY NOONE) 0)
+        (REALLY, 2)
+        (SURELY NOT 2)
+        (CAN YOU THINK OF ANYONE IN PARTICULAR)
+        (WHO, FOR EXAMPLE)
+        (YOU ARE THINKING OF A VERY SPECIAL PERSON)
+        (WHO, MAY I ASK)
+        (SOMEONE SPECIAL PERHAPS)
+        (YOU HAVE A PARTICULAR PERSON IN MIND, DON'T YOU)
+        (WHO DO YOU THINK YOU'RE TALKING ABOUT)))
+(FATHER DLIST(/NOUN FAMILY))
+(FEEL DLIST(/BELIEF))
+(FRANCAIS
+    (=XFREMD))
+(HELLO
+    ((0)
+        (HOW DO YOU DO. PLEASE STATE YOUR PROBLEM)))
+(HOW
+    (=WHAT))
+(I'M = YOU'RE
+    ((0 YOU'RE 0)
+        ( PRE ( YOU ARE 3 ) ( = I ) )))
+(I = YOU
+    ((0 YOU (* WANT NEED) 0)
+        (WHAT WOULD IT MEAN TO YOU IF YOU GOT 4)
+        (WHY DO YOU WANT 4)
+        (SUPPOSE YOU GOT 4 SOON)
+        (WHAT IF YOU NEVER GOT 4)
+        (WHAT WOULD GETTING 4 MEAN TO YOU)
+        (WHAT DOES WANTING 4 HAVE TO DO WITH THIS DISCUSSION))
+    ((0 YOU ARE 0 (*SAD UNHAPPY DEPRESSED SICK) 0)
+        (I AM SORRY TO HEAR YOU ARE 5)
+        (DO YOU THINK COMING HERE WILL HELP YOU NOT TO BE 5)
+        (I'M SURE ITS NOT PLEASANT TO BE 5)
+        (CAN YOU EXPLAIN WHAT MADE YOU 5))
+    ((0 YOU ARE 0 (*HAPPY ELATED GLAD BETTER) 0)
+        (HOW HAVE I HELPED YOU TO BE 5)
+        (HAS YOUR TREATMENT MADE YOU 5)
+        (WHAT MAKES YOU 5 JUST NOW)
+        (CAN YOU EXPLAIN WHY YOU ARE SUDDENLY 5))
+    ((0 YOU WAS 0)
+        (= WAS))
+    ((0 YOU (/BELIEF) YOU 0)
+        (DO YOU REALLY THINK SO)
+        (BUT YOU ARE NOT SURE YOU 5)
+        (DO YOU REALLY DOUBT YOU 5))
+    ((0 YOU 0 (/BELIEF) 0 I 0)
+        (= YOU))
+    ((0 YOU ARE 0)
+        (IS IT BECAUSE YOU ARE 4 THAT YOU CAME TO ME)
+        (HOW LONG HAVE YOU BEEN 4)
+        (DO YOU BELIEVE IT NORMAL TO BE 4)
+        (DO YOU ENJOY BEING 4))
+    ((0 YOU (* CAN'T CANNOT) 0)
+        (HOW DO YOU KNOW YOU CAN'T 4)
+        (HAVE YOU TRIED)
+        (PERHAPS YOU COULD 4 NOW)
+        (DO YOU REALLY WANT TO BE ABLE TO 4))
+    ((0 YOU DON'T 0)
+        (DON'T YOU REALLY 4)
+        (WHY DON'T YOU 4)
+        (DO YOU WISH TO BE ABLE TO 4)
+        (DOES THAT TROUBLE YOU))
+    ((0 YOU FEEL 0)
+        (TELL ME MORE ABOUT SUCH FEELINGS)
+        (DO YOU OFTEN FEEL 4)
+        (DO YOU ENJOY FEELING 4)
+        (OF WHAT DOES FEELING 4 REMIND YOU))
+    ((0 YOU 0 I 0)
+        (PERHAPS IN YOUR FANTASY WE 3 EACH OTHER)
+        (DO YOU WISH TO 3 ME)
+        (YOU SEEM TO NEED TO 3 ME)
+        (DO YOU 3 ANYONE ELSE))
+    ((0)
+        (YOU SAY 1)
+        (CAN YOU ELABORATE ON THAT)
+        (DO YOU SAY 1 FOR SOME SPECIAL REASON)
+        (THAT'S QUITE INTERESTING)))
+(IF 3
+    ((0 IF 0)
+        (DO YOU THINK ITS LIKELY THAT 3)
+        (DO YOU WISH THAT 3)
+        (WHAT DO YOU THINK ABOUT 3)
+        (REALLY, 2 3)))
+(ITALIANO
+    (=XFREMD))
+(LIKE 10
+    ((0 (*AM IS ARE WAS) 0 LIKE 0)
+        (= DIT))
+    ((0)
+        (NEWKEY)))
+(MACHINE 50
+    (=COMPUTER))
+(MACHINES 50
+    (=COMPUTER))
+(MAYBE
+    (=PERHAPS))
+(ME = YOU)
+(MOM = MOTHER DLIST(/FAMILY))
+(MOTHER DLIST(/NOUN FAMILY))
+(MY = YOUR 2
+    ((0 YOUR 0 (/FAMILY) 0)
+        (TELL ME MORE ABOUT YOUR FAMILY)
+        (WHO ELSE IN YOUR FAMILY 5)
+        (YOUR 4)
+        (WHAT ELSE COMES TO MIND WHEN YOU THINK OF YOUR 4))
+    ((0 YOUR 0)
+        (YOUR 3)
+        (WHY DO YOU SAY YOUR 3)
+        (DOES THAT SUGGEST ANYTHING ELSE WHICH BELONGS TO YOU)
+        (IS IT IMPORTANT TO YOU THAT 2 3)))
+(MYSELF = YOURSELF)
+(NAME 15
+    ((0)
+        (I AM NOT INTERESTED IN NAMES)
+        (I'VE TOLD YOU BEFORE, I DON'T CARE ABOUT NAMES - PLEASE CONTINUE)))
+(NO
+    ((0)
+        (ARE YOU SAYING 'NO' JUST TO BE NEGATIVE)
+        (YOU ARE BEING A BIT NEGATIVE)
+        (WHY NOT)
+        (WHY 'NO')))
+(NOBODY 2
+    (=EVERYONE))
+(NOONE 2
+    (=EVERYONE))
+(PERHAPS
+    ((0)
+        (YOU DON'T SEEM QUITE CERTAIN)
+        (WHY THE UNCERTAIN TONE)
+        (CAN'T YOU BE MORE POSITIVE)
+        (YOU AREN'T SURE)
+        (DON'T YOU KNOW)))
+(REMEMBER 5
+    ((0 YOU REMEMBER 0)
+        (DO YOU OFTEN THINK OF 4)
+        (DOES THINKING OF 4 BRING ANYTHING ELSE TO MIND)
+        (WHAT ELSE DO YOU REMEMBER)
+        (WHY DO YOU REMEMBER 4 JUST NOW)
+        (WHAT IN THE PRESENT SITUATION REMINDS YOU OF 4)
+        (WHAT IS THE CONNECTION BETWEEN ME AND 4))
+    ((0 DO I REMEMBER 0)
+        (DID YOU THINK I WOULD FORGET 5)
+        (WHY DO YOU THINK I SHOULD RECALL 5 NOW)
+        (WHAT ABOUT 5)
+        (= WHAT)
+        (YOU MENTIONED 5))
+    ((0)
+        (NEWKEY)))
+(SAME 10
+    (=DIT))
+(SISTER DLIST(/FAMILY))
+(SORRY
+    ((0)
+        (PLEASE DON'T APOLIGIZE)
+        (APOLOGIES ARE NOT NECESSARY)
+        (WHAT FEELINGS DO YOU HAVE WHEN YOU APOLOGIZE)
+        (I'VE TOLD YOU THAT APOLOGIES ARE NOT REQUIRED)))
+(THINK DLIST(/BELIEF))
+(WAS 2
+    ((0 WAS YOU 0)
+        (WHAT IF YOU WERE 4)
+        (DO YOU THINK YOU WERE 4)
+        (WERE YOU 4)
+        (WHAT WOULD IT MEAN IF YOU WERE 4)
+        (WHAT DOES ' 4 ' SUGGEST TO YOU)
+        (= WHAT))
+    ((0 YOU WAS 0)
+        (WERE YOU REALLY)
+        (WHY DO YOU TELL ME YOU WERE 4 NOW)
+        (PERHAPS I ALREADY KNEW YOU WERE 4))
+    ((0 WAS I 0)
+        (WOULD YOU LIKE TO BELIEVE I WAS 4)
+        (WHAT SUGGESTS THAT I WAS 4)
+        (WHAT DO YOU THINK)
+        (PERHAPS I WAS 4)
+        (WHAT IF I HAD BEEN 4))
+    ((0)
+        (NEWKEY)))
+(WERE = WAS
+    (=WAS))
+(WHAT
+    ((0)
+        (WHY DO YOU ASK)
+        (DOES THAT QUESTION INTEREST YOU)
+        (WHAT IS IT YOU REALLY WANT TO KNOW)
+        (ARE SUCH QUESTIONS MUCH ON YOUR MIND)
+        (WHAT ANSWER WOULD PLEASE YOU MOST)
+        (WHAT DO YOU THINK)
+        (WHAT COMES TO YOUR MIND WHEN YOU ASK THAT)
+        (HAVE YOU ASKED SUCH QUESTIONS BEFORE)
+        (HAVE YOU ASKED ANYONE ELSE)))
+(WHEN
+    (=WHAT))
+(WHY
+    ((0 WHY DON'T I 0)
+        (DO YOU BELIEVE I DON'T 5)
+        (PERHAPS I WILL 5 IN GOOD TIME)
+        (SHOULD YOU 5 YOURSELF)
+        (YOU WANT ME TO 5)
+        (= WHAT))
+    ((0 WHY CAN'T YOU 0)
+        (DO YOU THINK YOU SHOULD BE ABLE TO 5)
+        (DO YOU WANT TO BE ABLE TO 5)
+        (DO YOU BELIEVE THIS WILL HELP YOU TO 5)
+        (HAVE YOU ANY IDEA WHY YOU CAN'T 5)
+        (= WHAT))
+    (=WHAT))
+(WIFE DLIST(/FAMILY))
+(WISH DLIST(/BELIEF))
+(WONT = WON'T)
+(XFREMD
+    ((0)
+        (I AM SORRY, I SPEAK ONLY ENGLISH)))
+(YES
+    ((0)
+        (YOU SEEM QUITE POSITIVE)
+        (YOU ARE SURE)
+        (I SEE)
+        (I UNDERSTAND)))
+(YOU'RE = I'M
+    ((0 I'M 0)
+        ( PRE ( I ARE 3 ) ( = YOU ) )))
+(YOU = I
+    ((0 I REMIND YOU OF 0)
+        (= DIT))
+    ((0 I ARE 0)
+        (WHAT MAKES YOU THINK I AM 4)
+        (DOES IT PLEASE YOU TO BELIEVE I AM 4)
+        (DO YOU SOMETIMES WISH YOU WERE 4)
+        (PERHAPS YOU WOULD LIKE TO BE 4))
+    ((0 I 0 YOU)
+        (WHY DO YOU THINK I 3 YOU)
+        (YOU LIKE TO THINK I 3 YOU - DON'T YOU)
+        (WHAT MAKES YOU THINK I 3 YOU)
+        (REALLY, I 3 YOU)
+        (DO YOU WISH TO BELIEVE I 3 YOU)
+        (SUPPOSE I DID 3 YOU - WHAT WOULD THAT MEAN)
+        (DOES SOMEONE ELSE BELIEVE I 3 YOU))
+    ((0 I 0)
+        (WE WERE DISCUSSING YOU - NOT ME)
+        (OH, I 3)
+        (YOU'RE NOT REALLY TALKING ABOUT ME - ARE YOU)
+        (WHAT ARE YOUR FEELINGS NOW)))
+(YOUR = MY
+    ((0 MY 0)
+        (WHY ARE YOU CONCERNED OVER MY 3)
+        (WHAT ABOUT YOUR OWN 3)
+        (ARE YOU WORRIED ABOUT SOMEONE ELSES 3)
+        (REALLY, MY 3)))
+(YOURSELF = MYSELF)
+(NONE
+    ((0)
+        (I AM NOT SURE I UNDERSTAND YOU FULLY)
+        (PLEASE GO ON)
+        (WHAT DOES THAT SUGGEST TO YOU)
+        (DO YOU FEEL STRONGLY ABOUT DISCUSSING SUCH THINGS)))
+(MEMORY MY
+    (0 YOUR 0 = LETS DISCUSS FURTHER WHY YOUR 3)
+    (0 YOUR 0 = EARLIER YOU SAID YOUR 3)
+    (0 YOUR 0 = BUT YOUR 3)
+    (0 YOUR 0 = DOES THAT HAVE ANYTHING TO DO WITH THE FACT THAT YOUR 3))
+`;
+
+    const [status, s] = readScript(CACM_1966_01_DOCTOR_SCRIPT);
+    console.assert(status === 'success');
+    if (status !== 'success') {
+        return;
+    }
+    console.assert(scriptToString(s) === ORIGINAL_1966_CACM_SCRIPT_BUT_REORDERED);
+
+    const tags = collectTags(s.rules);
+    console.assert(tags.size === 3);
+    console.assert(join(tags.get("BELIEF").sort()) === "BELIEVE FEEL THINK WISH");
+    console.assert(join(tags.get("FAMILY").sort()) === "BROTHER CHILDREN DAD FATHER MOM MOTHER SISTER WIFE");
+    console.assert(join(tags.get("NOUN").sort()) === "FATHER MOTHER");
+
+
+    const eliza = new Eliza(s.rules, s.memoryRule, new nullTracer);
+    for (let i = 0; i < CACM_1966_CONVERSATION.length; i += 2) {
+        response = await eliza.response(CACM_1966_CONVERSATION[i]);
+        if (response !== CACM_1966_CONVERSATION[i + 1]) {
+            console.log("expected '" + CACM_1966_CONVERSATION[i + 1]
+                + "' but got '" + response + "'");
+        }
+        console.assert(response === CACM_1966_CONVERSATION[i + 1]);
+    }
+
+    // how the 1966 conversation might have continued...
+    // (to extend the test coverage a little)
+    const imaginedContinuation2023 = [
+        "My boyfriend loves me, he's not a bully.",
+        "WHY DO YOU SAY YOUR BOYFRIEND LOVES YOU",
+
+        "He annoys me sometimes, but I know he cares about me.",
+        "YOU SAY YOU KNOW HE CARES ABOUT YOU",
+
+        "That's why he wanted me to come here, because he knows I'm unhappy.",
+        "WHY DO YOU ASK",
+
+        "I didn't.",
+        "CAN YOU ELABORATE ON THAT",
+
+        "He knows I'm not getting on with my family and thought it would help me if I talked to someone.",
+        "DO YOU THINK ITS LIKELY THAT YOU TALKED TO SOMEONE",
+
+        "That's why I'm talking to you.",
+        "DOES THAT QUESTION INTEREST YOU",
+
+        "What question?",
+        "WHAT IS IT YOU REALLY WANT TO KNOW",
+
+        "How to have a good relationship with my parents.",
+        "DOES THAT SUGGEST ANYTHING ELSE WHICH BELONGS TO YOU",
+
+        "A brighter future?",
+        "I AM NOT SURE I UNDERSTAND YOU FULLY",
+
+        "If I could get on better with my parents I'd be a lot happier.",
+        "DO YOU WISH THAT YOU COULD GET ON BETTER WITH YOUR PARENTS I'D BE A LOT HAPPIER",
+
+        "I do.",
+        "DO YOU SAY YOU DO FOR SOME SPECIAL REASON",
+
+        "Not really.",
+        "DOES THAT HAVE ANYTHING TO DO WITH THE FACT THAT YOUR MOTHER",
+
+        "I'll never be as good as my sister in my mom's eyes.",
+        "TELL ME MORE ABOUT YOUR FAMILY",
+
+        "My sister did better at school than me and she's always got on better with my parents.",
+        "WHO ELSE IN YOUR FAMILY DID BETTER AT SCHOOL THAN YOU AND SHE'S ALWAYS GOT ON BETTER WITH YOUR PARENTS",
+
+        "It's just me and my sister.",
+        "YOUR SISTER",
+
+        "That's right.",
+        "BUT YOUR MOTHER TAKES CARE OF YOU",
+
+        "She does, sure. She's not mean to me. It's just little things she does, probably without even knowing she's doing them, that make me feel stupid and not as loved as my sister.",
+        "WHAT ELSE COMES TO MIND WHEN YOU THINK OF YOUR SISTER",
+
+        "I don't think she likes me much either.",
+        "DON'T YOU REALLY THINK SHE LIKES YOU MUCH EITHER",
+
+        "She's older than me and I was always her silly little annoying sister.",
+        "WERE YOU REALLY",
+
+        "She thought so.",
+        "BUT YOUR FATHER",
+
+        "He dotes on her too.",
+        "PLEASE GO ON"
+    ];
+
+    for (let i = 0; i < imaginedContinuation2023.length; i += 2) {
+        response = await eliza.response(imaginedContinuation2023[i]);
+        if (response !== imaginedContinuation2023[i + 1]) {
+            console.log("expected '" + imaginedContinuation2023[i + 1]
+                + "' but got '" + response + "'");
+        }
+        console.assert(response === imaginedContinuation2023[i + 1]);
+    }
+}
+
+
+
+function elizaTest() {
+    testEqual();
+    testfilterBcd();
+    testSplit();
+    testJoin();
+    testToInt();
+    testInlist();
+    testMatch();
+    testReassemble();
+    testHash();
+    testLastChunkAsBcd();
+    testScript();
+    testDoctor();
+}
+
+    elizaTest();
+
+    let currentScriptText = CACM_1966_01_DOCTOR_SCRIPT;
+    let [status, script] = readScript(currentScriptText);
+    console.assert(status === 'success');
+    let tracer = new Tracer();
+    const TRANSFORMATION_LIMIT_DEFAULT = 500;
+    let currentTransformationLimit = TRANSFORMATION_LIMIT_DEFAULT;
+    let eliza = new Eliza(script.rules, script.memoryRule, tracer, currentTransformationLimit);
+
+
+/////////////////////////////////////////////////////////////////////////////
+
+    const okchars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ.,' ";
+
+    // In order to permit rapid key pressing, we need multiple instances
+    // of the audio, otherwise it'll skip. 
+    var whichkey = 0;
+    const nkeys = 10;
+    // (I tried to do this with a comprehesion but couldn't figure out how.)
+    const keypresses = Array(nkeys).fill().map(() => new Audio("asr33keypress.wav"));
+
+    var keylocs = [];
+
+    const typingspeed = 100;
+
+    function playkeypress(){
+	keypresses[whichkey++].play();
+	if (whichkey == nkeys) whichkey = 0;
+    }
+
+    function typeWriter(text, index) {
+      if (index < text.length) {
+	    playkeypress();
+        let nextchar = text.charAt(index);
+        document.getElementById('textField').value += nextchar;
+        setTimeout(function() {
+          typeWriter(text, index + 1);
+        }, typingspeed); 
+      }
+    }
+
+    var input = "";
+
+    function ELIZAresponse(input) {
+        return("\nYou wrote: " + input+"\n");
+    }
+
+    var startEliza = true;
+
+    document.addEventListener('keypress', (e) => {
+        const key = e.key;
+        if (key === 'Enter') {
+            if (startEliza) {
+                typeWriter('\n' + join(script.helloMessage) + '\n\n',0);
+                startEliza = false;
+            }
+            else {
+                e.preventDefault();
+                eliza.response(input).then((response) => {
+                    typeWriter('\n' + response + '\n\n',0);
+                    input = '';
+                });
+            }
+        }
+        else {
+            const char = key.toString().toUpperCase();
+            if (okchars.includes(char)){
+                playkeypress();
+                flashKey(char);
+                input += char;
+                document.getElementById('textField').value += char;
+            }
+        }
+    });
+
+
+    document.addEventListener("DOMContentLoaded", function() {
+    var canvas = document.getElementById('myCanvas');
+
+    // draw the image
+    // var background = new Image();
+    // background.src = "teletype-model-33-top_3.jpg";
+    // background.onload = function(){ctx.drawImage(background,0,0,1000,1000);}
+
+    var ctx = canvas.getContext('2d');
+    var y = -15;
+    for (row of ["QWERTYUIOP","ASDFGHJKL","ZXCVBNM,."]){
+        y = y + 45;
+        var x = (y/5)-24;
+        for (letter of row) {
+            x = x + 27;
+            var radius = 10;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            ctx.fillStyle = 'rgba(4, 10, 100, 0.5)'; // Semi-transparent circles
+            ctx.fill();
+            ctx.font = `${radius}px Arial`; // Adjust font size based on radius
+            ctx.fillStyle = 'white'; // Letter color
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(letter, x, y);
+	    keylocs.push([letter,x,y]);
+    }
+    }
+    // !!!!!!!! This doesn't work because there's a "no autoplay" blocker that doesn't
+    // let you play audio before the used interacts with the web page!
+    // typeWriter("Welcome! What can I do for you today?",0);
+    // Adding a "Start ELIZA" button is one way to fix this.
+    })
+
+    function flashKey(letter) {
+        // Some of this can be made global, but it has to be done after domload, and I'm lazy.
+        var canvas = document.getElementById('myCanvas');
+        var ctx = canvas.getContext('2d');
+        var flashInterval = 100; // Interval in milliseconds
+        var flashTimes = 1; // Number of times to flash
+        var currentFlash = 0;
+        
+        var intervalId = setInterval(function() {
+            var key = keylocs.find(k => k[0] === letter);
+            if (!key) {
+                clearInterval(intervalId); // Stop if key not found
+                return;
+            }
+
+            if (currentFlash % 2 === 0) {
+                // Draw circle in a different color to "flash"
+                ctx.beginPath();
+                ctx.arc(key[1], key[2], key[3], 0, 2 * Math.PI);
+                ctx.fillStyle = 'yellow'; // Flash color
+                ctx.fill();
+
+                // Redraw letter
+                ctx.font = `${key[3]}px Arial`;
+                ctx.fillStyle = 'black'; // Letter color for visibility
+                ctx.fillText(key[0], key[1], key[2]);
+            } else {
+                // Redraw original circle and letter
+                ctx.beginPath();
+                ctx.arc(key[1], key[2], key[3], 0, 2 * Math.PI);
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.fill();
+                
+                // Redraw letter
+                ctx.fillStyle = 'white';
+                ctx.fillText(key[0], key[1], key[2]);
+            }
+
+            currentFlash++;
+            if (currentFlash >= flashTimes * 2) {
+                clearInterval(intervalId); // Stop flashing
+            }
+        }, flashInterval);
+    }
+</script>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #container {
+            position: relative;
+            width: 1600px; /* Example width */
+            height: 1200px; /* Example height */
+        }
+
+        #backgroundCanvas {
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        #textField, #myCanvas {
+            position: absolute;
+            z-index: 1;
+        }
+
+        #textField {
+            width: 545px;
+            height: 300px;
+            top: 150px; /* Adjust based on your needs */
+            left: 560px; /* Adjust based on your needs */
+        }
+
+        #myCanvas {
+            width: 545px;
+            height: 160px;
+            border: 1px solid #000000;
+            top: 840px; 
+            left: 550px; 
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <canvas id="backgroundCanvas"></canvas>
+        <h1 style="position: absolute; top: 0; left: 100px;">Press enter to start ELIZA.</h1>
+        <textarea id="textField" readonly></textarea>
+        <canvas id="myCanvas"></canvas>
+    </div>
+
+    <script>
+        window.onload = function() {
+            var canvas = document.getElementById('backgroundCanvas');
+            var context = canvas.getContext('2d');
+            var img = new Image();
+
+            img.onload = function() {
+                var x = 0; 
+                var y = 0; 
+
+                var width = canvas.width; 
+                var height = canvas.height; 
+
+                // Draw the image on the canvas
+		context.drawImage(img, x, y, width, height);
+            };
+            img.src = 'teletype-model-33-top_2.jpg'; // Path to your image
+        };
+    </script>
+</body>
+</html>

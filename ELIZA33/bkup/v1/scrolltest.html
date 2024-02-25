@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teletype from Bottom</title>
+    <style>
+        #teletypeContainer {
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: flex-start;
+            overflow: hidden;
+            width: 400px;
+            height: 200px;
+            border: 1px solid #000;
+            padding: 4px;
+            font-family: monospace;
+            background-color: #f0f0f0;
+        }
+        #teletypeContent {
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="teletypeContainer">
+        <div id="teletypeContent"></div>
+    </div>
+    <button id="addText">Add Text</button>
+
+    <script>
+
+    document.addEventListener("DOMContentLoaded", function() {
+    const teletypeContent = document.getElementById('teletypeContent');
+    const addTextButton = document.getElementById('addText');
+
+    addTextButton.addEventListener('click', function() {
+        // Generate some text to add
+        const newText = document.createElement("div");
+        newText.textContent = "New line at " + new Date().toLocaleTimeString();
+        
+        // Prepend the new text to the teletype content, making it appear at the bottom
+        if (teletypeContent.firstChild) {
+            teletypeContent.insertBefore(newText, teletypeContent.firstChild);
+        } else {
+            teletypeContent.appendChild(newText);
+        }
+
+        // Adjust scrolling if content overflows
+        const container = document.getElementById('teletypeContainer');
+        if (teletypeContent.offsetHeight > container.offsetHeight) {
+            container.scrollTop = teletypeContent.scrollHeight - container.scrollHeight;
+        }
+    });
+});
+
+    </script>
+</body>
+</html>
