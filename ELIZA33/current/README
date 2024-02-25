@@ -1,0 +1,7 @@
+This is a simulation of ELIZA running on an ASR33 Teletype. Its
+purpose is to give you a sense of what it was like to use the original
+ELIZA. The ELIZA here is Anthony Hay's, which is the closest known
+simulation of Joseph Weizenbaum's original MAD-SLIP ELIZA from the mid
+1960. The original ELIZA would definitely have run on various
+teletype-like devices, and most likely on ASR33s (although Weizenbaum
+appears to have had an IBM 2741 at home).
