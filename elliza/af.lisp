@@ -1,16 +1,23 @@
+; cd ../..
+; sbcl
 ; (load "af.lisp")
+; cd eliza/src
+; clang++ -std=c++20 -pedantic -o eliza eliza.cpp
+; ./eliza --quick --nobanner ../../af.script
+
+;;; Pre-edits: Take out all apostrophies
 
 (defparameter *sentences*
   '(
-    "The hens revolt against Napoleon's orders to give up their eggs for trade."
-    "The animals' first collective decision was to rename Manor Farm to Animal Farm."
+    "The hens revolt against Napoleons orders to give up their eggs for trade."
+    "The animals first collective decision was to rename Manor Farm to Animal Farm."
     "Snowball organizes committees to teach the animals reading and writing."
-    "Napoleon blames the destruction of the windmill on Snowball's sabotage."
-    "Boxer adopts the personal maxim, 'I will work harder.'"
+    "Napoleon blames the destruction of the windmill on Snowballs sabotage."
+    "Boxer adopts the personal maxim, I will work harder."
     "The pigs establish trade with the neighboring human farms despite earlier promises."
     "Clover suspects the pigs of altering the commandments but convinces herself otherwise."
-    "Napoleon bans the song 'Beasts of England' after consolidating power."
-    "The sheep are taught to chant, 'Four legs good, two legs bad.'"
+    "Napoleon bans the song Beasts of England after consolidating power."
+    "The sheep are taught to chant, Four legs good, two legs bad."
     "Snowball plans to build the windmill to generate electricity for the farm."
     "The animals celebrate their victory in the Battle of the Cowshed with great pride."
     "Napoleon changes his stance on the windmill and claims it as his own idea."
@@ -18,51 +25,51 @@
     "Mr. Frederick deceives Napoleon by paying for timber with counterfeit money."
     "Boxer is seriously injured while rebuilding the windmill."
     "The pigs begin sleeping in the farmhouse beds, breaking another commandment."
-    "Squealer spreads propaganda to justify the pigs' increasing privileges."
+    "Squealer spreads propaganda to justify the pigs increasing privileges."
     "The animals work longer hours but receive fewer rations as time passes."
     "Napoleon uses the dogs to terrorize and execute dissenting animals."
     "The windmill is destroyed by a storm, but the pigs blame Snowball."
-    "The farm engages in trade with Mr. Pilkington's farm despite earlier promises."
+    "The farm engages in trade with Mr. Pilkingtons farm despite earlier promises."
     "Napoleon raises a litter of puppies to become his personal enforcers."
     "The animals find it hard to remember the original seven commandments."
-    "The hens' rebellion leads to starvation as Napoleon cuts off their food supply."
+    "The hens rebellion leads to starvation as Napoleon cuts off their food supply."
     "Clover becomes disillusioned but is unable to articulate her concerns."
     "The pigs learn to walk on two legs by the end of the story."
     "The animals realize they can no longer distinguish between the pigs and humans."
     "Mr. Whymper acts as an intermediary for trade between Animal Farm and humans."
-    "Snowball's military strategies help win the Battle of the Cowshed."
+    "Snowballs military strategies help win the Battle of the Cowshed."
     "The pigs claim that their intellectual work justifies their privileged lifestyle."
     "The animals work diligently on the windmill, hoping it will improve their lives."
     "Napoleon revises the commandments to suit his increasing authoritarian rule."
-    "Napoleon awards himself the title of 'Leader' of Animal Farm."
-    "The pigs exploit the other animals' hard work for their own benefit."
+    "Napoleon awards himself the title of Leader of Animal Farm."
+    "The pigs exploit the other animals hard work for their own benefit."
     "Napoleon holds extravagant banquets in the farmhouse, mimicking humans."
     "The animals are forced to rebuild the windmill multiple times."
     "Napoleon trades with both Mr. Pilkington and Mr. Frederick despite tensions."
     "Squealer constantly manipulates facts to maintain control over the animals."
-    "The original ideals of Animalism are slowly corrupted by the pigs' greed."
-    "The animals fear Napoleon's dogs and rarely speak out against him."
+    "The original ideals of Animalism are slowly corrupted by the pigs greed."
+    "The animals fear Napoleons dogs and rarely speak out against him."
     "Clover tries to recall if the commandment against killing was ever changed."
-    "Napoleon gradually increases the pigs' power, making them the ruling class."
+    "Napoleon gradually increases the pigs power, making them the ruling class."
     "The pigs begin drinking milk and eating apples, claiming they need them for their brains."
     "Napoleon uses the threat of Jones returning to maintain control over the farm."
-    "The animals never truly understand the extent of the pigs' manipulation."
+    "The animals never truly understand the extent of the pigs manipulation."
     "Mr. Jones attempts to retake the farm but fails during the Battle of the Cowshed."
     "The animals are promised a better future with the windmill, but it never comes."
-    "The pigs change the commandments from 'No animal shall drink alcohol' to 'No animal shall drink alcohol to excess.'"
+    "The pigs change the commandments from No animal shall drink alcohol to No animal shall drink alcohol to excess."
     "Napoleon arranges for a deal with the humans to sell timber from Animal Farm."
     "The animals slowly realize that they are working harder than they did under Jones."
     "The sheep’s chanting is used to drown out any dissent during meetings."
     "The animals initially believe they are building the windmill for their own benefit."
-    "The pigs' gradual transformation into human-like behavior is noticed by Clover."
-    "Napoleon orders the animals to confess to crimes they didn't commit."
+    "The pigs gradual transformation into human-like behavior is noticed by Clover."
+    "Napoleon orders the animals to confess to crimes they didnt commit."
     "The pigs use Boxer as a symbol of loyalty and hard work, only to betray him."
     "The animals hold a memorial service for Boxer, unaware of his true fate."
-    "The pigs promise that the windmill will be used to ease the animals' burdens."
+    "The pigs promise that the windmill will be used to ease the animals burdens."
     "Napoleon creates a personality cult around himself, similar to Stalin."
     "The animals look forward to retirement, but the pasture promised for this purpose is never used."
     "The pigs engage in gambling with the humans despite previously condemning such behavior."
-    "Snowball's role in the Battle of the Cowshed is rewritten to portray him as a traitor."
+    "Snowballs role in the Battle of the Cowshed is rewritten to portray him as a traitor."
     "The animals gather every Sunday for meetings, which eventually become controlled by Napoleon."
     "The pigs use fear of an external threat to justify their harsh rule."
     "Napoleon orders the execution of several animals, accusing them of conspiring with Snowball."
@@ -71,20 +78,20 @@
     "Napoleon raises the puppies in isolation, ensuring their loyalty to him alone."
     "The pigs hoard luxuries like sugar and alcohol while the other animals starve."
     "Snowball is declared an enemy of the farm despite his early contributions."
-    "The pigs change the original commandment 'All animals are equal' to 'All animals are equal, but some animals are more equal than others.'"
+    "The pigs change the original commandment All animals are equal to All animals are equal, but some animals are more equal than others."
     "The animals remember Old Major’s dream but realize how far they’ve strayed from it."
     "The pigs invite human farmers to visit and tour Animal Farm, shocking the other animals."
     "The dogs grow into a vicious, fearsome pack that answers only to Napoleon."
     "Clover and other animals try to recall the old days when they were all comrades."
-    "The animals notice that the pigs no longer refer to themselves as 'comrades.'"
+    "The animals notice that the pigs no longer refer to themselves as comrades."
     "Napoleon ensures that he has control over all decision-making on the farm."
     "The pigs train the sheep to chant in support of their every decision."
     "Napoleon eliminates Snowball from all records, portraying himself as the sole hero."
     "The animals are too afraid to speak out when they see the pigs violating the commandments."
-    "Napoleon’s leadership mirrors the tyranny of Mr. Jones, the farm's former owner."
+    "Napoleon’s leadership mirrors the tyranny of Mr. Jones, the farms former owner."
     "The windmill is completed, but it is used to grind grain for profit, not for electricity."
     "The animals secretly doubt the pigs’ leadership but remain silent out of fear."
-    "Squealer reinterprets history to justify Napoleon's policies and decisions."
+    "Squealer reinterprets history to justify Napoleons policies and decisions."
     "The animals struggle to make sense of the contradictory messages from the pigs."
     "Napoleon uses the threat of starvation to force the hens into submission."
     "Napoleon is rarely seen in public, using Squealer to communicate with the other animals."
@@ -93,13 +100,13 @@
     "Napoleon uses Snowball as a scapegoat for every failure on the farm."
     "The animals realize too late that they are as oppressed under Napoleon as they were under Jones."
     "The pigs host lavish dinners in the farmhouse with human guests."
-    "The animals continue to chant 'Long live Animal Farm' despite their worsening conditions."
-    "The farm’s name is quietly changed back to 'Manor Farm' under Napoleon's leadership."
+    "The animals continue to chant Long live Animal Farm despite their worsening conditions."
+    "The farm’s name is quietly changed back to Manor Farm under Napoleons leadership."
     "The pigs begin wearing clothes, something they had previously condemned as human behavior."
     "Napoleon alters the history of the rebellion to glorify himself and discredit others."
     "The animals dream of freedom but are trapped in a cycle of oppression and hard labor."
     "Napoleon adopts a policy of trading with the humans, defying the original principles of Animalism."
-    "The animals are given fewer rations, but the pigs' luxury increases over time."
+    "The animals are given fewer rations, but the pigs luxury increases over time."
     "The animals find it difficult to recall the early days of the rebellion."
     "The pigs declare that the revolution is complete, though nothing has really changed."
     "The transformation of the pigs into human-like figures suggests that the oppressors often become indistinguishable from the original tyrants."
@@ -108,8 +115,8 @@
     "The hierarchy among the animals reveals how class structures persist even in supposedly equal societies."
     "The betrayal of ideals implies that revolutionary leaders often abandon the principles they originally espoused."
     "The relationship between the pigs and the humans suggests that revolutions often end in alliances with former enemies."
-    "The animals’ acceptance of their exploitation shows how ignorance and fear can keep people oppressed."
-    "The pigs' increasing privileges demonstrate how those in power justify their actions through self-serving logic."
+    "The animals acceptance of their exploitation shows how ignorance and fear can keep people oppressed."
+    "The pigs increasing privileges demonstrate how those in power justify their actions through self-serving logic."
     "The alteration of the seven commandments suggests that even the most sacred rules can be bent by those in control."
     "The tragic fate of Boxer reveals the expendability of the loyal working class in a corrupt system."
     "The narrative suggests that political revolutions often replace one form of tyranny with another."
@@ -117,8 +124,8 @@
     "The gradual accumulation of power by the pigs reveals how authoritarian regimes slowly tighten their grip on society."
     "The spread of disinformation shows that lies are a critical tool for maintaining control over a population."
     "The loyalty of the animals to Napoleon suggests that charismatic leaders can inspire obedience, even when acting against the common good."
-    "The animals' dwindling rations imply that economic inequality deepens under corrupt leadership."
-    "The pigs' decision to live in the farmhouse demonstrates how privilege and comfort are reserved for the ruling elite."
+    "The animals dwindling rations imply that economic inequality deepens under corrupt leadership."
+    "The pigs decision to live in the farmhouse demonstrates how privilege and comfort are reserved for the ruling elite."
     "The use of scapegoats implies that leaders often shift blame to maintain their image of infallibility."
     "The rewriting of history suggests that the past is malleable in the hands of those who control the present."
     "The animals’ failure to question authority reveals how indoctrination can lead to unquestioning obedience."
@@ -134,12 +141,12 @@
     "The shift in power dynamics implies that revolutions often end up reproducing the same inequalities they sought to eliminate."
     "The animals’ acceptance of their worsening conditions shows how desensitization leads to the normalization of oppression."
     "The pigs’ claim to superiority reveals how leaders manufacture justifications for their dominance over others."
-    "The betrayal of the animals' trust suggests that power breeds betrayal and manipulation."
+    "The betrayal of the animals trust suggests that power breeds betrayal and manipulation."
     "The illusion of equality maintained by the pigs shows that rhetoric is often used to disguise stark inequalities."
     "The consolidation of power by Napoleon reveals that revolutions often give rise to dictatorships."
     "The ignorance of the animals about their exploitation implies that education and critical thinking are key to resisting oppression."
     "The division between the pigs and the other animals reveals the persistence of social hierarchies in revolutionary societies."
-    "The pigs' alliance with humans suggests that revolutionary movements can devolve into collusion with the old systems of power."
+    "The pigs alliance with humans suggests that revolutionary movements can devolve into collusion with the old systems of power."
     "The story as a whole demonstrates how revolutions can be co-opted by the very forces they sought to overthrow, turning the cycle of oppression full circle."
     "Farm to make his political ideas clear to a broad audience."
     "The book was written in 1943 but wasn’t published until 1945 due to wartime paper shortages and political concerns."
@@ -181,7 +188,7 @@
     "Orwell was influenced by the concept of “animalism,” which represented distorted forms of socialism and communism in the novel."
     "The phrase “All animals are equal, but some animals are more equal than others” from Animal Farm has entered popular usage to describe hypocrisy and double standards."
     "Orwell viewed the success of Animal Farm as a vindication of his belief that literature could be a powerful vehicle for political thought."
-    "Orwell insisted that Animal Farm be published with a special dedication to his friend and colleague, the writer Arthur Koestler, who shared Orwell's concerns about totalitarianism."
+    "Orwell insisted that Animal Farm be published with a special dedication to his friend and colleague, the writer Arthur Koestler, who shared Orwells concerns about totalitarianism."
     "Animal Farm written by George Orwell is an animal fable that happens in a farm where animals start building a communism society but end up becoming totalitarianism hinting obliquely at the communists in the real world."
     "The gaps between the pigs and other common animals demonstrate the theme that the corruption of power appears when the majority is ruled."
     "The intelligence superiority allows the pigs to place themselves at a position which is closer to power and more easily corruptible."
@@ -216,12 +223,12 @@
     "Religious figures like bishops and priests were executed in the Soviet Union."
     "The Catholic laity also met the same fate whether by firing squad being sent to labor camps or psychiatric hospitals for treatment most never to be seen again."
     "In Animal Farm Old Major preached that under Animalism everybody’s sorrows would disappear and equality would reign creating a utopia."
-    "As the story progresses the world under Animalism becomes no different than Jones's rule."
+    "As the story progresses the world under Animalism becomes no different than Joness rule."
     "At the end of the story the pigs literally become human walking on their hind feet drinking gambling and cheering with the other animals just like humans."
     "Napoleon took no interest in Snowball’s committees and said that the education of the young was more important than anything."
     "Orwell uses this to show how Napoleon works where Napoleon wishes to educate the young as they are more impressionable and easier to manipulate."
-    "Squealer then goes as far as to state And as to the Battle of the Cowshed I believe the time will come when we shall find that Snowball's part in it was much exaggerated."
-    "In Chapter Ten Napoleon and the other pigs contradict this concept by wearing clothes from Mr Jones's wardrobe."
+    "Squealer then goes as far as to state And as to the Battle of the Cowshed I believe the time will come when we shall find that Snowballs part in it was much exaggerated."
+    "In Chapter Ten Napoleon and the other pigs contradict this concept by wearing clothes from Mr Joness wardrobe."
     "The pigs were walking around on their hind legs and engaging in business with humans."
     "Napoleon never realized that his mentality was equivalent to Mr Jones’s and that he was no better at controlling the farm."
     "The story of Animal Farm was used to discuss the Russian revolution and to show how pointless much of what happened afterward was."
@@ -243,51 +250,21 @@
     "Orwell wrote Animal Farm as a warning to readers with the central theme that power corrupts and absolute power corrupts absolutely."
     ))
 
-(defparameter *entities*
-    '(
-      (farm manor)
-      orwell
-      (pigs pig)
-      (animals animal)
-      napoleon
-      snowball
-      (dogs dog)
-      major
-      moses
-      crow
-      (church)
-      marx
-      bishops
-      priests
-      laity
-      rebellion
-      jones
-      pilkington
-      squealer
-      boxer
-      (puppies puppy)
-      (working workers worker)
-      (commandment commandments)
-      revolution
-      (soviet union)
-      windmill
-      (glue factory)
-      (sugarcandy mountain)
-      napoleon
-      (house farmhouse)
-      (humans human people)
-      bed
-      ))
-
 (defvar *w->s* (make-hash-table :test #'equal))
 
 (defparameter *stop-words*
   '(
     ;; Added from Animal Farm text:
     a an at and are all as be meaning memory ;; can't have a keyword MEMORY
-    wasn't 
-    ;; From some random thing I found on github
+    wasn't AFTER ANOTHER TIME BECOME STORY ACTS TITLE HOLDS TIMES
+ ATTEMPTS HOLD AROUND ALONE LONG BACK SUGGESTS ALLOWS NARRATIVE
+ IMPLIES ACTING IMPLY LEAD RISE THINKING KEY WASN DISCUSSED LIVED
+ INITIAL GAINED BECAME VIEWS BECAUSE CHARACTER WANTED ALSO MEANT
+ READER ALLOWING BECOMING START CLOSER ALTHOUGH MAIN CONTEXT ACCORDING
+ TERM REFERS STANDS REAPPEARS IGNORE MET CHAPTER QUOTE WORD EVIDENCE
+ PROBLEMS SENDS AWAY THINK NONE
     about anything
+    ;; From some random thing I found on github:
     beforehand begin beginning beginnings begins behind being believe
     below beside besides best better between beyond bi
     bill biol bj bk bl bn both bottom
@@ -432,49 +409,74 @@
   (truncate (* 10 (/ (- *n-sentences* (length s*)) *n-sentences*))))
 
 (defvar *fixed-scripts-components*
-  "
-(THINK 10
-    ((0 THINK THAT 0)
-     (THAT 4 IT INTERESTING. CAN I ANSWER ANY QUESTIONS ABOUT IT?)
-     (I HAD NOT THOUGHT THAT 4. MAYBE YOU HAVE QUESTIONS ABOUT IT.)
-     (IF IT IS TRUE THAT 4 THAT MIGHT BRING UP OTHER QUESTIONS YOU CAN ASK.)
+  '(
+    (THINK 10
+     ((0 THINK THAT 0)
+      (THAT 4 IS INTERESTING. CAN I ANSWER ANY QUESTIONS ABOUT IT?)
+      (I HAD NOT THOUGHT THAT 4. MAYBE YOU HAVE QUESTIONS ABOUT IT.)
+      (IF IT IS TRUE THAT 4 THAT MIGHT BRING UP OTHER QUESTIONS YOU CAN ASK.)
+      ))
+
+    (MEMORY THINK
+     (0 THINK 0 = BEFORE YOU SAID YOU THOUGHT 3. THAT IS AN INTERESTING THOUGHT. CAN I ANSWER ANY QUESTIONS ABOUT IT?)
+     (0 THINK 0 = BEFORE YOU SAID YOU THOUGHT 3. I HAD NOT THOUGHT ABOUT THAT. ARE THERE QUESTIONS YOU HAVE ABOUT IT?)
+     (0 THINK 0 = BEFORE YOU SAID YOU THOUGHT 3. IF THAT IS TRUE IT MIGHT BRING UP OTHER QUESTIONS YOU CAN ASK.)
+     (0 THINK 0 = WHAT OTHER QUESTIONS DO YOU HAVE ABOUT YOUR PREVIOUS THOUGHT THAT 3?)
+     )
+    (NONE
+     ((0)
+      (ASK ME SOMETHING ELSE ABOUT ANIMAL FARM.)
+      (ANYTHING ELSE YOU WANT TO KNOW ABOUT ANIMAL FARM?)
+      (WHAT ELSE WOULD YOU LIKE TO KNOW ABOUT ANIMAL FARM?)
+      (DO YOU FEEL STRONGLY ABOUT DISCUSSING ANIMAL FARM?)))
     ))
 
-(MEMORY THINK
-    (0 THINK 0 = BEFORE YOU SAID YOU THOUGHT 3. THAT'S AN INTERESTING THOUGHT. CAN I ANSWER ANY QUESTIONS ABOUT IT?)
-    (0 THINK 0 = BEFORE YOU SAID YOU THOUGHT 3. I HAD NOT THOUGHT ABOUT THAT. ARE THERE QUESTIONS YOU HAVE ABOUT IT?)
-    (0 THINK 0 = BEFORE YOU SAID YOU THOUGHT 3. IF THAT IS TRUE IT MIGHT BRING UP OTHER QUESTIONS YOU CAN ASK.)
-    (0 THINK 0 = WHAT OTHER QUESTIONS DO YOU HAVE ABOUT YOUR PREVIOUS THOUGHT THAT 3?)
-    )
-(NONE
-    ((0)
-        (ASK ME SOMETHING ELSE ABOUT ANIMAL FARM.)
-        (ANYTHING ELSE YOU WANT TO KNOW ABOUT ANIMAL FARM?)
-        (WHAT ELSE WOULD YOU LIKE TO KNOW ABOUT ANIMAL FARM?)
-        (DO YOU FEEL STRONGLY ABOUT DISCUSSING ANIMAL FARM?)))
-"
-  )
-
 (defun ellizagen (&aux *PRINT-LENGTH* *PRINT-PRETTY*)
+  ;; We start by turning the nicely formatted sentences into the ugly
+  ;; all-caps horrors. Probably this isn't actually necessary, but it
+  ;; also removes all punctuation, which is a PITA to deal with.
   (setf *sentences* (mapcar #'s->w* *sentences*))
+  ;; *w->s* is a table from words to assertions. We clear it here and
+  ;; then we'll immediately load up the assertions.
   (clrhash *w->s*)
+  ;; Here's the setup of the *w->s* table.
+  (loop for w* in *sentences* ;; Walk through each assertion
+	do (loop for w in w*  ;; Walk through each word
+		 ;; The stop words are things like "the", 
+		 ;; that are so common we don't want to index them.
+		 unless (or (member w *stop-words*)
+			    ;; This is a special purpose test to stop
+			    ;; all numbers. ELIZA can't process them.
+			    (numberp (read-from-string (format nil "~a" (aref (format nil "~a" w) 0)))))
+		 ;; So, not a stop word, add the assertion to the
+		 ;; table under the word. Note that the sentence 
+		 ;; will get added to every entry for each work in
+		 ;; the assertion that isn't a stop word. There is
+		 ;; going to be a LOT of redundancy in the script!
+		 do (push w* (gethash w *w->s*))))
+  ;; Okay, the table is built, now all we need to do
+  ;; is dump it in the right format for an ELIZA script.
   (with-open-file
       (o "af.script" :if-exists :supersede :direction :output)
+    ;; The intro sentence:
     (format o "(Hi! Let's talk about animal farm! What do you want to know?)~%~%")
-    (loop for w* in *sentences*
-	  do (loop for w in w*
-		   unless (or (member w *stop-words*)
-			      (numberp (read-from-string (format nil "~a" (aref (format nil "~a" w) 0)))))
-		   do (push w* (gethash w *w->s*))))
+    ;; We loop through all the table keys, which are the non-stopped
+    ;; words in the assertions that we saved above.
     (loop for w being the hash-keys of *w->s*
-	  using (hash-value s*)
-	  do (format o "(~a ~a~%    ((0 ~s 0)~%"
-		     w (priority s*) w)
-	  (loop for s in s*
-		do (format o "   ~s~%" (append s (random-discourse-continuation))))
-	  (format o "~%   ))~%")
-	  )
-    (format o "~a~%" *fixed-scripts-components*)
+	  using (hash-value s*) ;; s* will be all the assertions for
+	  ;; word w This is ultra fancy lisp code (called a backquote
+	  ;; expression) that is only possible here because the ELIZA
+	  ;; script is exactly a lisp s-expression. Essentially this
+	  ;; directly formats the rule, computing the prioty and
+	  ;; writing out all the sentences, including possilby adding
+	  ;; a continuation prompt.
+	  do (print `(,w ,(priority s*)
+			 ((0 ,w 0)
+			  ,@(loop for s in s*
+				  collect (append s (random-discourse-continuation)))))
+		    o))
+    ;; Finally output the fixed components.
+    (mapcar #'(lambda (c) (print c o)) *fixed-scripts-components*)
     ))
 
 ;;; This will return nil half the time, which you can adjust by
@@ -488,7 +490,7 @@
 
 (defun s->w* (s)
   (mapcar #'read-from-string
-	  (mapcar #'(lambda (w) (string-trim ",;'-.:" w))
+ 	  (mapcar #'(lambda (w) (string-trim "\",;'-.:" w))
 		  (string-split s))))
 
 (defun string-split (string &key (delimiter #\space) (convert-num-values? nil))
