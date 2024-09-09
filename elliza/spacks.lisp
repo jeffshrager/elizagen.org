@@ -1,0 +1,150 @@
+;(load "spacks.lisp")
+
+#|
+CALLING SPACKS SCRIPT
+SPACKS SCRIPT
+
+IN ONE OF HIS POEMS, BARRY SPACKS HAS THE HAUNTING LINE: 
+
+   Is any heart In order after Belsen? 
+
+I WOULD LIKE TO DISCUSS THIS LINE WITH YOU BRIEFLY.
+
+TO BEGIN WITH, WHERE IS BELSEN.
+
+> in Ireland 
+
+BELSEN IS IN NORTHWEST GERMANY.
+WHAT EXISTED AT BELSEN TO WHICH SPACKS REFERS HERE.
+
+> a concentration camp 
+
+RIGHT. THE CONCENTRATION CAMP AT BELSEN WAS TORN DOWN AFTER WORLD WAR TWO.
+
+WHAT ANSWER DOES SPACKS EXPECT TO HIS QUESTION:
+
+Is any heart in order after Belsen?
+
+> he knows what the answer is, namely no 
+
+OF COURSE. THE QUESTION IS RHETORICAL.
+APPARENTLY, THEN, THE CONCENTRATION CAMP AT BELSEN
+SYMBOLIZES SOME SORT OF WATERSHED IN TIME.
+'BEFORE BELSEN' THERE WAS AT LEAST THE POSSIBILITY
+THAT THE HEART COULD BE 'IN ORDER'. 
+
+IN WHAT WAY COULD THE HEART BE IN ORDER BEFORE BELSEN.
+
+people did not have to fear their own inhumanity to other humans
+
+WHAT ASPECT OR ASPECTS OF CONCENTRATION CAMP LIFE MADE
+IT DIFFICULT FOR ANY HEART TO BE 'IN ORDER' THEREAFTER.
+
+the sadistic cruelty and fear that it might happen again
+
+YES, THE SENSELESS CRUELTY VIOLATES THE HOPE THAT EVIL HAS LIMITS.
+
+WHY DO YOU SUPPOSE THE WORD 'HEART' IS USED RATHER THAN 'MIND'.
+
+heart has more effect on the emotions and connotes more of the horror of a concentration camp than the relatively emotionless world mind. 
+
+RIGHT, 'HEART' SYMBOLIZES OUR INSTINCTIVE EMOTIONAL REACTION TO LIFE.
+
+BARRY SPACKS IS A PROFESSOR IN THE MIT HUMANITIES DEPARTMENT.
+THE POEM FROM WHICH THE LINE WE HAVE BEEN DISCUSSING CAME
+IS CALLED 'FRESHMEN' AND WAS PUBLISHED IN THE NEW YORKER MAGAZINE
+ON OCTOBER 1, 1966, PAGE 48.
+
+THE POEM CONSISTS OF 65 SHORT LINES.
+I CAN TYPE IT FOR YOU IN ABOUT 3 MINUTES.
+WOULD YOU LIKE ME TO DO SO. yes 
+|#
+
+(defparameter *spacks-script*
+  '((ask
+     "IN ONE OF HIS POEMS, BARRY SPACKS HAS THE HAUNTING LINE: 
+
+   Is any heart In order after Belsen? 
+
+I WOULD LIKE TO DISCUSS THIS LINE WITH YOU BRIEFLY.
+
+TO BEGIN WITH, WHERE IS BELSEN?"
+     :expect  "germany"
+     :ifyes "CORRECT."
+     :ifno "BELSEN IS IN NORTHWEST GERMANY."
+     )
+    (ask "WHAT EXISTED AT BELSEN TO WHICH SPACKS REFERS HERE?"
+     :expect  "concentration camp"
+     :ifyes "RIGHT."
+     :ifno "A CONCENTRATION CAMP WAS LOCATED AT BELSEN."
+     )
+    (ask "THE CONCENTRATION CAMP AT BELSEN WAS TORN DOWN AFTER WORLD WAR TWO.
+
+     WHAT ANSWER DOES SPACKS EXPECT TO HIS QUESTION:
+
+     Is any heart in order after Belsen?"
+     :expect nil
+     :ifyes nil
+     :ifno nil
+     )
+
+    (ask "OF COURSE. THE QUESTION IS RHETORICAL.
+APPARENTLY, THEN, THE CONCENTRATION CAMP AT BELSEN
+SYMBOLIZES SOME SORT OF WATERSHED IN TIME.
+'BEFORE BELSEN' THERE WAS AT LEAST THE POSSIBILITY
+THAT THE HEART COULD BE 'IN ORDER'. 
+
+IN WHAT WAY COULD THE HEART BE IN ORDER BEFORE BELSEN?"
+     :expect nil
+     :ifyes nil
+     :ifno nil)
+
+    (ask "WHAT ASPECT OR ASPECTS OF CONCENTRATION CAMP LIFE MADE
+IT DIFFICULT FOR ANY HEART TO BE 'IN ORDER' THEREAFTER?"
+     :expect "curelty"
+     :ifyes "YES, THE SENSELESS CRUELTY VIOLATES THE HOPE THAT EVIL HAS LIMITS."
+     :ifno "THE SENSELESS CRUELTY VIOLATES THE HOPE THAT EVIL HAS LIMITS.")
+
+    (ask "WHY DO YOU SUPPOSE THE WORD 'HEART' IS USED RATHER THAN 'MIND'?"
+     :expect "emotion"
+     :ifyes "RIGHT, 'HEART' SYMBOLIZES OUR INSTINCTIVE EMOTIONAL REACTION TO LIFE."
+     :ifno "'HEART' SYMBOLIZES OUR INSTINCTIVE EMOTIONAL REACTION TO LIFE."
+     )
+
+    (ask "BARRY SPACKS IS A PROFESSOR IN THE MIT HUMANITIES DEPARTMENT.
+THE POEM FROM WHICH THE LINE WE HAVE BEEN DISCUSSING CAME
+IS CALLED 'FRESHMEN' AND WAS PUBLISHED IN THE NEW YORKER MAGAZINE
+ON OCTOBER 1, 1966, PAGE 48.
+
+THE POEM CONSISTS OF 65 SHORT LINES.
+I CAN TYPE IT FOR YOU IN ABOUT 3 MINUTES.
+WOULD YOU LIKE ME TO DO SO?"
+     :expect "yes"
+     :ifyes (print "[here's the whole poem]")
+     :ifno (quit)
+     )
+    (quit)
+    ))
+
+  
+(defun socrates (script)
+  (loop for turn in script
+	do (eval turn)))
+
+(defun dorprint (r)
+  (if (stringp r)
+      (format t "~a~%" r)
+      (eval r)))
+
+(defun ask (q &key expect ifyes ifno)
+  (format t "~a~%" q)
+  (let ((input (read-line)))
+    (if expect
+	(if (search expect (string-downcase input))
+	    (dorprint ifyes)
+	    (dorprint ifno)))))
+
+(untrace)
+;(trace search)
+(socrates *spacks-script*)
+
