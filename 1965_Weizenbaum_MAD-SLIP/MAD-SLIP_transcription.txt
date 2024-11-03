@@ -27,13 +27,13 @@ READ(7)         NEXT=SEQLR.(S,F)                                                
                 PRINT COMMENT $*$                                               001540
                 TPRINT.(NEXT,0)                                                 001550
                 PRINT FORMAT SNUMB,I                                            001560
-                PRINT COMENT $ $                                                001570
+                PRINT COMMENT $ $                                               001570
                 T'O READ(7)                                                     001580
 DISPLA          CONTINUE                                                        001590
                 PRINT COMMENT $ $                                               001600
                 PRINT COMMENT $MEMORY LIST FOLLOWS$                             001610
                 PRINT COMMENT $ $                                               001620
-                T'H MEMLIST, FOR I=1 , 1, I .G. 4                               001630
+                T'H MEMLST, FOR I=1 , 1, I .G. 4                                001630
 MEMLST          TXTPRT.(MYTRAN(I),0)                                            001640
                 T'O CHANGE                                                      001650
             E'L                                                                 001660
@@ -82,7 +82,7 @@ READ(6)     OBJCT=SEQLR.(S,F)                                                   
             W'R F .G. 0, T'O FAIL                                               002090
             W'R F .NE. 0, T'O READ(6)                                           002100
             OBJCT=SEQLL.(S,F)                                                   002110
-            W'R LNKLL.(OBJECT) .E. 0                                            002120
+            W'R LNKL.(OBJECT) .E. 0                                             002120
                 SUBST.(POPTOP.(INPUT),LSPNTR.(S))                               002130
             O'E                                                                 002140
                 NEWTOP.(POPTOP.(INPUT),LSPNTR.(S))                              002150
@@ -217,7 +217,7 @@ NUMBER      K=A*262144                                                          
             LIST.(OUTPUT)                                                       000100
             LIST.(JUNK)                                                         000110
             LIMIT=1                                                             000120
-            LSSCPY.(THREAD.(INPUT,SCRIPT),JUNK)                                 000130
+            LSSCPY.(TREAD.(INPUT,SCRIPT),JUNK)                                  000130
             MTLIST.(INPUT)                                                      000140
             T'H MLST, FOR I=1,1, I .G. 4                                        000150
 MLST        LIST.(MYTRAN(I))                                                    000160
@@ -388,7 +388,7 @@ ENDPLA          PRINT COMMENT $WHAT IS TO BE THE NUMBER OF THE NEW SCRIPT$      
                 LPRINT.(INPUT,SCRIPT)                                           001840
                 NEWTOP.(MEMORY,MTLIST.(OUTPUT))                                 001850
                 NEWTOP.($MEMORY$,OUTPUT)                                        001860
-                T'H DUMP, FOR I=1,1 I .G. 4                                     001870
+                T'H DUMP, FOR I=1,1, I .G. 4                                    001870
 DUMP            NEWBOT.(MYTRAN(I),OUTPUT)                                       001880
                 LPRINT.(OUTPUT,SCRIPT)                                          001890
                 MTLIST.(OUTPUT)                                                 001900
