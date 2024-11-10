@@ -38,8 +38,8 @@ MEMLST          TXTPRT.(MYTRAN(I),0)                                            
                 T'O CHANGE                                                      001650
             E'L                                                                 001660
             THEME=POPTOP.(INPUT)                                                001670
-            SUBJECT=KEY(HASH.(THEME,5))                                         001680
-            S=SEQRDR.(SUBJECT)                                                  001690
+            SUBJCT=KEY(HASH.(THEME,5))                                          001680
+            S=SEQRDR.(SUBJCT)                                                   001690
 LOOK        TERM=SEQLR.(S,F)                                                    001700
             W'R F .G. 0, T'O FAIL                                               001710
             W'R TOP.(TERM) .E. THEME, T'O FOUND                                 001720
@@ -54,7 +54,7 @@ DELTA(2)    S=SEQRDR.(TERM)                                                     
 READ(1)     OBJCT=SEQLR.(S,F)                                                   001810
             W'R F .G. 0, T'O FAIL                                               001820
             W'R F .NE. 0, T'O READ(1)                                           001830
-            INSIDE=SEQRDR.(OBJECT)                                              001840
+            INSIDE=SEQRDR.(OBJCT)                                               001840
 READ(2)     IT=SEQLR.(INSIDE,F)                                                 001850
             W'R F .G. 0, T'O READ(1)                                            001860
             SIT=SEQRDR.(IT)                                                     001870
@@ -82,7 +82,7 @@ READ(6)     OBJCT=SEQLR.(S,F)                                                   
             W'R F .G. 0, T'O FAIL                                               002090
             W'R F .NE. 0, T'O READ(6)                                           002100
             OBJCT=SEQLL.(S,F)                                                   002110
-            W'R LNKL.(OBJECT) .E. 0                                             002120
+            W'R LNKL.(OBJCT) .E. 0                                              002120
                 SUBST.(POPTOP.(INPUT),LSPNTR.(S))                               002130
             O'E                                                                 002140
                 NEWTOP.(POPTOP.(INPUT),LSPNTR.(S))                              002150
@@ -339,7 +339,7 @@ MATCH               ES=SEQLR.(IT,FR)                                            
                         I=HASH.(WORD,5)                                         001350
                         SCANER=SEQRDR.(KEY(I))                                  001360
 SCAN                    ITS=SEQLR.(SCANER,F)                                    001370
-                        W'R F .G. 0, T'O NOMATCH(LIMIT)                         001380
+                        W'R F .G. 0, T'O NOMACH(LIMIT)                          001380
                         W'R WORD .E. TOP.(ITS)                                  001390
                             S=SEQRDR.(ITS)                                      001400
 SCANI                       ES=SEQLR.(S,F)                                      001410
@@ -350,7 +350,7 @@ SCANI                       ES=SEQLR.(S,F)                                      
                             T'O SCAN                                            001460
                         E'L                                                     001470
                     E'L                                                         001480
-                    W'R FR .G. 0, T'O NOMATCH(LIMIT)                            001490
+                    W'R FR .G. 0, T'O NOMACH(LIMIT)                             001490
 TRY                 W'R YMATCH.(TOP.(ES),INPUT,MTLIST.(TEST)) .E. 0,T'O MATCH   001500
                     ESRDR=SEQRDR.(ES)                                           001510
                     SEQLR.(ESRDR,ESF)                                           001520
@@ -400,13 +400,13 @@ WRITE           CONTINUE                                                        
                 LPRINT.(MTLIST.(INPUT),SCRIPT)                                  001960
                 EXIT.                                                           001970
                R* * * * * * * * * * SCRIPT ERROR EXIT                           001980
-NOMATCH(1)      PRINT COMMENT $PLEASE CONTINUE $                                002200
+NOMACH(1)       PRINT COMMENT $PLEASE CONTINUE $                                002200
                 T'O START                                                       002210
-NOMATCH(2)      PRINT COMMENT $HMMM $                                           002220
+NOMACH(2)       PRINT COMMENT $HMMM $                                           002220
                 T'O START                                                       002230
-NOMATCH(3)      PRINT COMMENT $GO ON , PLEASE $                                 002240
+NOMACH(3)       PRINT COMMENT $GO ON , PLEASE $                                 002240
                 T'O START                                                       002250
-NOMATCH(4)      PRINT COMMENT $I SEE $                                          002260
+NOMACH(4)       PRINT COMMENT $I SEE $                                          002260
                 T'O START                                                       002270
                 VECTOR VALUES SNUMB= $I3 * $                                    002280
                 E'M                                                             002290
