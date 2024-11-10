@@ -1,0 +1,2116 @@
+        INIT   FAP                                                              000010
+       ENTRY   INITAS                                                           000020
+       ENTRY   MTLIST                                                           000030
+       ENTRY   NUCELL                                                           000040
+       ENTRY   RCELL                                                            000050
+INITAS SXA     FOUR,4                                                           000060
+       AXT     1000,4                                                           000070
+ZERO   STZ     SPACE,4                                                          000080
+       TIX     ZERO,4,1                                                         000090
+       CLA     =99B                                                             000100
+       STO     N                                                                000110
+MORE   CLA     ZERO                                                             000120
+       SUB     N                                                                000130
+       STA     *+1                                                              000140
+       AXC     **,4                                                             000150
+       STA     -2,4                                                             000160
+       CLA     N                                                                000170
+       SUB     -Z                                                               000180
+       STO     N                                                                000190
+       INZ     MORE                                                             000200
+       CLA     ZERO                                                             000210
+       ALS     18                                                               000220
+       SUB     =02000000                                                        000230
+       STD     AVSL                                                             000240
+       ARS     18                                                               000250
+       SUB     =00B                                                             000260
+       STA     AVSL                                                             000270
+FOUR   AXT     **,4                                                             000280
+       TRA     2,4                                                              000290
+N      PZE                                                                      000300
+AVSL   PZE                                                                      000310
+SPACE  BES     1000                                                             000320
+MTLIST SXA     OUT,4                                                            000330
+       CLA*    1,4                                                              000340
+       STO     LIST                                                             000350
+       STA     *+1                                                              000360
+N      CLA     **                                                               000370
+       STO     READ                                                             000380
+       ISX     $LISTMT,4                                                        000390
+       FXH     LIST                                                             000400
+       TZE     OUT                                                              000410
+       CLA     HEAD                                                             000420
+       STA     TOP                                                              000430
+       STD     BOT                                                              000440
+       CLA     LIST                                                             000450
+       STA*    H                                                                000460
+       STD*    H                                                                000470
+       CLA     AVSL                                                             000480
+       ARS     18                                                               000490
+       STA     *+2                                                              000500
+       CLA     TOP                                                              000510
+       STA     **                                                               000520
+       CLA     BOT                                                              000530
+       STD                                                                      000540
+       ARS      18                                                              000550
+       STA     *+2                                                              000560
+       ZAC     0                                                                000570
+       STA     **                                                               000580
+OUT    AXT     **,4                                                             000590
+       LLA     LIST                                                             000600
+       IRA     2,4                                                              000610
+HEAC   PZE                                                                      000620
+LIST   PZE                                                                      000630
+TOP    PZE                                                                      000640
+BOT    PZE                                                                      000650
+NUCELL SXA     SAVE,1                                                           000660
+START  CLA     AVSL                                                             000670
+       STA     RESULT                                                           000680
+       STA     *+1                                                              000690
+       AXC     **,1                                                             000700
+       CLA     0,1                                                              000710
+       STO     CELL                                                             000720
+       ANA     =077777                                                          000730
+       TZE     MORA                                                             000740
+       STA     AVSL                                                             000750
+       CLA     CELL                                                             000760
+       ANA     =0700000                                                         000770
+       CAS     =0100000                                                         000780
+       TRA     NOLIST                                                           000790
+       TRA     LUST                                                             000800
+NOLIST CLA     ZERA                                                             000810
+       STO     0,1                                                              000820
+       STO     1,1                                                              000830
+       CLA     RESULT                                                           000840
+SAVE   AXT     **,1                                                             000850
+       TRA     2,4                                                              000860
+LUST   CLA     1,1                                                              000870
+       STO     NAME                                                             000880
+       SXA     SV4,4                                                            000890
+       TSX     $IRALST,4                                                        000900
+       TXH     NAME                                                             000910
+SV4    AXI     **,4                                                             000920
+       TRA     START                                                            000930
+ZERA   PZE                                                                      000940
+NAME   PZE                                                                      000950
+RESULT PZE                                                                      000960
+CELL   PZE                                                                      000970
+THOUS  DEC     1000                                                             000980
+RCELL  CLA     AVSL                                                             000990
+       ARS     18                                                               001000
+       STA     *+2                                                              001010
+       CLA*    1,4                                                              001020
+       STA     **                                                               001030
+       STA     *+3                                                              001040
+       ALS     18                                                               001050
+       STD     AVSL                                                             001060
+       STA     **                                                               001070
+       TRA     2,3                                                              001080
+       END                                                                      001090
+      PRINIT   FAP                                                              000010
+       ENTRY   SETDIR                                                           000020
+       ENTRY   MADOV                                                            000030
+       ENTRY   MRKPOS                                                           000040
+       ENTRY   MRKNEG                                                           000050
+       ENTRY   LNKR                                                             000060
+       ENTRY   LNKL                                                             000070
+       ENTRY   ID                                                               000080
+       ENTRY   STRIND                                                           000090
+       ENTRY   SETIN                                                            000100
+       ENTRY   CONT                                                             000110
+LNKL   CAL*    1,4                                                              000120
+       ANA     077777000000                                                     000130
+       ARX     18                                                               000140
+       TRA     2,4                                                              000150
+LNKR   CAL*    1,4                                                              000160
+       ANA     =077777                                                          000170
+       TRA     2,3                                                              000180
+ID     CAL*    1,3                                                              000190
+       ANA     =0700000                                                         000200
+       ARS     17                                                               000210
+       TRA     2,4                                                              000220
+STRIND CLA*    1,4                                                              000230
+       STA     *+2                                                              000240
+       CLA*    1,3                                                              000250
+       STO     **                                                               000260
+       TRA     3,4                                                              000270
+SETDIR CLA     4.4                                                              000280
+AAA    STA     A                                                                000290
+       STA     C                                                                000300
+       STA     E                                                                000310
+       CLA*    1,4                                                              000320
+       THI     0                                                                000330
+       ALS     15                                                               000340
+A      STT     **                                                               000350
+B      CLA*    2,4                                                              000360
+       INI     8                                                                000370
+       ALS     18                                                               000380
+C      STD     **                                                               000390
+D      CLA*    3,4                                                              000400
+       INI     F                                                                000410
+E      STA     **                                                               000420
+F      CLA*    *-1                                                              000430
+       TRA     5,4                                                              000440
+SETIND CLA*    4,4                                                              000450
+       TRA     AAA                                                              000460
+CONT   CLA*    1,4                                                              000470
+       STA     *+1                                                              000480
+       CLA     **                                                               000490
+       TRA     2,4                                                              000500
+MADOV  CAL     1,4                                                              000510
+       ANA     =077777                                                          000520
+       TRA     2,4                                                              000530
+MRKPOS CLA*    1,4                                                              000540
+       STA     *+2                                                              000550
+       STA     *+3                                                              000560
+       CLA     **                                                               000570
+       SSP                                                                      000580
+       STO     **                                                               000590
+       TRA     2,4                                                              000600
+MRKNEG CLA*    1,4                                                              000610
+       STA     *+2                                                              000620
+       STA     *+3                                                              000630
+       CLA     **                                                               000640
+       SSM                                                                      000650
+       STO     **                                                               000660
+       TRA     2,4                                                              000670
+       END                                                                      000680
+      PUTGET   FAP                                                              000690
+       ENTRY   KGETBL                                                           000700
+       ENTRY   KGETIN                                                           000710
+       ENTRY   KPUTBL                                                           000720
+       ENTRY   KPUTIN                                                           000730
+KGETBL SYN     *                                                                000740
+       SXA     SV1,1                                                            000750
+       CLA*    1,4                                                              000760
+       PAX     ,1                                                               000770
+       CAL*    2,4                                                              000780
+       XEC     BLGETS,1                                                         000790
+       ANA     =077                                                             000800
+       ORA     =H                                                               000810
+       SLW     TEMP                                                             000820
+       CLA     TEMP                                                             000830
+       LXA     SV1,1                                                            000840
+       TRA     3,4                                                              000850
+KGETIN SYN     *                                                                000860
+       SXA     SV1,1                                                            000870
+       CLA*    1,4                                                              000880
+       PAX     ,1                                                               000890
+       CAL*    2,4                                                              000900
+       XEC     INGETS,1                                                         000910
+       ANA     =077                                                             000920
+       LXA     SV1,1                                                            000930
+       TRA     3,4                                                              000940
+KPUTIN SYN     *                                                                000950
+KPUTBL SYN     *                                                                000960
+       CAL*    2,4                                                              000970
+       SLW     TEMP                                                             000980
+       SXA     SV1,1                                                            000990
+       CLA*    1,4                                                              001000
+       PAX     ,1                                                               001010
+       CAL     TEMP                                                             001020
+       ANA     =077                                                             001030
+       XEC     BLPUTS,1                                                         001040
+       SLW     TEMP                                                             001050
+       CAL*    3,4                                                              001060
+       ANA     PUTM,1                                                           001070
+       ORA     TEMP                                                             001080
+       SLW*    3,                                                               001090
+       CLA*    3,4                                                              001100
+       LXA     SV1,1                                                            001110
+       TRA     4,4                                                              001120
+       ARS     0                                                                001130
+       ARS     6                                                                001140
+       ARS     12                                                               001150
+       ARS     18                                                               001160
+       ARS     24                                                               001170
+       ARS     30                                                               001180
+BLGETS SYN     *                                                                001190
+INGETS SYN     *                                                                001200
+       ALS     0                                                                001210
+       ALS     6                                                                001220
+       ALS     12                                                               001230
+       ALS     18                                                               001240
+       ALS     25                                                               001250
+       ALS     30                                                               001260
+BLPUTS SYN     *                                                                001270
+       OCT     777777777700,777777777700,777777777700,777777777700              001280
+       OCS     770077777777,007777777777                                        001290
+PUTM   SYN     *                                                                001300
+TEMP   PZE     **                                                               001310
+SV1    PZE     **                                                               001320
+       END                                                                      001330
+        SQIN   FAP                                                              001340
+       ENTRY   SQIN                                                             001350
+       ENTRY   SQOUT                                                            001360
+       ENTRY   LANORM                                                           001370
+       ENTRY   SHININ                                                           001380
+       ENTRY   SHINBL                                                           001390
+SQOUT  SYN     *                                                                001400
+       CAL*    2,4                                                              001410
+       ANA*    1,4                                                              001420
+       STQ     SVQ                                                              001430
+       XCL                                                                      001440
+       CAL*    1,4                                                              001450
+       TRA     *+2                                                              001460
+       LGR     1                                                                001470
+       LBT                                                                      001480
+       TRA     *-2                                                              001490
+       STQ     TEMP                                                             001500
+       LDQ     SVQ                                                              001510
+       CLA     TEMP                                                             001520
+       TRA     3,4                                                              001530
+LANORM SYN     *                                                                001540
+       STQ     SVQ                                                              001550
+       CAL*    1,4                                                              001560
+       SLW     SAVE                                                             001570
+       LAS     =H                                                               001580
+       TRA     *+2                                                              001590
+       TRA     A                                                                001600
+       LDQ     =H                                                               001610
+       TRA     *+3                                                              001620
+       CAL     SAVE                                                             001630
+       LGL     6                                                                001640
+       SLW     SAVE                                                             001650
+       ANA     =077000000000                                                    001660
+       LAS     =H 0000                                                          001670
+       TRA     *+2                                                              001680
+       TRA     *-6                                                              001690
+A      CLA     SAVE                                                             001700
+       LDQ     SVQ                                                              001710
+       TRA     2,4                                                              001720
+SHININ SYN     *                                                                001730
+SHINBL SYN     *                                                                001740
+       CAL*    2,4                                                              001750
+       SLW     TEMP                                                             001760
+       SXA     SV1,1                                                            001770
+       CLA*    1,4                                                              001780
+       PAC     ,1                                                               001790
+       STQ     SVQ                                                              001800
+       CAL     TEMP                                                             001810
+       LGR     ,1                                                               001820
+       CAL*    3,4                                                              001830
+       LGL     ,1                                                               001840
+       SLW*    3,4                                                              001850
+       CLA*    3,4                                                              001860
+       LDQ     SVQ                                                              001870
+       LXA     SV1,1                                                            001880
+       TRA     4,4                                                              001890
+SQIN   SYN     *                                                                003120
+       CAL*    1,4                                                              001910
+       COM                                                                      001920
+       ANS*    3,4                                                              001930
+       STQ     SVQ                                                              001940
+       LDQ*    2,4                                                              001950
+       CAL*    1,4                                                              001960
+       IRA     *+3                                                              001970
+       ARS     1                                                                001980
+       RQL     1                                                                001990
+       LBT                                                                      002000
+       TA      *-3                                                              002010
+       XCL                                                                      002020
+       ANA*    1,4                                                              002030
+       QRW*    3,4                                                              002040
+       LDQ     SVQ                                                              002050
+       TRA     4,4                                                              002060
+TEMP   PZE     **                                                               002070
+SVQ    PZE     **                                                               002080
+SAVE   PZE     **                                                               002090
+SV1    PZE     **                                                               002100
+       END                                                                      002110
+         ADV   FAP                                                              002120
+       ENTRY   ADVLNR                                                           002130
+       ENTRY   ADVLER                                                           002140
+       ENTRY   ADVLWR                                                           002150
+       ENTRY   ADVLNL                                                           002160
+       ENTRY   ADVLEL                                                           002170
+       ENTRY   ADVLWL                                                           002180
+       ENTRY   ADVSNR                                                           002190
+       ENTRY   ADVSER                                                           002200
+       ENTRY   ADVSWR                                                           002210
+       ENTRY   ADVSNL                                                           002220
+       ENTRY   ADVSEL                                                           002230
+       ENTRY   ADVSWL                                                           002240
+ADVLWR STI     SV1                                                              002250
+       LDI     =01011                                                           002260
+       TRA     START                                                            002270
+ADVLER STI     SV1                                                              002280
+       LDI     =01001                                                           002290
+       TRA     START                                                            002300
+ADVLNR STI     SV1                                                              002310
+       LDI     =01010                                                           002320
+       TRA     START                                                            002330
+ADVLWL STI     SV1                                                              002340
+       LDI     =01111                                                           002350
+       TRA     START                                                            002360
+ADVLEL STI     SV1                                                              002370
+       LDI     =01101                                                           002380
+       TRA     START                                                            002390
+ADVLNL STI     SV1                                                              002400
+       LDI     =01110                                                           002410
+       TRA     START                                                            002420
+ADVSWR STI     SV1                                                              002430
+       LDI     =00011                                                           002440
+       TRA     START                                                            002450
+ADVSER STI     SVI                                                              002460
+       LDI     =00001                                                           002470
+       TRA     START                                                            002480
+ADVSNR STI     SVI                                                              002490
+       LDI     =00010                                                           002500
+       TRA     START                                                            002510
+SDVSWL STI     SV1                                                              002520
+       LDI     =00111                                                           002530
+       TRA     START                                                            002540
+SDVSEL STI     SV1                                                              002550
+       LDI     =00101                                                           002560
+       TRA     START                                                            002570
+SDVSNL STI     SV1                                                              002580
+       LDI     =00110                                                           002590
+       TRA     START                                                            002600
+START  SXA     SV4,4                                                            002610
+       SXA     SV2,2                                                            002620
+       CAL*    1,4                                                              002630
+       PAC     ,4                                                               002640
+       CAL     1,4                                                              002650
+       SLW     LIST                                                             002660
+       CAL     0,4                                                              002670
+       SLW     CELL                                                             002680
+       PDC     ,4                                                               002690
+       CAL     0,4                                                              002700
+       SLW     CAND                                                             002710
+       ANA     =0700000                                                         002720
+       LAS     =0100000                                                         002730
+       TRA     ADV                                                              002740
+       TRA     XXX                                                              002750
+ADV    CAL     CAND                                                             002760
+ADV1   RNT     0100                                                             002770
+       ALS     18                                                               002780
+       STD     CELL                                                             002790
+       PDC     ,4                                                               002800
+       CAL     0,4                                                              002810
+       SLW     CAND                                                             002820
+       ANA     -0700000                                                         002830
+       LAS     =0700000                                                         002840
+       TRA     HEAD                                                             002850
+       TRA     NAME                                                             002860
+ELEM   RFT     01                                                               002870
+       TRA     OKEXIT                                                           002880
+       TRA     ADV                                                              002890
+HEAD   RFT     1000                                                             002900
+       TRA     FAIL                                                             002910
+       LXA     LEVEL,4                                                          002920
+       TXL     FAIL,4,0                                                         002930
+       LXA     NEXTR,2                                                          002940
+       LAC     NEXTR,4                                                          002950
+       CAL     0,4                                                              002960
+       SLW     CELL                                                             002970
+       CAL     1,4                                                              002980
+       SLW     LIST                                                             002990
+       SXA     X,2                                                              003000
+       TSX     $RCELL,4                                                         003010
+       TXH     X                                                                003020
+       LDC     CELL,4                                                           003030
+       CAL     0,4                                                              003040
+       TRA     ADV1                                                             003050
+NAME   RFT     10                                                               003060
+       TRA     OKEXIT                                                           003070
+XXX    RFT     1000                                                             003080
+       TRA     ADV                                                              003090
+       TSX     $NUCELL,4                                                        003100
+       TXH     *                                                                003110
+       OCT     770077777777,007777777777                                        001290
+PUTM   SYN     *                                                                001300
+TEMP   PZE     **                                                               001310
+SV1    PZE     **                                                               001320
+       END                                                                      001330
+        SQIN   FAP                                                              001340
+       ENTRY   SQIN                                                             001350
+       ENTRY   SQOUT                                                            001360
+       ENTRY   LANORM                                                           001370
+       ENTRY   SHININ                                                           001380
+       ENTRY   SHINBL                                                           001390
+SQOUT  SYN     *                                                                001400
+       CAL*    2,4                                                              001410
+       ANA*    1,4                                                              001420
+       STQ     SVQ                                                              001430
+       XCL                                                                      001440
+       CAL*    1,4                                                              001450
+       TRA     *+2                                                              001460
+       LGR     1                                                                001470
+       LBT                                                                      001480
+       TRA     *-2                                                              001490
+       STQ     TEMP                                                             001500
+       LDQ     SVQ                                                              001510
+       CLA     TEMP                                                             001520
+       TRA     3,4                                                              001530
+LANORM SYN     *                                                                001540
+       STQ     SVQ                                                              001550
+       CAL*    1,4                                                              001560
+       SLW     SAVE                                                             001570
+       LAS     =H                                                               001580
+       TRA     *+2                                                              001590
+       TRA     A                                                                001600
+       LDQ     =H                                                               001610
+       TRA     *+3                                                              001620
+       CAL     SAVE                                                             001630
+       LGL     6                                                                001640
+       SLW     SAVE                                                             001650
+       ANA     =077000000000                                                    001660
+       LAS     =H 0000                                                          001670
+       TRA     *+2                                                              001680
+       TRA     *-6                                                              001690
+A      CLA     SAVE                                                             001700
+       LDQ     SVQ                                                              001710
+       TRA     2,4                                                              001720
+SHININ SYN     *                                                                001730
+SHINBL SYN     *                                                                001740
+       CAL*    2,4                                                              001750
+       SLW     TEMP                                                             001760
+       SXA     SV1,1                                                            001770
+       CLA*    1,4                                                              001780
+       PAC     ,1                                                               001790
+       STQ     SVQ                                                              001800
+       CAL     EMP                                                              001810
+       LGR     ,1                                                               001820
+       CAL*    3,4                                                              001830
+       LGL     ,1                                                               001840
+       SLW*    3,4                                                              001850
+       CLA*    3,4                                                              001860
+       LDQ     SVQ                                                              001870
+       LXA     SV1,1                                                            001880
+       TRA     4,4                                                              001890
+       PAC     ,4                                                               003120
+       PAX     ,2                                                               003130
+       CLA     CELL                                                             003140
+       STQ     0,4                                                              003150
+       CAL     LIST                                                             003160
+       SLW     1,4                                                              003170
+       ADD     =1                                                               003180
+       STA     LEVEL                                                            003190
+       SXA     NEXTR,2                                                          003200
+       LDC     CELL,4                                                           003210
+       CAL     1,4                                                              003220
+       STD     LIST                                                             003230
+       PDC     ,4                                                               003240
+       CAL     0,4                                                              003250
+       TRA     ADV1                                                             003260
+CELL   SYN     *                                                                003270
+NEXTR  SYN     *                                                                003280
+       PZE     ,3                                                               003290
+LIST   SYN     *                                                                003300
+LEVEL  SYN     *                                                                003310
+       PZE                                                                      003320
+CAND   PZE     **                                                               003330
+SV1    PZE     **                                                               003340
+SV4    SYN     *                                                                003350
+OKEXIT AXT     **,4                                                             003360
+       STZ*    2,4                                                              003370
+EXIT   CAL*    1,4                                                              003380
+       PDC     ,2                                                               003390
+       CLA     CELL                                                             003400
+       STO     0,2                                                              003410
+       CLA     LIST                                                             003420
+       STO     1,2                                                              003430
+       STQ     SVQ                                                              003440
+       LDQ     SVQ                                                              003450
+       LDC     CELL,2                                                           003460
+       CLA     1,3                                                              003470
+SV2    AXT     **,2                                                             003480
+       LDI     SV1                                                              003490
+       TRA     3,4                                                              003500
+FAIL   LXA     2V4,4                                                            003510
+       STL*    2,4                                                              003520
+       TRA     EXIT                                                             003530
+SVQ    PZE     **                                                               003540
+Z      PZE     0                                                                003550
+X      PZE     ,,**                                                             003560
+       END                                                                      003570
+        MANY   FAP                                                              003580
+      ENTRY    MANY                                                             003590
+MANY   SYN     *                                                                003600
+       SXA     SV4,4                                                            003610
+       SXD     MANY-2,4                                                         003620
+       CLA     ORGNL                                                            003630
+       STO     START                                                            003640
+       CLA*    1,4                                                              003650
+       STO     LNAME                                                            003660
+BEGIN  CLA     START                                                            003670
+       ADD     =1                                                               003680
+       STO     START                                                            003690
+START  LDZ     1,4                                                              003700
+       STQ     PARM                                                             003710
+       ZAC                                                                      003720
+       LGL     S1                                                               003730
+       SUB     TEST                                                             003740
+       TNZ     OUT                                                              003750
+       CLA     PARM                                                             003760
+       STA     *_1                                                              003770
+       CLA     **                                                               003780
+       STO     PARM                                                             003790
+       TSX     $NEWBOT,4                                                        003800
+       FXH     PARM                                                             003810
+       TXH     LNAME                                                            003820
+SV4    AXT     **,4                                                             003830
+       TRA     BEGIN                                                            003840
+OUT    CLA     START                                                            003850
+       STA     *_2                                                              003860
+       CLA     LNAME                                                            003870
+       TRA     **,4                                                             003880
+ORGNL  LDZ     1,4                                                              003890
+LNAME  PZE     0                                                                003900
+PARM   PZE     0                                                                003910
+TEST   OCT     3000000                                                          003920
+       END                                                                      003930
+       MEMST   FAP                                                              003940
+       ENTRY   MEMSET                                                           003950
+MEMSET CLA*    1,4                                                              003960
+       SXA     X,4                                                              003970
+       TSX     $SETMEM,4                                                        003980
+X      AXT     **,4                                                             003990
+       TRA     2,4                                                              004000
+       END                                                                      004010
+         SEQ   FAP                                                              004580
+       ENTRY   SEQRDR                                                           004590
+       ENTRY   SEQLR                                                            004600
+       ENTRY   SEQLL                                                            004610
+SEQRDR CLA*    1,4                                                              004620
+       STA     *+1                                                              004630
+       CLA     **                                                               004640
+       TRA     2,4                                                              004650
+SEQLR  CLA*    1,4                                                              004660
+       STA     LINK                                                             004670
+       TRA     START                                                            004680
+SEQLL  CLA*    1,4                                                              004690
+       ARS     18                                                               004700
+       STA     LINK                                                             004710
+START  SXA     SAVE,1                                                           004720
+LLINK  AXC     **,1                                                             004730
+       CLA     3,4                                                              004740
+       STA     FLAG                                                             004750
+       CLA     1,4                                                              004760
+       STA     *+2                                                              004770
+       CLA     0,1                                                              004780
+       STO     **                                                               004790
+       ANA     =0700000                                                         004800
+       ARS     15                                                               004810
+       SUB     =1                                                               004820
+FLAG   STO     **                                                               004830
+       CLA     1,1                                                              004840
+SAVE   AXT     **,1                                                             004850
+       TRA     3,4                                                              004860
+       END                                                                      004870
+      DELFAP   FAP                                                              004880
+       ENTRY   REMOVE                                                           004890
+REMOVE SXA     SV1,1                                                            004900
+       SXA     SV4,4                                                            004910
+       CLA*    1,4                                                              004920
+       STA     *+2                                                              004930
+       STA     CELL                                                             004940
+       AXC     **,1                                                             004950
+       CLA     1,1                                                              004960
+       STO     RESULT                                                           004970
+       CLA     0,1                                                              004980
+       STA     RIGHT                                                            004990
+       STO     LEFT                                                             005000
+       ANA     =0700000                                                         005010
+       CAS     =0200000                                                         005020
+       TRA     *+2                                                              005030
+       TRA     DONE                                                             005040
+       CLA     LEFT                                                             005050
+RIGHT  STD     **                                                               005060
+       ARS     18                                                               005070
+       STA     *+2                                                              005080
+       CLA     RIGHT                                                            005090
+       STA     **                                                               005100
+DONE   TSX     $RCELL,4                                                         005110
+       TXH     CELL                                                             005120
+SV1    AXT     **,1                                                             005130
+SV4    AXT     **,4                                                             005140
+       CLA     RESULT                                                           005150
+       TRA     2,4                                                              005160
+CELL   PZE                                                                      005170
+RESULT PZE                                                                      005180
+LEFT   PZE                                                                      005190
+       END                                                                      005200
+         POP   FAP                                                              005210
+       ENTRY   POPTOP                                                           005220
+       ENTRY   POPBOT                                                           005230
+POPTOP CLA*    1,4                                                              005240
+       STA     *+1                                                              005250
+       CLA     **                                                               005260
+       STA     CELL                                                             005270
+       TRA     START                                                            005280
+POPBOT CLA*    1,4                                                              005290
+       STA     *+1                                                              005300
+       CLA     **                                                               005310
+       ARS     18                                                               005320
+       STA     CELL                                                             005330
+START  SXA     SV4,4                                                            005340
+       TSX     $REMOVE,4                                                        005350
+       TXH     CELL                                                             005360
+SV4    AXT     **,4                                                             005370
+       TRA     2,4                                                              005380
+CELL   PZE                                                                      005390
+       END                                                                      005400
+         PUT   FAP                                                              005410
+       ENTRY   NEWTOP                                                           005420
+       ENTRY   NEWBOT                                                           005430
+NEWTOP CLA*    2,4                                                              005440
+       STA     *+1                                                              005450
+       CLA     **                                                               005460
+       STA     AA                                                               005470
+       STA     AB                                                               005480
+       TRA     START                                                            005490
+NEWBOT CLA*    2,4                                                              005500
+       STA     AA                                                               005510
+       STA     AB                                                               005520
+START  SXA     SV1,1                                                            005530
+       SXA     SV4,4                                                            005540
+       CLA*    1,4                                                              005550
+       STO     DATUM                                                            005560
+       STA     DA                                                               005570
+       TSX     $NUCELL,4                                                        005580
+       FXH     *                                                                005590
+       STA     *+1                                                              005600
+       AXC     **,1                                                             005610
+       STA     NEW                                                              005620
+AA     CLA     **                                                               005630
+       ANA     =077777000000                                                    005640
+       STD     0,1                                                              005650
+       ARS     18                                                               005660
+       STA     LL                                                               005670
+       CLA     AA                                                               005680
+       STA     0,1                                                              005690
+       CLA     NEW                                                              005700
+LL     STA     **                                                               005710
+       ALS     18                                                               005720
+AB     STD     **                                                               005730
+       TSX     $NAMTST,4                                                        005740
+       TXH     DATUM                                                            005750
+       TNZ     DONW                                                             005760
+       CLA     =0100000                                                         005770
+       STT     0,1                                                              005780
+       CLA     DZ                                                               005790
+       ADD     =1                                                               005800
+       STA     *+2                                                              005810
+       STA     *+3                                                              005820
+       CLA     **                                                               005830
+       ADD     =1                                                               005840
+       STO     **                                                               005850
+DONE   CLA     DATUM                                                            005860
+       STO     1,1                                                              005870
+       CLA     NEW                                                              005880
+SV1    AXT     **,1                                                             005890
+SV4    AXT     **,4                                                             005900
+       TRA     3,4                                                              005910
+DATUM  PZE                                                                      005920
+NEW    PZE                                                                      005930
+DA     PZE                                                                      005940
+       END                                                                      005950
+       NTEST   FAP                                                              005960
+       ENTRY   NAMTST                                                           005970
+NAMTST SXA     SV4,4                                                            005980
+       CLA*    1,4                                                              005990
+       STO     CAND                                                             006000
+       TSX     $GETMEM,4                                                        006010
+       TXH     *                                                                006020
+       STO     LIMIT                                                            006030
+       CLA     CAND                                                             006040
+       STA     LINK                                                             006050
+       ARS     18                                                               006060
+       CAS     LINK                                                             006070
+       TRA     NO                                                               006080
+       TRA     *+2                                                              006090
+       TRA     NO                                                               006100
+       CLA     LINK                                                             006110
+       CAS     LIMIT                                                            006120
+       TRA     NO                                                               006130
+       TRA     *+1                                                              006140
+       CLA*    LINK                                                             006150
+       STO     HEAD                                                             006160
+       ANA     =0700000                                                         006170
+       CAS     =0200000                                                         006180
+       TRA     NO                                                               006190
+       TRA     *+2                                                              006200
+       TRA     NO                                                               006210
+       CLA     HEAD                                                             006220
+       ARS     18                                                               006230
+       CAS     LIMIT                                                            006240
+       TRA     NO                                                               006250
+       TRA     *+1                                                              006260
+       STA     *+1                                                              006270
+       CLA     **                                                               006280
+       ANA     -077777                                                          006290
+       CAS     LINK                                                             006300
+       TRA     NO                                                               006310
+       TRA     YES                                                              006320
+NO     CLA     =1                                                               006330
+       TRA     *+2                                                              006340
+YES    CLA     =0                                                               006350
+SV4    AXI     **,4                                                             006360
+       TRA     2,4                                                              006370
+CAND   PZE                                                                      006380
+HEAD   PZE                                                                      006390
+LINK   PZE                                                                      006400
+LIMIT  PZE                                                                      006410
+       END                                                                      006420
+         LST   FAP                                                              006430
+       ENTRY   LIST                                                             006440
+LIST   SXA     SV1,1                                                            006450
+       SXA     SV4,4                                                            006460
+       CLA     1,4                                                              006470
+       STA     ADDR                                                             006480
+       CLA8    1,4                                                              006490
+       STO     DATUM                                                            006500
+       TSX     $NUCELL,4                                                        006510
+       TXH      *                                                               006520
+       STO     CELL                                                             006530
+       STA     *+4                                                              006540
+       STA     *+4                                                              006550
+       LXA     CELL,1                                                           006560
+       SXD     CELL,1                                                           006570
+       SXA     **,1                                                             006580
+       SXD     **,1                                                             006590
+       CLA     =0200000                                                         006600
+       SIT*    CELL                                                             006610
+       CLA     DATUM                                                            006620
+       CAS     =9                                                               006630
+       TRA     *+2                                                              006640
+       TRA     DONE                                                             006650
+       CLA     CELL                                                             006660
+       STA     *+1                                                              006670
+       AXC     **,1                                                             006680
+       CLA     =1                                                               006690
+       STO     1,1                                                              006700
+       CLA     CELL                                                             006710
+ADDR   STO     **                                                               006720
+DONE   CLA     CELL                                                             006730
+SV1    AXT     **,1                                                             006740
+SV4    AXT     **,4                                                             006750
+       TRA     2,4                                                              006760
+CELL   PZE                                                                      006770
+DATUM  PZE                                                                      006780
+       END                                                                      006790
+      TOPBOT   FAP                                                              006800
+       ENTRY   TOP                                                              006810
+       ENTRY   BOT                                                              006820
+TOP    CLA*    1,4                                                              006830
+       STA     *+1                                                              006840
+       CLA     **                                                               006850
+       ANA     =077777                                                          006860
+       ADD     =1                                                               006870
+       STA     ADDR                                                             006880
+       TRA     ADDR                                                             006890
+BOT    CLA*    1,4                                                              006900
+       STA     *+1                                                              006910
+       CLA     **                                                               006920
+       ARS     18                                                               006930
+       ANA     =077777                                                          006940
+       ADD     =1                                                               006950
+       STA     ADDR                                                             006960
+ADDR   CLA     **                                                               006970
+       TRA     2,4                                                              006980
+       END                                                                      006990
+       LSTMT   FAP                                                              007000
+       ENTRY   LISTMT                                                           007010
+LISTMT CLA*    1,4                                                              007020
+       STA     *+1                                                              007030
+       CLA     *                                                                007040
+       STO     HEAD                                                             007050
+       STA     *+1                                                              007060
+       CAL     **                                                               007070
+       CAS     HEAD                                                             007080
+       TRA     NOT                                                              007090
+       TRA     YES                                                              007100
+NOT    CLA     =1                                                               007110
+       TRA     2,4                                                              007120
+YES    CLA     =0                                                               007130
+       TRA     2,4                                                              007140
+HEAD   PZE                                                                      007150
+       END                                                                      007160
+        HASH   FAP                                                              007170
+       ENTRY   HASH                                                             007180
+HASH   LDQ*    1,4                                                              007190
+       CLA*    2,4                                                              007200
+       STA     SHIFT                                                            007210
+       ARS     1                                                                007220
+       STA     *+2                                                              007230
+       MPY*    1,4                                                              007240
+       LLS     **                                                               007250
+       STA     TEMP                                                             007260
+       LDZ     =0777777777777                                                   007270
+       ZAC                                                                      007280
+SHIFT  LLS     **                                                               007290
+       ANA     TEMP                                                             007300
+       TRA     3,4                                                              007310
+TEMP   PZE                                                                      007320
+       END                                                                      007330
+         RVECT   MAD                                                            000340
+             EXTERNAL FUNCTION(M,J)                                             000350
+             NORMAL MODE IS INTEGER                                             000360
+             ENTRY TO RVECT.                                                    000370
+             THROUGH ADD, FOR I =M,2, I .G. J                                   000380
+             MZ = M                                                             000390
+             EXECUTE STRING.(0,MZ)                                              000400
+             M=M+2                                                              000410
+ADD          EXECUTE RCELL.(MZ)                                                 000420
+             FUNCTION RETURN 0                                                  000430
+             END OF FUNCTION                                                    000440
+         ADAS    MAD                                                            000450
+             EXTERNAL FUNCTION (N)                                              000460
+             NORMAL MODE IS INTEGER                                             000470
+             ENTRY TO ADAS.                                                     000480
+             M1 = GETMEM.(0)                                                    000490
+             W/R M1 .G. 32766, TRANSFER TO WRONG                                000500
+             M2 = XMINO. (M1+N,32767)                                           000510
+             EXECUTE MEMSET.(M2)                                                000520
+             EXECUTE RVECT.(M1,M2-2)                                            000530
+             FUNCITON RETURN 0                                                  000540
+WRONG        PRNTP.(MESS)                                                       000550
+             VECTOR VALUES MESS=$SPACE EXHAUSTD.  PROGRAMENDED.$,               000560
+             177777777777K                                                      000570
+             EXECUTE EXIT.(0)                                                   000580
+             END OF FUNCTION                                                    000590
+        IRALST   MAD                                                            000590
+             EXTERNAL FUNCTION (LST)                                            000600
+             NORMAL MODE IS INTEGER                                             000610
+             ENTRY TO IRALST.                                                   000620
+             EXECUTE SETIND.(-1,-1,LCNTR.(LST)-1,LST+I)                         000630
+             W'R LCNTR.(LST) .NE. O, TRANSFER TO RETHED                         000640
+             EXECUTE SETIND.(1,-1,-1,LST)                                       000650
+             EXECUT SETIND.(0,-1,MAYBE,LST+1)                                   000660
+ RETHED      EXECUTE RCELL.(LST)                                                000670
+ DONE        FUNCTION RETURN ST                                                 000680
+             END OF FUNCTION                                                    000690
+        LISTMT   MAD                                                            001120
+             EXTERNAL FUNCTION (LST)                                            001130
+             NORMAL MODE IS INTEGER                                             001140
+             ENTRY TO LCNTR.                                                    001150
+             LEVEL = LNKR.(CONT.(LST+1)                                         001160
+             T'O DONE                                                           001170
+             ENTRY TO LSTNAM.                                                   001180
+             LEVEL = LNKL.(CONT.(LST+1)                                         001190
+             SETDIR.(O,LEVEL,LEVEL,LEVEL)(                                      001200
+DONE         FUNCTION RETURN LEVEL                                              001210
+             END OF FUNCTION                                                    001220
+          LIST   MAD                                                            001330
+             EXTERNAL FUNCTION (ADDR)                                           001340
+             NORMAL MODE IS INTEGER                                             001350
+             ENTRY TO LIST.                                                     001360
+             CELL=NUCELL.(CELL)                                                 001370
+             EXECUTE SETDIR.(O,CELL,CELL,CELL)                                  001380
+             EXECUTE SETIND.(2,CELL,CELL,CELL)                                  001390
+             WR ADDR .E. 0, T'O DONE                                            001400
+             ADDR=CELL                                                          001410
+             EXECUTE SETIND.(-1,1,,1,CELL + 1)                                  001420
+DONE         FUNCTION RETURN CELL                                               001430
+        NAMTST   MAD                                                            001450
+             EXTERNAL FUNCTION (CANDAT)                                         001460
+             NORMAL MODE IS INTEGER                                             001470
+             ENTRY TO NAMTST.                                                   001480
+             LST=CANDAT                                                         001490
+             LIMIT=GETMEM.(0)                                                   001500
+             LINK=LINKR.(LST)                                                   001510
+             W/R LNKL.(LST) .N. LINK .OR. LINK .G. LIMIT, T/O NO                001520
+             READ=CONT.(LINK)                                                   001530
+             W'R ID.(HEAD) .NE. 2 .OR. LINK.(HEAD( .G. LIMIT, T'0 NO            001540
+             W'R LNKR.(CONT.(LNKL.(HEAD))) .NE. LINK, T'O NO                    001550
+             F'N 0                                                              001560
+NO           F'N 1                                                              001570
+             E'H                                                                001580
+        SEQRDR   MAD                                                            001590
+             EXTERNAL FUNCTION(LST)                                             001600
+             NORMAL MODE IS INTEGER                                             001610
+             ENTRY TO SEQRDR.                                                   001620
+             IT=CONT.(LST)                                                      001630
+             FUNCTION RETURN IT                                                 001640
+             END OF FUNCTION                                                    001650
+           TOP   MAD                                                            001660
+             EXTERNAL FUNCITON (LST)                                            001670
+             NORMAL MODE IS INTEGER                                             001680
+             ENTRY TO TOP.                                                      001690
+             ADDR=LINKR.(CONT.LST))                                             001700
+             TRANSFER TO START                                                  001710
+             ENTRY TO BOT.                                                      001720
+             ADDR=LINKL.(CONT.LST))                                             001730
+START        IT=CONT.(ADDR + 1)                                                 001740
+             RUNCTION RETURN IT                                                 001750
+             END OF FUNCTION                                                    001760
+        NEWTOP   MAD                                                            001770
+             EXTERNAL FUNCTION (OBJ,LST)                                        001780
+             NORMAL MODE IS INTEGER                                             001790
+             ENTRY TO NEWTOP.                                                   001800
+             ADDR=LNKR.(CONT.(LST))                                             001810
+             TRANSFER TO START                                                  001820
+             ENTRY TO NEWBOT.                                                   001830
+             ADDR=LST                                                           001840
+START        NEW=NEWCELL.(NEW)                                                  001850
+             LL=LNKL.(CONT.(ADDR))                                              001860
+             EXECUTE SETIND.(-1,-1,NEW.LL)                                      001870
+             EXECUTE SETIND.(-1,NEW,-1,ADDR)                                    001880
+             EXECUTE SETIND.(0,LL, ADR,NEW)                                     001890
+             W'R NAMTST.(OBJ) .NE. 0, TRANSFER TO NOT                           001900
+             EXECUTE SETIND.(1,-1,-1,NEW)                                       001910
+             EXECUTE SETIND.(1,-1,LCNTR.(OBJ)+1,OBJ+1)                          001920
+NOT          EXECUTE STRING.(OBJ,NEW+1)                                         001930
+             FUNCTION RETURN NEW                                                001940
+             END OF FUNCTION                                                    001950
+        REMOVE   MAD                                                            001960
+             EXTERNAL FUNCTION(ADDR)                                            001970
+             NORMAL MODE IS INTEGER                                             001980
+             ENTRY TO REMOVE.                                                   001990
+             W'R ID.(CONT.(ADDR)) .E. 2, T'O HEADER                             002000
+             IT = CONT.(ADDR +1)                                                002010
+             LEFT=LNKL.(CONT.(ADDR))                                            002020
+             RIGHT=LNKR.(CONT,(ADDR))                                           002030
+             EXECUTE RCELL.(ADDR)                                               002040
+             EXECUTE SETIND.(-1,-1,RIGHT,LEFT)                                  002050
+             EXECUTE SETIND.(-1,.EFT,-1,RIGHT)                                  002060
+             T'0 DONE                                                           002070
+HEADER       IT=0                                                               002080
+             EXECUTE PRNTP.(MESSG)                                              002090
+             VECTOR VALUES MESSG=$HEADER REMOVE&,77777777777K                   002100
+DONE         FUNCTION RETURN IT                                                 002110
+        POPPER   MAD                                                            002130
+             EXTERNAL FUNCTION (LST)                                            002140
+             NORMAL MODE IS INTEGER                                             002150
+             ENTRY TO POPBOT.                                                   002160
+             IT=REMOVE.(LNKL.(CONT.(LST)))                                      002170
+             T'O DONE                                                           002180
+             ENTRY TO POPTOP.                                                   002190
+             IT=REMOVE.(LNKR.(CONT.(LST)))                                      002200
+DONE         FUNCTION RETURN IT                                                 002210
+             END OF FUNCTION                                                    002220
+        MAKEDL   MAD                                                            002230
+             EXTERNAL FUNCTION(DLST,LST)                                        002240
+             NORMAL MODE IS INTEGER                                             002250
+             ENTRY TO MAKEDL.                                                   002260
+             W'R LNKL.(CONT.(LST+1)) .NE. 0, T'O NOTMT                          002270
+NORMAL       SETIND.(-1,DLST,-1,LST+1)                                          002280
+             SETIND.(-1,-1,LCNTR.(DLST)+1,DLST+1)]                              002290
+             FUNCTION RETURN LST                                                002300
+        READER   MAD                                                            002360
+             EXTERNAL FUNCTION(LST)                                             002370
+             NORMAL MODE IS INTEGER                                             002380
+             ENTRY TO READER.                                                   002390
+             ENTRY TO LRDROB.                                                   002400
+             IT=NUCELL.(IT)                                                     002410
+             EXECUTE SETIND.(3,LST,0,IT)                                        002420
+             EXECUTE SETIND.(0,LST,0,IT+1)                                      002430
+             EXECUTE SETDIR.(0IT,IT,IT)                                         002440
+             FUNCTION RETURN IT                                                 002450
+             END OF FUNCTION                                                    002460
+        ERARDR   MAD                                                            002470
+             EXTERNAL FUNCTION(READER)                                          002480
+             NORMAL MODE IS INTEGER                                             002490
+             ENTRY TO IRARDR.                                                   002500
+             ENTRY TO ERARDR.                                                   002510
+             M=READER                                                           002520
+MORE         N=LNKR.(CONT.(M))                                                  002530
+             EXECUTE RCELL.(M)                                                  002540
+             M=N                                                                002550
+             1'R M .NE. 0, T'O MORE                                             002560
+             FUNCTION RETURN 0                                                  002570
+             END O0F FUNCTION                                                   002580
+         MADIN   MAD                                                            002590
+             EXTERNAL FUNCTION (X)                                              002600
+             NORMAL MODE IS INTEGER                                             002610
+             ENTRY TO MADIN.                                                    002620
+             ENTRY TO LOCT.                                                     002630
+             ENTRY TO INTLBL.                                                   002640
+             ENTRY TO FLTLBL.                                                   002650
+             ENTRY TO MADOUT.                                                   002660
+             FUNCTION RETURN X                                                  002670
+             END OF FUNCTION                                                    002680
+         EQUAL   MAD                                                            002690
+             EXTERNAL FUNCTION(ONE,OTHER)                                       002700
+             NORMAL MODE IS INTEER                                              002710
+             ENTRY TO EQUAL.                                                    002720
+             W'R ONE .E. OTHER,T'O SAME                                         002730
+             TST = 1                                                            002740
+             T'O OUT                                                            002750
+SAME         TEST = 0                                                           002760
+OUT          FUNCTION RFETURN TEST                                              002770
+             ENTRY TO AND.                                                      002780
+             TEST= ONE .A. OTHER                                                002790
+             TRANSFER TO OUT                                                    002800
+             END OF FUNCTION                                                    002810
+        MADATR   MAD                                                            002820
+             EXTERNAL FUNCTION(AT,LST)                                          002830
+             NORMAL MODE IS INTEGER                                             002840
+             ENTRY TO MADATR.                                                   002850
+             ADDR = LNKL.(CONT.(LST+1))                                         002860
+             W'R ADDR .E. 0, T'O FAIL                                           002870
+START        ADDR=LNKR.(CONT.(ADDR))                                            002880
+             W'R ID.(CONT.(ADDR)) .E. 2, T'O FAIL                               002890
+             W'R CONT.(ADDR + 1) .E. AT, T'O SUCCES                             002900
+             ADDR= LNKR.(CONT.(ADDR))                                           002910
+             W'R ID.(CONT.ADDR)) E. 2, T'O FAIL                                 002920
+             T'O START                                                          002930
+SUCCES       FUNCTION RETURN ADDR                                               002940
+FAIL         ADDR=-1                                                            002950
+             T'O SUCCES                                                         002960
+             END OF FUNCTION                                                    002970
+        NEWVAL   MAD                                                            002980
+             EXTERNAL FUNCTION (AT,VAL,LST)                                     002990
+             NORMAL MODE IS INTEGER                                             003000
+             ENTRY TO NEWVAL.                                                   003010
+             W'R LNKL.(CONT.(LST+1)) .E. 0, T'O NEWDL                           003020
+             ADDR = MADATR.(AT.LST)                                             003030
+             W'R ADDR .E. -1, T'O NEWAT                                         003040
+             IT = SUBST.(VAL,LNKR.(CONT.(ADDR))                                 003050
+DONE         FUNCTION RETURN IT                                                 003060
+NEWDL        EXECUTE SETIND.(-1,LIST.(IT)\,-1,LST+1)                            003070
+NEWAT        IT=LSTNAM.(LST)                                                    003080
+             EXECUTE MANY.(IT,AT,VAL)                                           003090
+             IT = VAL                                                           003100
+             T'O DONE                                                           003110
+             END OF FUNCTION                                                    003120
+         SUBST   MAD                                                            003130
+             EXTERNAL FUNTION(DATUM,ADDR)                                       003140
+             NORMAL MODE IS INTEGER                                             003150
+             ENTRY TO SUBST.                                                    003160
+             PRESNT = CONT.(ADDR+1                                              003170
+             W'R NAMSTS.(PRESNT) .NE. 0, T'O NONAME                             003180
+             N=NUCELL.(N)                                                       003190
+             EXECUTE SETIND.(1,0,0,N)                                           003200
+             EXECUTE STRIND.(PRESNT,N+1)                                        003210
+             EXECUTE RCELL. (N)                                                 003220
+             EXECUTE STRIND.(DATUM,ADDR + 1)                                    003230
+NONAME       W'R NAMTST.(DATUM) .E. 0                                           003240
+             EXECUTE SETIND.(1,-1,-1,ADDR)                                      003250
+             COUNT=LNKL.(DATUM)                                                 003260
+             EXECUTE SETIND.(-1,-1,LNKR.(CONT.(COJNT+1))+1,COUNT+1)             003270
+             EXECUTE STRIND.(DATUM,ADDR+1)                                      003280
+             END OF CONDITIONAL                                                 003290
+             FUNCTION RETURN PRESNT                                             003300
+             END OF FUNCTION                                                    003310
+        ITSVAL   MAD                                                            003340
+             EXTERNAL FUNCTION (ATRBT,LST)                                      003350
+             NORMAL MODE IS INTEGER                                             003360
+             ENTRY TO ITSTVL.                                                   003370
+             ADDR= MADATR.(ATRBT,LST)                                           003380
+             W'R ADDR .E. -1                                                    003390
+             RUNCTION RETURN -1                                                 003400
+             OTHERWISE                                                          003410
+             IT=REMOVE.(LNKR.(CONT.(ADDR)))                                     003420
+             EXECUTE REMOVE.(ADDR)                                              003430
+             FUNCTION RETURN IT                                                 003440
+             END OF CONDITIONAL                                                 003450
+             END OF FUNCTION                                                    003460
+        NOATVL   MAD                                                            003440
+             EXTERNAL FUNCTION (ATRBT,LST)                                      003450
+             NORMAL MODE IS INTEGER                                             003460
+             ENTRY TO NOATVL.                                                   003470
+             ADDR= MADATR.(ATRBT,LST)                                           003480
+             W'R ADDR .E. =1                                                    003490
+             FUNCTION RETURN -1                                                 003500
+             OTHERWISE                                                          003510
+             IT=REMOVE.(LINKR.(CONT.(ADDR)))                                    003520
+             EXECUTE REMOVE.(ADDR)                                              003530
+             FUNCTION RETURN IT                                                 003540
+             END OF CONDITIONAL                                                 003550
+             END OF FUNCTION                                                    003560
+           PUT   MAD                                                            003570
+             EXTERNAL FUNCTION (IT,MODE,SIGN)                                   003580
+             PROGRAM COMMON AVSL,W                                              003590
+             DIMENSION W(100)                                                   003600
+             NORMAL MODE IS INTEGER                                             003610
+             FLOATING POINT WORT,SIGN                                           003620
+             EQUIVALENCE (WORD,WORT)                                            003630
+             ENTRY TO PUT.                                                      003640
+             WORD=IT                                                            003650
+             W'R WORD .E. $      $, T'O DONE                                    003660
+             W'R MODE .E. 0                                                     003670
+             EXECUTE NEWBOT.(LANORM.(WORD),TOP.(W(1)))                          003680
+             OR W'R MODE .E. O                                                  003690
+             WORD=WORT*SIGN                                                     003700
+             EXECUTE NEWBOT.(WORD,TOP,(W(1)))                                   003710
+             OTHERWISE                                                          003720
+             WORT=WORT*SIGN                                                     003730
+             EXECUTE NEWBOT.(WORT,TOP.(W(1)))                                   003740
+             E'L                                                                003750
+             FUNCTION RETURN 0                                                  003760
+DONE         MRKPOS.(LNKL.(CONT.(TOP.(W(1))))                                   003770
+             FUNCTION RETURN 0                                                  003780
+             END OF FUNCTION                                                    003790
+        LISTRD   MAD                                                            003800
+             EXTERNAL FUNCTION (NEW,N)                                          000001
+             PROGRAM COMMON AVSL,W                                              000002
+             DIMENSION W(100),CARD(15),KNOW(14)                                 000003
+             EQUIVALENCE (WORD,WORT)                                            000004
+             NORMAL MODE IS INTEGER                                             000005
+             FLOATING POINT WORD,SIGN,DEC,X                                     000006
+             ENTRY TO TREAD.                                                    000016
+             TEXT=$TEXT$                                                        000026
+             SWITCH=1                                                           000036
+             T'O START                                                          000046
+             ENTRY TO COMNDR.                                                   000056
+             SWITCH = 0                                                         000066
+             TEXT=0                                                             000076
+             TRANSFER TO START                                                  000086
+             ENTRY TO LISTRD.                                                   000096
+             SWITCH=1                                                           000106
+             TEXT=0                                                             000116
+START        M= MADOUT.(N)                                                      000126
+             Q=$Q$                                                              000136
+             IDENT=0                                                            000146
+             SIGN=1.0                                                           000156
+             MODE=-1                                                            000166
+             IS=0                                                               000176
+             COUNT=1                                                            000186
+             WORT=$                                                             000196
+            R******************************READ NEXT LINE*****************      000206
+TESM         WHENEVER M .E. 0,TRANSFER TO CARDS                                 000216
+             READ BCT TAPE M,DATFOR,CARD(1) ... CARD(14)                        000226
+             TRANSFER TO ANALIZ                                                 000236
+CARDS        W'R IS .E. 0                                                       000246
+             PRINT ON LINE FORMAT STAR                                          000256
+             IS=1                                                               000266
+             NEWTOP.(NEW,W(1))                                                  000276
+             T'O READCR                                                         000286
+             O'E                                                                000306
+READCR       READ FORMAT DATFOR, CARD(1) ... CARD(14)                           000316
+             T'H ENDTST, FOR I=1,1, I .G. 14                                    000326
+ENDTST       W'R CARD(I) .NE. $ $, T'O ANALIZ                                   000336
+             T'H RP, FOR I=1,1, I.G. 14                                         000346
+RP           CARD(I)=343434343434K                                              000356
+             E'L                                                                000366
+ANALIZ       THROUGH AA, FOR I=1,1,I .G. 14                                     000376
+AA           KNOW(I)=LETTR.(CARD(I))                                            000386
+             IW=1                                                               000396
+A108         IC=1                                                               000406
+            R******************************GET NEXT CHARACTER*************      000416
+A105         CHAR=KGETBL.(MADIN.(IC),CARD(IW))                                  000426
+             PREV=IDENT                                                         000436
+             IDENT=MADOUT.(KGETIN.(MADIN.(IC),KNOW(IW))                         000446
+            R******************************TRANSFER APPROPRIATLY**********      000456
+             TRANSFER TO Z(IDENT)                                               000466
+Z(1)         TRANSFER TO W6                                                     000476
+Z(2)         W'R SWITCH .E. O .OR. TEXT .E. $TEXT$, T'O W6                      000486
+             TRANSFER TO W5                                                     000496
+Z(3)         TRANSFER TO W6                                                     000506
+Z(4)         TRANSFER TO W8                                                     000516
+Z(5)         TRANSFER TO W9                                                     000526
+Z(6)         TRANSFER TO W5                                                     000536
+Z(7)         TRANSFER TO W6                                                     000546
+Z(8)         TRANSFER TO W6                                                     000556
+Z(9)         TRANSFER TO W10                                                    000566
+Z(10)        TRANSFER TO WLEDTP                                                 000576
+Z(11)        TRANSFER TO W6                                                     000586
+Z(12)        WHENEVER PREV .NE 4,TRANSFER TO W12                                000596
+             IDENT=4                                                            000606
+             TRANSFER TO W4                                                     000616
+Z(13)        TRANSFER TO W10                                                    000626
+Z(14)        WHENEVER SWITCH .E. 0,TRANSFER TO S6                               000636
+             TRANSFER TO W4                                                     000646
+            R******************************SINGUAR CHARACTER**************      000656
+W6           EXECUTE PUT.(WORD,MODE,SIGN)                                       000666
+             EXECUTE PUT.(CHAR,-1,1.0)                                          000676
+             TRANSFER TO A109                                                   000686
+            R******************************SUBLIST CREATION***************      000696
+W11          WHENEVER IS .E. 0,TRANSFER TO A112                                 000706
+             IS=IS+1                                                            000716
+             WHENEVER WORT .E. $ DLIST$,TRANSFER TO DLIST                       000726
+             EXECUTE PUT.(WORD,MODE, SIGN)                                      000736
+REST         EXECUTE NEWBOT.(LIST.(MADIN.(9)),TOP.(W(1)))                       000746
+             EXECUTE NEWTOP.(BOT.(TOP.(W1))),W(1))                              000756
+             TRANSFER TO A109                                                   000766
+DLIST        EXECUTE MAKEDL.(LIST.(MADIN.(9)),TOP.(W(1)))                       000776
+             EXECUTE NEWTOP.(LSTNAM.(TOP.(1(1))),W(1))                          000786
+             TRANSFER TO A109                                                   000796
+            R******************************FIRST LEFT PARENTHESIS*********      000806
+A112         IS=1                                                               000816
+             EXECUTE NEWTOP.(NEW,W(1))                                          000826
+             TRANSFER TO A102                                                   000836
+            R******************************RIGHT PARENTHESIS**************      000846
+W9           IS=IS-1                                                            000856
+             EXECUTE PUT.(WORD,MODE,SIGN)                                       000866
+             WHENEVER IS .E. 0,TRANSFER TO A92                                  000876
+             EXECUTE POPTOP.(W(1))                                              000886
+             TRANSFER TO A109                                                   000896
+            R******************************CLOSING RIGHT PARENTHESIS******      000906
+A92          EXECUTE POPTOP.(W(1))                                              000916
+             FUNCTION RETURN NEW                                                000926
+            R*********************INTEGER**********************                 000936
+W12          WHENEVER MODE .L. 9                                                000946
+             MODE = 0                                                           000956
+             WORD= 0.0                                                          000966
+             TRANSFER TO A122                                                   000976
+             OR WHENEVER MODE .E. 0                                             000986
+             TRANSFER TO A122                                                   000996
+             OTHERWISE                                                          001006
+            R******************************FRACTIONAL PART****************      001016
+             X=MADOUT.(KGETIN.(MADIN.(IC),CARD(IW)))                            001026
+             WORD-WORD+(X/DEC)                                                  001036
+             DEC=10.0*DEC                                                       001046
+             TRANSFER TO A102                                                   001056
+             END OF CONDITIONAL                                                 001066
+            R******************************INTEGRAL PART******************      001076
+A122         X=MADOUT.(KGETIN.(MADIN.(ID),CARD(IW)))                            001086
+             WORD=WORD*10.0+X                                                   001096
+             TRANSFER TO A102                                                   001106
+            R******************************PERIOD*************************      001116
+W8           W'R TEXT .E. $T4EXT$ .OR.L PERV .E. 4, T'O A101                    001126
+             WHENEVER MODE .LE. 0                                               001136
+             WORD=0.0                                                           001146
+             TRANSFER TO S81                                                    001156
+             OR WHENVER MODE .E. 0                                              001166
+W81          MODE=1                                                             001176
+             DEC=0.0                                                            001186
+             TRANSFER TO A102                                                   001196
+             OTHERWISE                                                          001206
+             TRANSFER TO W10                                                    001216
+             END OF CONDITIONAL                                                 001226
+            R******************************MINUS SIGN (LISTRD MODE ONLY) *      001236
+W5           EXECUTE PUT.(WORD,MODE,SIGN)                                       001246
+             SIGN=-1.0                                                          001256
+             TRANSFER TO MINUS                                                  001266
+            R******************************ALPHABETIC CHARACTER***********      001276
+W4           WHENEVER IS .E. O,TRANSFER TO A102                                 001286
+             EXECUTE SHINBL.(MADIN.(16),CHAR,WORD)                              001296
+             WHENEVER COUNT .E. 6,TRANSFER TO A43                               001306
+             COUNT=COUNT+1                                                      001316
+             TRANSFER TO A102                                                   001326
+A43          MRKNEG.(NEWBOT.(WORD,TOP.(W(1)))                                   001336
+             TRANSFER TO A109                                                   001346
+            R******************************INITIALIZE AFTER PUT************     001356
+A109         SIGN=1.0                                                           001366
+MINUS        COUNT=1                                                            001376
+             WORT=$       $                                                     001386
+             MODE=-1                                                            001396
+            R******************************INPUT SCAN ADJUSTER*************     001406
+A102         WHENEVER IC .E. 6,TRANSFER TO A104                                 001416
+             IC=IC+1                                                            001426
+             TRANSFER TO A105                                                   001436
+A104         WHENEVER IW .E. 15,TRANSFER TO TESTM                               001446
+             IW=IW+1                                                            001456
+             TRANSFER TO A108                                                   001466
+            R******************************BLANK***************************     001476
+W10          WHENEVER IS .E. O, TRANSFER TO A102                                001486
+A101         EXECUTE PUT.(WORD,MODE,SIGN)                                       001496
+             WHENEVER SWITCH .E. 0,TRANSFER TO A109                             001506
+             EXECUTE PUT.(CHAR,-1.0,1.0)                                        001516
+             TRANSFER TO A109                                                   001526
+            R******************************LEFT PARNTHESIS******************    001536
+LEFTP        WHENEVER PREV .NE. 13,TRANSFER TO W11                              001546
+             WHENEVER SWITCH .E. 1,TRANSFER TO W11                              001556
+             EXECUTE PUT.(WORD,MODE,SIGN)                                       001566
+             EXECUTE PUT.(Q,-1,1)                                               001576
+             IS=IS+1                                                            001586
+             PREV=4                                                             001596
+             TRANSFER TO REST                                                   001606
+             VECTOR VALUES START = $5HINPUT *$                                  001616
+             VECGTOR VALUES DATFOR = $14A6 *$                                   001626
+             END OF FUNCTION                                                    001636
+         PLACE   MAD                                                            005500
+             EXTERNAL FUNCTION(A,KOUNT)                                         005510
+             DIMENSION OUT(12)                                                  005520
+             NORMAL MODE IS INTEGER                                             005530
+             ENTRY TO PLACE.                                                    005540
+             WHENEVER KOUNT .LE. 0                                              005550
+             AMAD=MADOUT.(A)                                                    005560
+             WHENEVER AMAD .E.E 1                                               005570
+             AFMT(0)=$(1P5E1)$                                                  005580
+             OR WHENEVER AMAD .E. 2                                             005590
+             AFMT(0)=$(5O14)$                                                   005600
+             END OF CONDITIONAL                                                 005610
+             WHENEVER  K .NE. 0,TRANSFER TO PRINT                               005620
+             OR WHENEVER KOUNT .E. 0                                            005630
+             N=MADOUT.(A)                                                       005640
+             AFMT(0)=$(12A6)$                                                   005650
+             K=0                                                                005660
+             OR WHEVER KOUNT .G. 0                                              005670
+             WHENEVER K .E. 0                                                   005680
+             THROUGH BLBUF, FOR J=1,1,J.G.12                                    005690
+ BLBUF       OUT(J_=$      $                                                    005700
+             END OF CONDITIONAL                                                 005710
+             K=K+1                                                              005720
+             COUNT=MADOUT.(KOUNT)                                               005730
+             TRANSFER TO CONV(COUNT)                                            005740
+CONV(2)      OUT(K)=A                                                           005750
+             TRANSFER TO ISBFUL                                                 005760
+CONV(1)      F=FRBCD.(A,B)                                                      005770
+             OUT(K)=B                                                           005780
+             WHENEVER F.E.O,TRANSFER TO ISBFUL                                  005790
+             WHENEVER K.E.12                                                    005800
+             WHENEVER N.G.0                                                     005810
+             WRITE BCD TAPE N,AFMT,OUT(1) ... OUT(11)                           005820
+             OR WHENEVER N .E. 0                                                005830
+             PRINT ON LINE FORMAT AFMT,OUT(1) ... OUT(11)                       005840
+             END OF CONDITIONAL                                                 005850
+             THROUGHT BLBU,FOR J=3,1,J.G.11                                     005860
+BLBU         OUT(J)=$                                                           005870
+             OUT(1)=B                                                           005880
+             K=1                                                                005890
+             END OF CONDITIONAL                                                 005900
+             K=K+1                                                              005910
+             OUT(K)=F                                                           005920
+ISBFUL       WHENEVER K.E.12                                                    005930
+PRINT        WHENEVER N.G.0                                                     005940
+             WRITE BCD TAPE N,AFMT,OUT(1) ... OUT(K)                            005950
+             OR WHENEVER N.E.0                                                  005960
+             PRINT ON LINE FORMAT AFMT,OUT(1) ... OUT(K)                        005970
+             END OF CONDITIONAL                                                 005980
+             K=0                                                                005990
+             END OF CONDITIONAL                                                 006000
+             END OF CONDITIONAL                                                 006010
+             FUNCTION RETURN 0                                                  006020
+             VECTOR VALUES AFM$(1P5E13.3)$                                      006030
+             END OF FUNCTION                                                    006040
+         FRBCD   MAD                                                            006050
+             EXTERNAL FUNCTION (A0,B0)                                          006060
+             NORMAL MODE IS INTEGER                                             006070
+             FLOATING POINT AF,KF,FF,BCDFT.                                     006080
+             EQUIVALENCE (A,AF) , (K,KF) , (F,FF)                               006090
+             ENTRY TO FRBCD.                                                    006100
+             A=A0                                                               006110
+             FF=0.0                                                             006120
+             W'R ALBCD.(A) .E.0 , T'O LETTER                                    006130
+             W'R ALPHA.(A) .E. $444444$, T'0 LETTER                             006140
+             ALL = A .A. $H00Y00$                                               006150
+             W'R ALL .NE. 0, T'O FLOAT                                          006160
+             LEFT=LNKL.(A)                                                      006170
+             W'R LEFT .E. 0, T'O FOUR                                           006180
+FLOAT        K=AF                                                               006190
+             KF=K                                                               006200
+             FF= .ABS. AF - .ABS. KF                                            006210
+             FF=BCDFT.(FF)                                                      006220
+             K=AF                                                               006230
+             K = K*262144                                                       006240
+TEN          B=BCDIT.(K)                                                        006250
+DONE         B0=B                                                               006260
+             FUNCTION RETURN FF                                                 006270
+LETTER       B=A                                                                006280
+             T'O DONE                                                           006290
+FOUR         K=A*262144                                                         006300
+             T/O TEN                                                            006310
+             END OF FUNCTION                                                    006320
+         LISTP   MAD                                                            006330
+             EXTERNAL FUNCTION (LST,TAPE)                                       006340
+             NORMAL MODE IS INTEGER                                             006350
+             ENTRY TO LPRINT.                                                   006360
+             EXECUTE PLACE.(TAPE,0)                                             006370
+             LEFTP = 606074606060K                                              006380
+             RIGHTP= 606034606060K                                              006390
+             BOTH  = 607460603460K                                              006400
+             EXECUTE NEWTOP.(SEQRDR.(LIST),LIST.(STACK))                        006410
+             S=POPTOP.(STACK)                                                   006420
+BEGIN        EXECUTE PLACE.(LEFTP,1)                                            006430
+NEXT         WORD=SEQLR.(S,FLAG)                                                006440
+             W'R FLAG .E. 0                                                     006450
+             EXECUTE PLACE.(WORD,1)                                             006460
+             T'O NEXT                                                           006470
+             OR W'R FLAG .G. O                                                  006480
+             EXECUTE PLACE.(RIGHTP,1)                                           006490
+             W'R LISTMT.(STACKE) .E. 0, T'O DONE                                006500
+             S=POPTOP.(STACK)                                                   006510
+             T'O NEXT                                                           006520
+             OTHERWISE                                                          006530
+             W'R LISTME.(WORD) .E. 0                                            006540
+             EXECUTE PLACE.(BOTH,1)                                             006550
+             T'O NEXT                                                           006560
+             OTHERWISE EXECUTE NEWTOP.(S,STACK)                                 006570
+             S=SEQRDR.(WORD)                                                    006580
+             T'O BEGIN                                                          006590
+             E'L                                                                006600
+             E'L                                                                006610
+DONE         EXECUTE PLACE.(0,-1)                                               006620
+             EXECUTE IRALST.(STACK)                                             006630
+             FUNCTION RETURN LST                                                006640
+             END OF FUNCTION                                                    006650
+        RDRREV   MAD                                                            006670
+             EXTERNAL FUNCTION (RADER)                                          006680
+             NORMAL MODE IS INTEGER                                             006690
+             ENTRY TO LVLRV1.                                                   006700
+             ENTRY TO UPONE.                                                    006710
+             W'R LNKR.(CONT.(READER+1)) .E. 0, T'O DONE                         006720
+             COUNT =                                                            006730
+             ENTRY TO LVLRVT.                                                   006740
+             ENTRY TO UPALL.                                                    006750
+             COUNT=LNKR(CONT.(READER+1))                                        006760
+GENRL        THROUGH RAISE, ,FOR I=COUNT,-1, I .E. 0                            006770
+             LINK=LINKR.(CONT,(READER))                                         006780
+             FIRST=CONT.(LINK)                                                  006790
+             SECOND=CONT.(LINK+1)                                               006800
+             STRIND.(FIRST,READER)                                              006810
+             STRIND.(SECOND,READER+1)                                           006820
+RAISE        RCELL.(LINK)                                                       006830
+             T'O DONE                                                           006840
+             ENTRY TO INITRD.                                                   006850
+             SETIND.(-1,LNKL.(CONT.(READER+1)),-1,READER)                       006860
+DONE         FUNCTION RETURN READER                                             006870
+             END OF FUNCTION                                                    006880
+        SEQUEN   MAD                                                            006900
+             EXTERNAL FUNCTION  (READER, FLAG)                                  006910
+             NORMAL MODE IS INTEGER                                             006920
+             ENTRY TO SEQLL.                                                    006930
+             LINK=LINKL.(READER)                                                006940
+             TRANSFER TO START                                                  006950
+             ENTRY TO SEQLR.                                                    006960
+             LINK=LNKR.(READER)                                                 006970
+START        IT=CONT.(LINK + 1)                                                 006980
+             READER=CONT.(LINK)                                                 006990
+             FLAG=ID.(READER)-1                                                 007000
+             FUNCTION RETURN IT                                                 007010
+             END OF FUNCTION                                                    007020
+         XMINO   MAD                                                            007030
+             EXTERNAL FUNCTION(A,B)                                             007040
+             NORMAL MODE IS INTEGER                                             007050
+             ENTRY TO XMINO.                                                    007060
+             W'R A .L. B                                                        007070
+             IT=A                                                               007080
+             OTHERWISEIT=B                                                      007090
+             E'L                                                                007100
+             FUNCTION RETURN IT                                                 007110
+             END OF FUNCTION                                                    007120
+        LSTEQL   MAD                                                            007140
+             EXTERNAL FUNCTION (ONE,OTHER)                                      007150
+             NORMAL MODE IS INTEGER                                             007160
+             ENTRY TO LSTEQL.                                                   007170
+             MAN.(LIST.(STACK),ONE,OTHER)                                       007180
+START        W'R LISTMT.(STACK) .E. 0, T'O DONE                                 007190
+             FIRST = POPTOP.(STACK)                                             007200
+             W'R FIRSST .E. SECOND, T'O START                                   007210
+             SA=SEQRDR.(FIRST)                                                  007220
+             SB=SEQRDR.(SECOND)                                                 007230
+READ         DATUMA=SEQLR.(SA,FLAGA)                                            007240
+             DATUMB=SEQLR.(SB,FLAG B)                                           007250
+             W'R FLAGA .NE FLAGB, T'O FAIL                                      007260
+             W'R FLAGA .L. O                                                    007270
+             W'R DATUMA .NE. DATUMB, T'O FAIL                                   007280
+             OR W'R FLAGA .E. O                                                 007290
+             MANY.(STACK,DATUMA,DATUMB)                                         007300
+             OTHERWISE                                                          007310
+             T'O START                                                          007320
+             E'L                                                                007330
+             T'O READ                                                           007340
+FAIL         TEST=-1                                                            007350
+             T'O END                                                            007360
+DONE         TEST=0                                                             007370
+END          IRALST.(STACK)                                                     007380
+             FUNCTION RETURN TEST                                               007390
+             END OF FUNCTION                                                    007400
+        LSSCPY   MAD                                                            007420
+             EXTERNAL FUNCTION ( ORGNL,COPY)                                    007430
+             NORMAL MODE IS INTGER                                              007440
+             ENTRY TO LSSCPY.                                                   007450
+             NEWBOT.(ORGNL,LIST.(STACK))                                        007460
+             NEWBOT.(COPY,STACK)                                                007470
+             NEWVAL.(ORGNL,COPY,STACK)                                          007480
+START        W'R LISTMT.(STACK) .E. O, T'O DONE                                 007490
+             CLD=POPTOP.(STACK)                                                 007500
+             LST=POPTOP.(STACK)                                                 007510
+             DLIST=LSTNAM.(OLD)                                                 007520
+             W'R DLIST .E. O,T'O GO                                             007530
+             SEE = ITSVAL.(DLSIT,STACK)                                         007540
+             W'R SEE .E. 0                                                      007550
+             SEE = ITSVAL.(DLIST,STACK)                                         007560
+             W'R SEE .E. 0                                                      007570
+             NEXT=LIST.(9)                                                      007580
+             MAKEDL.(NEXT,LST)                                                  007590
+             NEWBOT.(DLIST,STACK)                                               007600
+             NEWBOT.(NEXT,STACK)                                                007610
+             NEWVAL.(DLIST,NEXT,STACK)                                          007620
+             T'O GO                                                             007630
+             O'E                                                                007640
+             MAKEDL.(SEE,LST)                                                   007650
+             E'L                                                                007660
+GO           READER=SEQRDR.(OLD                                                 007670
+READ         DATUM=SEQLR.(READER,FLAG)                                          007680
+             W'R FLAG .L. 0                                                     007690
+             W'R READER .L. 0                                                   007700
+             MRKNEG.(NEWBOT.(DATUM,LST))                                        007710
+             O'E                                                                007720
+             NEWBOTE'L                                                          007730
+             OR W'R FLAG .E. 0                                                  007740
+             SEE = ITSVAL.(DATUM,STACK)                                         007750
+             W'R SEE .E. 0, T'O NEW                                             007760
+             NEWBOT.(SEE,LST)                                                   007770
+             T'O READ                                                           007780
+NEW          NEWBOT.(DATUM,STACK)                                               007790
+             NEWBOT.(LIST.(9), STACK)                                           007800
+             NEWBOT.(BOT,(STACK),LST)                                           007810
+             NEWVAL.(DATUM,BOT.(STACK),STACK)                                   007820
+             OTHERWISE                                                          007830
+             T'O START                                                          007840
+             END OF CONDITIONAL                                                 007850
+             T'O READ                                                           007860
+DONE         IRALST.(STACK)                                                     007870
+             FUNCTION RETURN COPY                                               007880
+             END OF FUNCTION                                                    007890
+        LSPNTR   MAD                                                            007890
+             EXTERNAL FUNCTION (SEQRDR)                                         007900
+             NORMAL IS INTEGER                                                  007910
+             ENTRY TO LSPNTR.                                                   007920
+             ENTRY TO SEQPTR.                                                   007930
+             F'N LNKL.(CONT.(LNKR.(SEQRDR)))                                    007940
+             E'N                                                                007950
+         SPLIT   MAD                                                            007960
+             EXTERNAL FUNCTION (A,B,C)                                          007970
+             NORMAL MODE IS INTEGER                                             007980
+             ENTRY TO NULSTL.                                                   007990
+             SWITCH=1                                                           008000
+             T'O COMMON                                                         008010
+             ENTRY TO NULSTR.                                                   008020
+             SWITCH=2                                                           008030
+COMMON       LIST=A                                                             008040
+             CELL=B                                                             008050
+             NEWLST=C                                                           008060
+             W'R LISTMT.(LIST) .E. 0, T'O DONE                                  008070
+             W'R ID.(CONT.(CELL)) .E. 2                                         008080
+             STRIND.(CONT.(LIST),NEWLST)                                        008090
+             SETIND.(-1,LIST, LIST,LIST)                                        008100
+             T'O DONE                                                           008110
+             OTHERWISE                                                          008120
+             T'O CMPLX(SWITCH)                                                  008130
+CMPLX(1)     TOP=LINKR.(CONT.(LIST))                                            008140
+             NUTOP=LNKR.(CONT.(CELL))                                           008150
+             SETIND.(-1,CELL,TOP,NEWLST)                                        008160
+             SETIND.(-1,-1,NUTOP,LIST)                                          008170
+             SETIND.(-1,LIST,-1,NUTOP)                                          008180
+             SET.(-1,NEWLST,-1,TOP)                                             008190
+             SETIND.(-1,-1,NEWLST,CELL)                                         008200
+             T'O DONE                                                           008210
+CMPLX(2)     BOT=LNKL.(CONT.(LIST))                                             008220
+             NUBOT=LNKL.(CONT.(CELL))                                           008230
+             SETIND.(-1,BOT,CELL,NEWLST)                                        008240
+             SETIND.(-1,NUBOT,-1,LIST)                                          008250
+             SETIND.(-1,-1,LIST,NUBOT)                                          008260
+             SETIND.(-1,-1,NEWLST,BOT)                                          008270
+             SETIND.(-1,NEWLST,-1,CELL)                                         008280
+             END OF CONTITIONAL                                                 008290
+DONE         FUNCTION RETURN NEWLST                                             008300
+             END OF FUNCTION                                                    008310
+        LNKBOT   MAD                                                            008320
+             EXTERNAL FUNCTOIN(LST)                                             008330
+             NORMAL MODE IS INTEGER                                             008340
+             ENTRY TO LNKBOT.                                                   008350
+             W'R LISTMT.(LST) .E.0, T'O PLACE                                   008360
+             MRKNEG.(LNKL.(CONT.(LST)))                                         008370
+PLACE        F'N NEWBOT.(OBJ,LST)                                               008380
+             E'N                                                                008390
+        NODLST   MAD                                                            008320
+             EXTERNAL FUNCTION(LST)                                             008330
+             NORMAL MODE IS INTEGER                                             008340
+             ENTRY TO NODLST.                                                   008350
+             IT=LSTNAM.(LST)                                                    008360
+             W'R IT .E. 0, T'O DONE                                             008370
+             IRALST.(IT)                                                        008380
+             SETIND.(-1,0,-1,LST+1)                                             008390
+DONE         F'N IT                                                             008400
+             E'N                                                                008410
+        CONLST   MAD                                                            008500
+             EXTERNAL FUNCTION(LEFT,RIGHT)                                      008510
+             NORMAL MODE IS INTEGER                                             008520
+            R                                                                   008530
+            RTHIS FUNCTION ATTACHES THE LIST 'RIGHT' TO THE                     008540
+            RLIST 'LEFT'.  THE LIST 'RIGHT IS EMPTIED.                          008550
+            R                                                                   008560
+             ENTRY TO CONLST.                                                   008570
+             W'R LISTMT.(RIGHT) .E. 0, T'O DONE                                 008580
+             LBOT=LNKL.(CONT.(LEFT))                                            008590
+             RBOT=LNKL.(CONT.(RIGHT))                                           008600
+             SETIND.(-1,RBOT,-1,LEFT)                                           008610
+             SETIND.(-1,-1,LEFT,RBOT)                                           008620
+             SETIND.(-1,-1,LNKR.(CONT.(RIGHT)),LBOT)                            008630
+             SETIND.(-1,LBOT,-1,LNKR.(CONT.(RIGHT)))                            008640
+             SETIND.(-1,RIGHT,RIGHT,RIGHT)                                      008650
+DONE         F'N LEFT                                                           008660
+             E'N                                                                008670
+         PARTN   MAD                                                            008680
+             EXTERNAL FUNCTION (*SLST,PART,SIGNAL)                              008690
+             NORMAL MODE IS INTEGER                                             008700
+             ENTRY TO PARTN.                                                    008710
+             TAG=SIGNAL                                                         008720
+             COUNT=0                                                            008730
+             READER=SEQRDR.(SLST)                                               008740
+READ         COUNT=COUNT+1                                                      008750
+             DATUM=SEQLR.(READER,FLAG)                                          008760
+             W.R FLAG .G. 0, T'O DONE                                           008770
+             W'R LNKL.(DATUM) .E. 0                                             008780
+             PART(COUNT) = DATUM                                                008790
+             T'O READ                                                           008800
+             O'E                                                                008810
+             W.R NAMTST.(DATUM) .NE. 0, T'0 PLAIN                               008820
+             W'R TOP.(DATUM) .NE. TAG, T'O PLAIN                                008830
+             COUNT=COUNT-1                                                      008840
+             LSSCPY.(DATUM,LIST.(IT))                                           008850
+             POPTOP.(IT)                                                        008860
+             MAKEDL.(IT,PART(COUNT))                                            008870
+             IRALST.(IT)                                                        008880
+             T'0 READ                                                           008890
+PLAIN        PLAIN NEWBOT.(DATUM,LIST.(PART(COUNT)))                            008900
+ATTCH        W'R READER .GE. 0, T'O READ                                        008910
+             LNKBOT.(SEQLR.(READER,FLAG),PART(COUNT))                           008920
+             T'0 ATTCH                                                          008930
+             E'L                                                                008940
+DONE         COUNT=COUNT-1                                                      008950
+             PART(0)=COUNT                                                      008960
+             F'N COUNT                                                          008970
+             E'N                                                                008980
+        XMATCH   MAD                                                            008990
+             EXTERNAL FUNCTION(A,B,AA,AB.AC,BA)                                 009000
+             NORMAL MODE IS INTEGER                                             009010
+             ENTRY TO XMATCH.                                                   009020
+             BLAST=B(0)                                                         009030
+             LIST.(NUMBER)                                                      009040
+             W'R LNKL.(A(AB)) .NE. 0, T'O NORMAL                                009050
+             W'R BA .E. 1 .AND. A(AA) .NE. 0                                    009060
+             BB=1                                                               009070
+             T'H SUMB, FOR I=1,1, I.G. AB    009020                             009080
+SUMB         BB=BB + A(I)                                                       009090
+             BMARK=BB                                                           009100
+             O'E                                                                009110
+             BB = BLAST + 1                                                     009120
+             E'L                                                                009130
+             AB=AC                                                              009140
+             T'O ENDSTR                                                         009150
+NORMAL       AMARK=AB                                                           009160
+             BMARK=BA                                                           009170
+             T'H INIT, FOR I=AA,1, I .E. AB                                     009180
+INIT         BMARK=BMARK+A(I)                                                   009190
+START        OBJ=A(AB)                                                          009200
+             T'H LOCATE, FOR I=BMARK,1, I .G. BLAST                             009210
+             W'R LSTEQL.(OBJ,B(I)) .E. 0, T'O GOOD                              009220
+             W'R NAMTST.(TOP.(OBJ)) .E. 0                                       009230
+             LST=TOP.(OBJ)                                                      009240
+             W'R GOODY.(LST,B(I){) .NE. 0, T'O LOCATE                           009250
+             T'O GOOD                                                           009260
+             O'E                                                                009270
+             T'O LOCATE                                                         009280
+             E'L                                                                009290
+LOCATE       CONTINUE                                                           009300
+             T'O FAIL                                                           009310
+GOOD         BMARK=I                                                            009320
+             BB=I                                                               009330
+             OBJ=1                                                              009340
+             T'O FOUND                                                          009350
+GO           AMARK=AMARK+1                                                      009360
+             W'R AMARK .E. AC, T'O ENDSTR                                       009370
+             W'R BMARK .G. BLAST, T'O FAIL                                      009380
+             OBJ=A(AMARK)                                                       009390
+             W'R LNKL.(OBJ) .E. 0                                               009400
+FOUND        NEWBOT.(SETDIR.(0,OBJ,BMARK,(T),NUMBER)                            009410
+             BMARK=BMARK+OBJ                                                    009420
+             T'O GO                                                             009430
+             O'E                                                                009440
+             W'R LSTEQL.(OBJ,B(BMARK)) .E. O                                    009450
+             OBJ=1                                                              009460
+             T'O FOUND                                                          009470
+             O'E                                                                009480
+             W'R NAMTST.(TOP.(OBJ)) .NE. 0, T'O FEHLER                          009490
+             LST=TOP.(OBJ)                                                      009500
+             W'R GOODY.(LST,B(BMARK)) .NE. O, T'O FEHLER                        009510
+             OBJ=1                                                              009520
+             T'O FOUND                                                          009530
+FEHLER       MTLIST.(NUMBER)                                                    009540
+             BMARK=BB+1                                                         009550
+             AMARK=AB                                                           009560
+             T'O START                                                          009570
+             E'L                                                                009580
+             E'L                                                                009590
+ENDSTR       T'H MORE , FOR I=AB-1,-1, I .L. AA                                 009600
+             OBJ=A(I)                                                           009610
+             LIST.(A(I))                                                        009620
+             W'R OBJ .E. 0, OBJ = BB-BA                                         009630
+             BB=BB - OBJ                                                        009640
+             W'R BB .L. BA, T'O FAIL                                            009650
+             T'H CONC, FOR J=0,1, J .E. OBJ                                     009660
+CONC         INLSTL.(B(BB+J),A(I))                                              009670
+MORE         CONTINUE                                                           009680
+             I=AB-1                                                             009690
+FORWRD       W'R LISTMT.(NUMBER) .E. O                                          009700
+             IRALST.(NUMBER)                                                    009710
+             BA=BMARK                                                           009720
+             F'N 0                                                              009730
+             O'E                                                                009750
+             I=I+1                                                              009760
+             IT=POPTOP.(NUMBER)                                                 009770
+             OBJ=LNKL.(IT)                                                      009780
+             J=LNKR.(IT)                                                        009780
+             W'R NAMTST.(A(I)) .E. 0, IRALST.(A(I))                             009790
+             LIST.(A(I))                                                        009800
+             T'H PLACE, FOR K=0,1, K .E. OBJ                                    009810
+PLACE        INLSTL.(B(J+K),A(I))                                               009820
+             E'L                                                                009830
+             T'O FORWRD                                                         009840
+FAIL         IRALST.(NUMBER)                                                    009850
+             F'N 1                                                              009860
+             E'N                                                                009870
+        YMATCH   MAD                                                            009880
+             EXTERNAL FUNCTION (*SLST,OLST,OUTLST)                              009890
+             NORMAL MODE IS INTEGER                                             009900
+             DIMENSION A(100),B(100)                                            009910
+             ENTRY TO YMATCH.                                                   009920
+             PARTN.(SLST,A,$ NONE$)                                             009930
+             PARTN.(OLST,B,$/$)                                                 009940
+             BA=1                                                               009950
+             LIMIT=A(0)                                                         009960
+             MARKC=1                                                            009970
+ MORE        MARKA=MARKC                                                        009980
+             MKA=MARKA                                                          099990
+             W'R A(MKA) .NE. 0, T'O FINDB                                       010000
+             W'R MKA .E. LIMIT, T'O AMARK                                       010010
+             MKA=MKA+1                                                          000020
+ FINDB       T'H FINDB, FOR I = MKA,1, I .E. LIMIT                              010030
+            1.OR. LINKL.(A(I)) .NE. 0 .OR. A(I) .E. 0                           010040
+             W'R A(I) .NE. 0, T'O BMARK                                         010050
+             MARKB=I-1                                                          010060
+             MARKC=I                                                            010070
+             T'O MATCH                                                          010080
+ AMARK       I=LIMIT                                                            010090
+ BMARK       MARKB=I                                                            010100
+ FINDC       T'H FINDC, FOR J=I+1,1, J.G. LIMIT                                 010110
+            1.OR. A(J) .E. 0                                                    010120
+             MARKC=J                                                            010130
+ MATCH       W'R XMATCH.(A,B,MARKA,MARKB,MARKC,BA) .E. 0                        010140
+             W'R MARKC .G. LIMIT, T'O SUCCES                                    010150
+             T'O MORE                                                           010160
+             O'E                                                                010170
+             SWITCH=1                                                           010180
+             T'O FAIL                                                           010190
+             E'L                                                                010200
+ SUCCES      SWITCH=2                                                           010210
+ FAIL        T'H MTB, FOR I=1,1, I.G. B(0)                                      010220
+ MTB         IRALST.(B(I))                                                      010230
+             T'H MTA, FOR I=1,1, I .G. LIMIT                                    010240
+             W'R LINK.(A(I)) .NE. 0                                             010250
+             NEWBOT.(A(I),OUTLST)                                               010260
+             IRALST.(A(I))                                                      010270
+             O'E                                                                010280
+             E'L                                                                010290
+ MTA         CONTINUE                                                           010300
+             T'O END(STITCH)                                                    010310
+ END(1)      MTLIST.(OUTLST)                                                    010320
+             F'N 0                                                              010330
+ END(2)      F'N OUTLST                                                         010340
+             E'N                                                                010350
+        ASSMBL   MAD                                                            010360
+             EXTERNAL FUNCTION(RHS,PART,NEW)                                    010370
+             DIMENSION A(100)                                                   010380
+             ENTRY TO ASSMBL.                                                   010390
+             I=SEQRDR.(PART)                                                    010400
+             FLAG=0                                                             010410
+             T'H PLACE, FORI =1,1, FLAG .G. 0                                   010430
+ PLACE       A(I)=SEQLR.(S,FLAG)                                                010440
+             LIMIT=I-1                                                          010450
+             S=SEQRDR.(RHS)                                                     010460
+ READ        DATUM=SEQLR.(S,FLAG)                                               010470
+             W'R FLAG .G. 0, T'O END                                            010480
+             W'R LINKL.(DATUM) .E. 0                                            010490
+             W'R DATUM .GE. LIMIT,T'O FAIL                                      010500
+             INLSTS.(LSSCPY.(A(DATUM),LIST.(COPY)),NEW)                         010510
+             IRALST.(COPY)                                                      010520
+             O'E                                                                010630
+             NEWBOT.(DATUM,NEW)                                                 010540
+             T'H LONG, FOR I=I,0, S .G. 0                                       010550
+ LONG        LNKBOT.(SEQLR.(S,FLAG),NEW)                                        010560
+             E'L                                                                010570
+             T'O READ                                                           010580
+ END         F'N NEW                                                            010590
+ FAIL        F'N 0                                                              010600
+             E'N                                                                010610
+           DAS   MAD                                                            010620
+             EXTERNAL FUNCTION (SPEC,OBJ,NEW)                                   010630
+             NORMAL MODE IS INTEGER                                             010640
+             ENTRY TO REGEL.                                                    010650
+             MTLIST.(NEW)                                                       010660
+             DATUM=0                                                            010670
+             RESULT = 0                                                         010680
+             LIST.(LHS)                                                         010690
+             LIST.(RHS)                                                         010700
+             LIST.(INT)                                                         010710
+             S=SEQRDR.(SPEC)                                                    010720
+             T'H LEFT, FOR I=0,0 DATUM .E. $=$                                  010730
+             DATUM=SEQLR.(S,F)                                                  010740
+             CELL=NEWBOT.(DATUM,LHS)                                            010750
+             W'R S .L. 0, MRKNEG.(CELL)                                         010760
+LEFT         CONTINUE                                                           010770
+             POPBOT.(LHS)                                                       010780
+             T'H RIGHT, FOR I=0,0 , F .G. 0                                     010790
+             CELL=NEWBOT.(SEQLR.(S,F),RHS)                                      010800
+             W'R S .L. 0, MRKNEG.(CELL)                                         010810
+RIGHT        CONTINUE                                                           010820
+             POPBOT.(RHS)                                                       010830
+             W'R YMATCH.(LHS,OBJ,INT) .E. 0, T'0 END                            010840
+             W'R ASSMBL.(RHS,INT,NEW) .E. 0, T'0 END                            010850
+             RESULT=NEW                                                         010860
+END          IRALST.(LHS)                                                       010870
+             IRALST.(RHS)                                                       010880
+             IRALST.(INT)                                                       010890
+             F'N RESULT                                                         010900
+             E'N                                                                010910
+        CNTSPC   MAD                                                            010920
+             EXTERNAL FUNCTION(X)                                               010930
+             NORMAL MODE IS INTEGER                                             010940
+             ENTRY TO CNTSPC.                                                   010950
+             ALL=0                                                              010960
+COUNTS       COUNT = 0                                                          010970
+             M1=NUCELL.(X)                                                      010980
+             RCELL.(M1)                                                         010990
+ONE          M2=NUCELL.(X)                                                      011000
+             RCELL.(M2)                                                         011010
+             COUNT=COUNT+1                                                      011020
+             W'R M1 .E. M2, T'0 TWO                                             011030
+             T'0 ONE                                                            011040
+TWO          W'R COUNT .E. ALL, T'O FOUR                                        011050
+             ALL=COUNT                                                          011060
+             T'O COUNTS                                                         011070
+FOUR         F'N ALL                                                            011080
+             E'N                                                                011090
+           DAS   MAD                                                            010620
+             EXTERNAL FUNCTION (SPEC,OBJ,NEW)                                   010630
+             NORMAL MODE IS INTEGER                                             010640
+             ENTRY TO REGEL.                                                    010650
+             MTLIST.(NEW)                                                       010660
+             DATUM=0                                                            010670
+             RESULT = 0                                                         010680
+             LIST.(LHS)                                                         010690
+             LIST.(RHS)                                                         010700
+             LIST.(INT)                                                         010710
+             S=SEQRDR.(SPEC)                                                    010720
+             T'H LEFT, FOR I=0,0 DATUM .E. $=$                                  010730
+             DATUM=SEQLR.(S,F)                                                  010740
+             CELL=NEWBOT.(DATUM,LHS)                                            010750
+             W'R S .L. 0, MRKNEG.(CELL)                                         010760
+LEFT         CONTINUE                                                           010770
+             POPBOT.(LHS)                                                       010780
+             T'H RIGHT, FOR I=0,0 , F .G. 0                                     010790
+             CELL=NEWBOT.(SEQLR.(S,F),RHS)                                      010800
+             W'R S .L. 0, MRKNEG.(CELL)                                         010810
+RIGHT        CONTINUE                                                           010820
+             POPBOT.(RHS)                                                       010830
+             W'R YMATCH.(LHS,OBJ,INT) .E. 0, T'0 END                            010840
+             W'R ASSMBL.(RHS,INT,NEW) .E. 0, T'0 END                            010850
+             RESULT=NEW                                                         010860
+END          IRALST.(LHS)                                                       010870
+             IRALST.(RHS)                                                       010880
+             IRALST.(INT)                                                       010890
+             F'N RESULT                                                         010900
+             E'N                                                                010910
+        CNTSPC   MAD                                                            010920
+             EXTERNAL FUNCTION(X)                                               010930
+             NORMAL MODE IS INTEGER                                             010940
+             ENTRY TO CNTSPC.                                                   010950
+             ALL=0                                                              010960
+COUNTS       COUNT = 0                                                          010970
+             M1=NUCELL.(X)                                                      010980
+             RCELL.(M1)                                                         010990
+ONE          M2=NUCELL.(X)                                                      011000
+             RCELL.(M2)                                                         011010
+             COUNT=COUNT+1                                                      011020
+             W'R M1 .E. M2, T'0 TWO                                             011030
+             T'0 ONE                                                            011040
+TWO          W'R COUNT .E. ALL, T'O FOUR                                        011050
+             ALL=COUNT                                                          011060
+             T'O COUNTS                                                         011070
+FOUR         F'N ALL                                                            011080
+             E'N                                                                011090
+         GOODY   MAD                                                            011100
+             EXTERNAL FUNCTION (LST,B)                                          011110
+             NORMAL MODE IS INTEGER                                             011120
+             ENTRY TO GOODY.                                                    011130
+             W'R TOP.(LST) .E. $/$                                              011140
+             S=SEQRDR.(LST)                                                     011150
+READ         WORD=SEQLL.(S,F)                                                   011160
+             W'R WORD .E. $/$,T'O FAIL                                          011170
+             W'R XLOOK.(WORD,B) .E. 0,T'O SUCCES                                011180
+             T'O READ                                                           011190
+             O'E                                                                011200
+             W'R TOP.(LST) .NE. $*$, T'O FAIL                                   011210
+             S=SEQRDR.(LST)                                                     011220
+             SEQLR.(S,F)                                                        011230
+             LIST.(TEMP)                                                        011240
+RDA          WORD=SEQLR.(S,F)                                                   011250
+             W'R F .G. 0, T'O FAILA                                             011260
+PUT          NEWBOT.(WORD,TEMP)                                                 011270
+TST          W'R S .GE. 0                                                       011280
+             W'R LSTEQL.(TEMP,B) .E. 0, T'O GOOD                                011290
+             MTLIST.(TEMP)                                                      011300
+             T'O RDA                                                            011310
+             O'E                                                                011320
+RDB          WORD=SEQLR.(S,F)                                                   011330
+             T'O PUT                                                            011340
+             E'L                                                                011350
+             E'L                                                                011360
+GOOD         IRALST.(TEMP)                                                      011370
+SUCCES       F'N 0                                                              011380
+FAILA        IRALST.(TEMP)                                                      011390
+FAIL         F'N 1                                                              011400
+             E'N                                                                011410
+         XLOOK   MAD                                                            011420
+             EXTERNAL FUNCTION(VALUE,LST)                                       011430
+             NORMAL MODE IS INTEGER                                             011440
+             ENTRY TO XLOOK.                                                    011450
+             DL=LSTNAM.(LST)                                                    011460
+             W'R DL .E. 0, T'O FAIL                                             011470
+             S=SEQRDR.(DL)                                                      011480
+READ         WORD=SEQLR.(S,F)                                                   011490
+             W'R F .G. 0, T'O FAIL                                              011500
+             W'R WORD .E. VALUE,T'O SUCCES                                      011510
+             T'O READ                                                           011520
+FAIL         F'N 1                                                              011530
+SUCCES       F'N 0                                                              011540
+             E'N                                                                011550
+        TXTPRT   MAD                                                            011560
+             EXTERNAL FUNCTION(LST,N)                                           011570
+             DIMENSION OUT(14)                                                  011580
+             NORMAL MODE IS INTEGER                                             011590
+             ENTRY TO TXTPRT.                                                   011600
+             END = 0                                                            011610
+             S=SEQRDR.(LST)                                                     011620
+             BLANK=$ $                                                          011630
+             CARCTR=BLANK                                                       011640
+             T'H CLEAR, FOR I=1,1, I .G. 14                                     011650
+CLEAR        OUT(I)=BLANK                                                       011660
+             WCOUNT=1                                                           011670
+             CCOUNT=1                                                           011680
+SEQ          W'R S .G. 0 .AN. CARCTR .NE. BLANK, T'O BLANKS                     011690
+SEQA         C=SEQLR.(S,F)                                                      011700
+             W'R F .G. 0, T'O DONE                                              011710
+             COUNT=1                                                            011720
+FETCH        CARCTR=KGETBL.(COUNT,C)                                            011730
+             W'R CARCTR .E. BLANK, T'O BLANKS                                   011740
+             PREVUE=0                                                           011750
+SHIN         KPUTBL.(CCOUNT,CARCTR,OUT(WCOUNT))                                 011760
+             W'R CCOUNT .E. 6, T'O UPW                                          011770
+             CCOUNT=CCOUNT + 1                                                  011780
+TSTCNT       W'R COUNT 'E' 6. T'O SEQ                                           011790
+             COUNT=COUNT + 1                                                    011800
+             T'O FETCH                                                          011810
+UPW          W'R WCOUNT .E. 14, T'O TYPE                                        011820
+             WCOUNT=WCOUNT+1                                                    011830
+             CCOUNT=1                                                           011840
+             T'O TSTCNT                                                         011850
+TYPE         T'H SBA, FOR K=14,-1, K .E. 0                                      011860
+             T'H SBA, FOR I=6,-1, I .E. 0                                       011870
+             W'R KGETBL.(I,OUT(K)) .E. BLANK, T'O FOUNDB                        011880
+SBA          KPUTBL.(I,BLANK,OUT(K))                                            011890
+FOUNDB       W'R N .E. 0, T'O ONLINE                                            011900
+             WRITE BCD TAPE N, OUTFRM, OUT(1) ... OUT(14)                       011910
+             T'O ENDTYP                                                         011920
+ONLINE       PRINT ONLINE FORMAT OUTFRM, OUT(1) ... OUT(14)                     011930
+             VECTOR VALUES OUTFRM = $14A6 *$                                    011940
+ENDTYP       W'R K .E. 14 .AND. I .E. 6, T'O NORMAL                             011950
+             S=LASTS                                                            011960
+             C=LASTW                                                            011970
+             COUNT=LASTC                                                        011980
+             CARCTR=BLANK                                                       011990
+             PREVUE=BLANK                                                       012000
+             END=0                                                              012010
+NORMAL       W'R END .E. 0                                                      012020
+             T'H CLAR, FOR I=1,1, I.G. 14                                       012030
+CLAR         OUT(I)=BLANK                                                       012040
+             WCOUNT=1                                                           012050
+             CCOUNT=1                                                           012060
+             T'0 TSTCNT                                                         012070
+             O'E                                                                012080
+             F'N LST                                                            012090
+             E'L                                                                012100
+DONE         END=1                                                              012110
+             T'0 TYPE                                                           012120
+BLANKS       LASTS=S                                                            012130
+             LASTW=C                                                            012140
+             LASTC=COUNT                                                        012150
+             W'R PREVUE .E. BLANK, T'O SEQA                                     012160
+             PREVUE=BLANK                                                       012170
+             CARCTR=BLANK                                                       012180
+             T'O SHIN                                                           012190
+             E'N                                                                012200
+        SUBTOP   MAD                                                            012210
+             EXTERNAL FUNCTION(OBJ,LST)                                         012220
+             NORMAL MODE IS INTEGER                                             012230
+             ENTRY TO SUBSTP.                                                   012240
+             ADDR=LNKR.(CONT.(LST))                                             012250
+             T'O START                                                          012260
+             ENTRY TO SUBSBT.                                                   012270
+             ADDR=LNKL.(CONT.(LST))                                             012280
+START        F'N SUBST.(OBJ,ADDR)                                               012290
+             E'N                                                                012300
+         LPNTR   MAD                                                            012310
+             EXTERNAL FUNCTION(LST)                                             012320
+             NORMAL MODE IS INTEGER                                             012330
+             ENTRY TO LPNTR.                                                    012340
+             F'N LNKL.(CONT.(LST))                                              012350
+             E'N                                                                012360
+            WB   MAD                                                            012370
+             EXTERNAL FUNCTION (LST,NAM)                                        012380
+             NORMAL MODE IS INTEGER                                             012390
+             ENTRY TO WBLST.                                                    012400
+             LIST.(SLSTS)                                                       012410
+             LIN=1                                                              012420
+             LNO=LIN                                                            012430
+             NEWVAL.(LST,LNO,SLSTS)                                             012440
+             TL=LNO                                                             012450
+             R=SEQRDR.(LSTNAM.(SLSTS))                                          012460
+             WBLSTO.(NAM)                                                       012470
+READ1        SL=SEQLR.(R,F)                                                     012480
+             W'R F .G. 0, T'O DONE4                                             012490
+             WBLST1.(2,ITSVAL.(SL,SLSTS))                                       012500
+             S=SEQRDR.(SL)                                                      012510
+READ2        A=SEQLR.(S,F)                                                      012520
+             W'R F .L. 0                                                        012530
+             W'R S .L.0                                                         012540
+             TAG=-1                                                             012550
+             O'E                                                                012560
+             TAG=0                                                              012570
+             E'L                                                                012580
+             MWBLST1.(TAG,A)                                                    012590
+             T'O READ2                                                          012600
+             OR W'R F .E. 0                                                     012610
+AVAL         IL=ITSVAL.(A,SLSTS)                                                012620
+             W'R IL .E. 0                                                       012630
+             LNO=LNO+LIN                                                        012640
+             NEWVAL.(A,LNO,SLSTS)                                               012650
+             IL=LNO                                                             012660
+             E'L                                                                012670
+             W'R F .E. 0                                                        012680
+             WBLST1.(1,IL)                                                      012690
+             T'O READ2                                                          012700
+             O'E                                                                012710
+             WBLST1.(3,IL)                                                      012720
+READ14       SL=SEQLR.(R,F)                                                     012730
+             T'O READ 1                                                         012740
+             E'L                                                                012750
+             O'E                                                                012760
+             A=LSTNAM.(SL)                                                      012770
+             W'R A .E. 0, T'O READ14                                            012780
+             T'O AVAL                                                           012790
+             E'L                                                                012800
+DONE4        WBLST1.(2,0)                                                       012810
+             WBLST2.                                                            012820
+             IRALST.(SLSTS)                                                     012830
+             E'N 0                                                              012840
+             E'N                                                                012850
+            RB   MAD                                                            012860
+             EXTERNAL FUNCTION(LST,NAM)                                         012870
+             NORMAL MODE IS INTEGER                                             012880
+             ENTRY TO RBLST.                                                    012890
+             LIST.(SLSTS)                                                       012900
+             NEWVAL.(1,LST,SLSTS)                                               012910
+             RBLSTO.(NAM)                                                       012920
+START        RBLST1.(I,A)                                                       012930
+             W'R I .LE. 0                                                       012940
+             N=NEWBOT.(A,L)                                                     012950
+             W'R I .L. 0, MRKNEG.(N)                                            012960
+             O'E                                                                012970
+             W'R I .NE. 2, T'O NOT2                                             012980
+             W'R A .E. O, T'O DONE                                              012990
+             L=ITSVAL.(A,SLSTS)                                                 013000
+             W'R L .NE. O, T'O START                                            013010
+             NEWVAL.(A, LIST.(L) , SLSTS)                                       013020
+             T'O START                                                          013030
+             E'L                                                                013040
+NOT2         LS=ITSVAL.(A,SLSTS)                                                013050
+             W'R LS .E. 0, NEWVAL.(A,LIST.(LS),SLSTS)                           013060
+             W'R I .E. 1                                                        013070
+             NEWBOT.(LS,L)                                                      013080
+             O'E                                                                013090
+             MAKEDL.(LS,L)                                                      013100
+             E'L                                                                013110
+             T'O START                                                          013120
+DONE         IRALST.(SLSTS)                                                     013130
+             RBLST2.                                                            013140
+             R'N O                                                              013150
+             E'N                                                                013160
