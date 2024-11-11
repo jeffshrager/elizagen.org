@@ -1,0 +1,6 @@
+             EXTERNAL FUNCTION(LST)                                             001600
+             NORMAL MODE IS INTEGER                                             001610
+             ENTRY TO SEQRDR.                                                   001620
+             IT=CONT.(LST)                                                      001630
+             FUNCTION RETURN IT                                                 001640
+             END OF FUNCTION                                                    001650

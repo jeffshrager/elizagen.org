@@ -1,0 +1,32 @@
+       ENTRY   REMOVE                                                           004890
+REMOVE SXA     SV1,1                                                            004900
+       SXA     SV4,4                                                            004910
+       CLA*    1,4                                                              004920
+       STA     *+2                                                              004930
+       STA     CELL                                                             004940
+       AXC     **,1                                                             004950
+       CLA     1,1                                                              004960
+       STO     RESULT                                                           004970
+       CLA     0,1                                                              004980
+       STA     RIGHT                                                            004990
+       STO     LEFT                                                             005000
+       ANA     =0700000                                                         005010
+       CAS     =0200000                                                         005020
+       TRA     *+2                                                              005030
+       TRA     DONE                                                             005040
+       CLA     LEFT                                                             005050
+RIGHT  STD     **                                                               005060
+       ARS     18                                                               005070
+       STA     *+2                                                              005080
+       CLA     RIGHT                                                            005090
+       STA     **                                                               005100
+DONE   TSX     $RCELL,4                                                         005110
+       TXH     CELL                                                             005120
+SV1    AXT     **,1                                                             005130
+SV4    AXT     **,4                                                             005140
+       CLA     RESULT                                                           005150
+       TRA     2,4                                                              005160
+CELL   PZE                                                                      005170
+RESULT PZE                                                                      005180
+LEFT   PZE                                                                      005190
+       END                                                                      005200

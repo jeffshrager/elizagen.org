@@ -1,0 +1,11 @@
+             EXTERNAL FUNCTION(READER)                                          002480
+             NORMAL MODE IS INTEGER                                             002490
+             ENTRY TO IRARDR.                                                   002500
+             ENTRY TO ERARDR.                                                   002510
+             M=READER                                                           002520
+MORE         N=LNKR.(CONT.(M))                                                  002530
+             EXECUTE RCELL.(M)                                                  002540
+             M=N                                                                002550
+             1'R M .NE. 0, T'O MORE                                             002560
+             FUNCTION RETURN 0                                                  002570
+             END O0F FUNCTION                                                   002580

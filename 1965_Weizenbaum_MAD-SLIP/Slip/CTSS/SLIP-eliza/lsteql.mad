@@ -1,0 +1,26 @@
+             EXTERNAL FUNCTION (ONE,OTHER)                                      007150
+             NORMAL MODE IS INTEGER                                             007160
+             ENTRY TO LSTEQL.                                                   007170
+             MAN.(LIST.(STACK),ONE,OTHER)                                       007180
+START        W'R LISTMT.(STACK) .E. 0, T'O DONE                                 007190
+             FIRST = POPTOP.(STACK)                                             007200
+             W'R FIRSST .E. SECOND, T'O START                                   007210
+             SA=SEQRDR.(FIRST)                                                  007220
+             SB=SEQRDR.(SECOND)                                                 007230
+READ         DATUMA=SEQLR.(SA,FLAGA)                                            007240
+             DATUMB=SEQLR.(SB,FLAG B)                                           007250
+             W'R FLAGA .NE FLAGB, T'O FAIL                                      007260
+             W'R FLAGA .L. O                                                    007270
+             W'R DATUMA .NE. DATUMB, T'O FAIL                                   007280
+             OR W'R FLAGA .E. O                                                 007290
+             MANY.(STACK,DATUMA,DATUMB)                                         007300
+             OTHERWISE                                                          007310
+             T'O START                                                          007320
+             E'L                                                                007330
+             T'O READ                                                           007340
+FAIL         TEST=-1                                                            007350
+             T'O END                                                            007360
+DONE         TEST=0                                                             007370
+END          IRALST.(STACK)                                                     007380
+             FUNCTION RETURN TEST                                               007390
+             END OF FUNCTION                                                    007400

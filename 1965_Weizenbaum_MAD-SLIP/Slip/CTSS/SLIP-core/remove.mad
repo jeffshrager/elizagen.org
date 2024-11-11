@@ -1,0 +1,15 @@
+             EXTERNAL FUNCTION(ADDR)                                            001970
+             NORMAL MODE IS INTEGER                                             001980
+             ENTRY TO REMOVE.                                                   001990
+             W'R ID.(CONT.(ADDR)) .E. 2, T'O HEADER                             002000
+             IT = CONT.(ADDR +1)                                                002010
+             LEFT=LNKL.(CONT.(ADDR))                                            002020
+             RIGHT=LNKR.(CONT,(ADDR))                                           002030
+             EXECUTE RCELL.(ADDR)                                               002040
+             EXECUTE SETIND.(-1,-1,RIGHT,LEFT)                                  002050
+             EXECUTE SETIND.(-1,.EFT,-1,RIGHT)                                  002060
+             T'0 DONE                                                           002070
+HEADER       IT=0                                                               002080
+             EXECUTE PRNTP.(MESSG)                                              002090
+             VECTOR VALUES MESSG=$HEADER REMOVE&,77777777777K                   002100
+DONE         FUNCTION RETURN IT                                                 002110

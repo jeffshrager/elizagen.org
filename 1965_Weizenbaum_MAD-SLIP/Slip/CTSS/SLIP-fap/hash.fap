@@ -1,0 +1,16 @@
+       ENTRY   HASH                                                             007180
+HASH   LDQ*    1,4                                                              007190
+       CLA*    2,4                                                              007200
+       STA     SHIFT                                                            007210
+       ARS     1                                                                007220
+       STA     *+2                                                              007230
+       MPY*    1,4                                                              007240
+       LLS     **                                                               007250
+       STA     TEMP                                                             007260
+       LDZ     =0777777777777                                                   007270
+       ZAC                                                                      007280
+SHIFT  LLS     **                                                               007290
+       ANA     TEMP                                                             007300
+       TRA     3,4                                                              007310
+TEMP   PZE                                                                      007320
+       END                                                                      007330

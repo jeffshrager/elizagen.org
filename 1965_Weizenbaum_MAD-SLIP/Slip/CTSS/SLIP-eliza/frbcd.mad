@@ -1,0 +1,27 @@
+             EXTERNAL FUNCTION (A0,B0)                                          006060
+             NORMAL MODE IS INTEGER                                             006070
+             FLOATING POINT AF,KF,FF,BCDFT.                                     006080
+             EQUIVALENCE (A,AF) , (K,KF) , (F,FF)                               006090
+             ENTRY TO FRBCD.                                                    006100
+             A=A0                                                               006110
+             FF=0.0                                                             006120
+             W'R ALBCD.(A) .E.0 , T'O LETTER                                    006130
+             W'R ALPHA.(A) .E. $444444$, T'0 LETTER                             006140
+             ALL = A .A. $H00Y00$                                               006150
+             W'R ALL .NE. 0, T'O FLOAT                                          006160
+             LEFT=LNKL.(A)                                                      006170
+             W'R LEFT .E. 0, T'O FOUR                                           006180
+FLOAT        K=AF                                                               006190
+             KF=K                                                               006200
+             FF= .ABS. AF - .ABS. KF                                            006210
+             FF=BCDFT.(FF)                                                      006220
+             K=AF                                                               006230
+             K = K*262144                                                       006240
+TEN          B=BCDIT.(K)                                                        006250
+DONE         B0=B                                                               006260
+             FUNCTION RETURN FF                                                 006270
+LETTER       B=A                                                                006280
+             T'O DONE                                                           006290
+FOUR         K=A*262144                                                         006300
+             T/O TEN                                                            006310
+             END OF FUNCTION                                                    006320

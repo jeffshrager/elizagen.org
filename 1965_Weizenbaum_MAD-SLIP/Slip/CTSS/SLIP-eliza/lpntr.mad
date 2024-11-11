@@ -1,0 +1,5 @@
+             EXTERNAL FUNCTION(LST)                                             012320
+             NORMAL MODE IS INTEGER                                             012330
+             ENTRY TO LPNTR.                                                    012340
+             F'N LNKL.(CONT.(LST))                                              012350
+             E'N                                                                012360

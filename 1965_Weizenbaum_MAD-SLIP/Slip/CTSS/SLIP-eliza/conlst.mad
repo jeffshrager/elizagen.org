@@ -1,0 +1,17 @@
+             EXTERNAL FUNCTION(LEFT,RIGHT)                                      008510
+             NORMAL MODE IS INTEGER                                             008520
+            R                                                                   008530
+            RTHIS FUNCTION ATTACHES THE LIST 'RIGHT' TO THE                     008540
+            RLIST 'LEFT'.  THE LIST 'RIGHT IS EMPTIED.                          008550
+            R                                                                   008560
+             ENTRY TO CONLST.                                                   008570
+             W'R LISTMT.(RIGHT) .E. 0, T'O DONE                                 008580
+             LBOT=LNKL.(CONT.(LEFT))                                            008590
+             RBOT=LNKL.(CONT.(RIGHT))                                           008600
+             SETIND.(-1,RBOT,-1,LEFT)                                           008610
+             SETIND.(-1,-1,LEFT,RBOT)                                           008620
+             SETIND.(-1,-1,LNKR.(CONT.(RIGHT)),LBOT)                            008630
+             SETIND.(-1,LBOT,-1,LNKR.(CONT.(RIGHT)))                            008640
+             SETIND.(-1,RIGHT,RIGHT,RIGHT)                                      008650
+DONE         F'N LEFT                                                           008660
+             E'N                                                                008670

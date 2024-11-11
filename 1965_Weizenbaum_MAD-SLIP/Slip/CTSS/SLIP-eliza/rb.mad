@@ -1,0 +1,30 @@
+             EXTERNAL FUNCTION(LST,NAM)                                         012870
+             NORMAL MODE IS INTEGER                                             012880
+             ENTRY TO RBLST.                                                    012890
+             LIST.(SLSTS)                                                       012900
+             NEWVAL.(1,LST,SLSTS)                                               012910
+             RBLSTO.(NAM)                                                       012920
+START        RBLST1.(I,A)                                                       012930
+             W'R I .LE. 0                                                       012940
+             N=NEWBOT.(A,L)                                                     012950
+             W'R I .L. 0, MRKNEG.(N)                                            012960
+             O'E                                                                012970
+             W'R I .NE. 2, T'O NOT2                                             012980
+             W'R A .E. O, T'O DONE                                              012990
+             L=ITSVAL.(A,SLSTS)                                                 013000
+             W'R L .NE. O, T'O START                                            013010
+             NEWVAL.(A, LIST.(L) , SLSTS)                                       013020
+             T'O START                                                          013030
+             E'L                                                                013040
+NOT2         LS=ITSVAL.(A,SLSTS)                                                013050
+             W'R LS .E. 0, NEWVAL.(A,LIST.(LS),SLSTS)                           013060
+             W'R I .E. 1                                                        013070
+             NEWBOT.(LS,L)                                                      013080
+             O'E                                                                013090
+             MAKEDL.(LS,L)                                                      013100
+             E'L                                                                013110
+             T'O START                                                          013120
+DONE         IRALST.(SLSTS)                                                     013130
+             RBLST2.                                                            013140
+             R'N O                                                              013150
+             E'N                                                                013160

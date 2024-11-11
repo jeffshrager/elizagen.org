@@ -5,9 +5,20 @@ Joseph Weizenbaum's papers at MIT. The original source can be found
 [here](https://dome.mit.edu/handle/1721.3/201707)
 
 The [PDF](02-000311065.pdf) file contains a listing of FAP and MAD
- code. A [transcription](02-000311065.mad) of this to a text file was
- done by Arthur Schwarz.
-
+ code. 
+ 
+A [transcription](02-000311065.mad) of this to a text file was done by
+ Arthur Schwarz. We have started to break this down into individual
+ files under the following directories.
+ 
+- [`SLIP-core`](SLIP-core) - baseline SLIP code matching what was mentioned in
+the CACM article.
+- [`SLIP-eliza`](SLIP-eliza) - extra functions we believe were added for ELIZA
+- [`SLIP-fap`](SLIP-fap) - FAP assembly language primitives
+- [`SLIP-duplicates`](SLIP-duplicates) - where there were items
+  duplicated in both MAD and FAP, we have used the MAD version and
+  placed the FAP duplicate in here
+ 
 ## License
 
  From

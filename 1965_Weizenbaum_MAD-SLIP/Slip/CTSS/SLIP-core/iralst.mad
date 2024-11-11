@@ -1,0 +1,10 @@
+             EXTERNAL FUNCTION (LST)                                            000600
+             NORMAL MODE IS INTEGER                                             000610
+             ENTRY TO IRALST.                                                   000620
+             EXECUTE SETIND.(-1,-1,LCNTR.(LST)-1,LST+I)                         000630
+             W'R LCNTR.(LST) .NE. O, TRANSFER TO RETHED                         000640
+             EXECUTE SETIND.(1,-1,-1,LST)                                       000650
+             EXECUT SETIND.(0,-1,MAYBE,LST+1)                                   000660
+ RETHED      EXECUTE RCELL.(LST)                                                000670
+ DONE        FUNCTION RETURN ST                                                 000680
+             END OF FUNCTION                                                    000690

@@ -1,0 +1,35 @@
+             EXTERNAL FUNCTION (A,B,C)                                          007970
+             NORMAL MODE IS INTEGER                                             007980
+             ENTRY TO NULSTL.                                                   007990
+             SWITCH=1                                                           008000
+             T'O COMMON                                                         008010
+             ENTRY TO NULSTR.                                                   008020
+             SWITCH=2                                                           008030
+COMMON       LIST=A                                                             008040
+             CELL=B                                                             008050
+             NEWLST=C                                                           008060
+             W'R LISTMT.(LIST) .E. 0, T'O DONE                                  008070
+             W'R ID.(CONT.(CELL)) .E. 2                                         008080
+             STRIND.(CONT.(LIST),NEWLST)                                        008090
+             SETIND.(-1,LIST, LIST,LIST)                                        008100
+             T'O DONE                                                           008110
+             OTHERWISE                                                          008120
+             T'O CMPLX(SWITCH)                                                  008130
+CMPLX(1)     TOP=LINKR.(CONT.(LIST))                                            008140
+             NUTOP=LNKR.(CONT.(CELL))                                           008150
+             SETIND.(-1,CELL,TOP,NEWLST)                                        008160
+             SETIND.(-1,-1,NUTOP,LIST)                                          008170
+             SETIND.(-1,LIST,-1,NUTOP)                                          008180
+             SET.(-1,NEWLST,-1,TOP)                                             008190
+             SETIND.(-1,-1,NEWLST,CELL)                                         008200
+             T'O DONE                                                           008210
+CMPLX(2)     BOT=LNKL.(CONT.(LIST))                                             008220
+             NUBOT=LNKL.(CONT.(CELL))                                           008230
+             SETIND.(-1,BOT,CELL,NEWLST)                                        008240
+             SETIND.(-1,NUBOT,-1,LIST)                                          008250
+             SETIND.(-1,-1,LIST,NUBOT)                                          008260
+             SETIND.(-1,-1,NEWLST,BOT)                                          008270
+             SETIND.(-1,NEWLST,-1,CELL)                                         008280
+             END OF CONTITIONAL                                                 008290
+DONE         FUNCTION RETURN NEWLST                                             008300
+             END OF FUNCTION                                                    008310

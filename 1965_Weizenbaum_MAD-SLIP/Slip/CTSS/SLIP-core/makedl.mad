@@ -1,0 +1,7 @@
+             EXTERNAL FUNCTION(DLST,LST)                                        002240
+             NORMAL MODE IS INTEGER                                             002250
+             ENTRY TO MAKEDL.                                                   002260
+             W'R LNKL.(CONT.(LST+1)) .NE. 0, T'O NOTMT                          002270
+NORMAL       SETIND.(-1,DLST,-1,LST+1)                                          002280
+             SETIND.(-1,-1,LCNTR.(DLST)+1,DLST+1)]                              002290
+             FUNCTION RETURN LST                                                002300

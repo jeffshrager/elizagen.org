@@ -1,0 +1,10 @@
+             EXTERNAL FUNCITON (LST)                                            001670
+             NORMAL MODE IS INTEGER                                             001680
+             ENTRY TO TOP.                                                      001690
+             ADDR=LINKR.(CONT.LST))                                             001700
+             TRANSFER TO START                                                  001710
+             ENTRY TO BOT.                                                      001720
+             ADDR=LINKL.(CONT.LST))                                             001730
+START        IT=CONT.(ADDR + 1)                                                 001740
+             RUNCTION RETURN IT                                                 001750
+             END OF FUNCTION                                                    001760

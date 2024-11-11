@@ -1,0 +1,64 @@
+             EXTERNAL FUNCTION(LST,N)                                           011570
+             DIMENSION OUT(14)                                                  011580
+             NORMAL MODE IS INTEGER                                             011590
+             ENTRY TO TXTPRT.                                                   011600
+             END = 0                                                            011610
+             S=SEQRDR.(LST)                                                     011620
+             BLANK=$ $                                                          011630
+             CARCTR=BLANK                                                       011640
+             T'H CLEAR, FOR I=1,1, I .G. 14                                     011650
+CLEAR        OUT(I)=BLANK                                                       011660
+             WCOUNT=1                                                           011670
+             CCOUNT=1                                                           011680
+SEQ          W'R S .G. 0 .AN. CARCTR .NE. BLANK, T'O BLANKS                     011690
+SEQA         C=SEQLR.(S,F)                                                      011700
+             W'R F .G. 0, T'O DONE                                              011710
+             COUNT=1                                                            011720
+FETCH        CARCTR=KGETBL.(COUNT,C)                                            011730
+             W'R CARCTR .E. BLANK, T'O BLANKS                                   011740
+             PREVUE=0                                                           011750
+SHIN         KPUTBL.(CCOUNT,CARCTR,OUT(WCOUNT))                                 011760
+             W'R CCOUNT .E. 6, T'O UPW                                          011770
+             CCOUNT=CCOUNT + 1                                                  011780
+TSTCNT       W'R COUNT 'E' 6. T'O SEQ                                           011790
+             COUNT=COUNT + 1                                                    011800
+             T'O FETCH                                                          011810
+UPW          W'R WCOUNT .E. 14, T'O TYPE                                        011820
+             WCOUNT=WCOUNT+1                                                    011830
+             CCOUNT=1                                                           011840
+             T'O TSTCNT                                                         011850
+TYPE         T'H SBA, FOR K=14,-1, K .E. 0                                      011860
+             T'H SBA, FOR I=6,-1, I .E. 0                                       011870
+             W'R KGETBL.(I,OUT(K)) .E. BLANK, T'O FOUNDB                        011880
+SBA          KPUTBL.(I,BLANK,OUT(K))                                            011890
+FOUNDB       W'R N .E. 0, T'O ONLINE                                            011900
+             WRITE BCD TAPE N, OUTFRM, OUT(1) ... OUT(14)                       011910
+             T'O ENDTYP                                                         011920
+ONLINE       PRINT ONLINE FORMAT OUTFRM, OUT(1) ... OUT(14)                     011930
+             VECTOR VALUES OUTFRM = $14A6 *$                                    011940
+ENDTYP       W'R K .E. 14 .AND. I .E. 6, T'O NORMAL                             011950
+             S=LASTS                                                            011960
+             C=LASTW                                                            011970
+             COUNT=LASTC                                                        011980
+             CARCTR=BLANK                                                       011990
+             PREVUE=BLANK                                                       012000
+             END=0                                                              012010
+NORMAL       W'R END .E. 0                                                      012020
+             T'H CLAR, FOR I=1,1, I.G. 14                                       012030
+CLAR         OUT(I)=BLANK                                                       012040
+             WCOUNT=1                                                           012050
+             CCOUNT=1                                                           012060
+             T'0 TSTCNT                                                         012070
+             O'E                                                                012080
+             F'N LST                                                            012090
+             E'L                                                                012100
+DONE         END=1                                                              012110
+             T'0 TYPE                                                           012120
+BLANKS       LASTS=S                                                            012130
+             LASTW=C                                                            012140
+             LASTC=COUNT                                                        012150
+             W'R PREVUE .E. BLANK, T'O SEQA                                     012160
+             PREVUE=BLANK                                                       012170
+             CARCTR=BLANK                                                       012180
+             T'O SHIN                                                           012190
+             E'N                                                                012200

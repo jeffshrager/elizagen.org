@@ -1,0 +1,9 @@
+             EXTERNAL FUNCTION (LST)                                            002140
+             NORMAL MODE IS INTEGER                                             002150
+             ENTRY TO POPBOT.                                                   002160
+             IT=REMOVE.(LNKL.(CONT.(LST)))                                      002170
+             T'O DONE                                                           002180
+             ENTRY TO POPTOP.                                                   002190
+             IT=REMOVE.(LNKR.(CONT.(LST)))                                      002200
+DONE         FUNCTION RETURN IT                                                 002210
+             END OF FUNCTION                                                    002220

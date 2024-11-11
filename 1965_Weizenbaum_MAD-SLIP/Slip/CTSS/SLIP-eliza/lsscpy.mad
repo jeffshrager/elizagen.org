@@ -1,0 +1,47 @@
+             EXTERNAL FUNCTION ( ORGNL,COPY)                                    007430
+             NORMAL MODE IS INTGER                                              007440
+             ENTRY TO LSSCPY.                                                   007450
+             NEWBOT.(ORGNL,LIST.(STACK))                                        007460
+             NEWBOT.(COPY,STACK)                                                007470
+             NEWVAL.(ORGNL,COPY,STACK)                                          007480
+START        W'R LISTMT.(STACK) .E. O, T'O DONE                                 007490
+             CLD=POPTOP.(STACK)                                                 007500
+             LST=POPTOP.(STACK)                                                 007510
+             DLIST=LSTNAM.(OLD)                                                 007520
+             W'R DLIST .E. O,T'O GO                                             007530
+             SEE = ITSVAL.(DLSIT,STACK)                                         007540
+             W'R SEE .E. 0                                                      007550
+             SEE = ITSVAL.(DLIST,STACK)                                         007560
+             W'R SEE .E. 0                                                      007570
+             NEXT=LIST.(9)                                                      007580
+             MAKEDL.(NEXT,LST)                                                  007590
+             NEWBOT.(DLIST,STACK)                                               007600
+             NEWBOT.(NEXT,STACK)                                                007610
+             NEWVAL.(DLIST,NEXT,STACK)                                          007620
+             T'O GO                                                             007630
+             O'E                                                                007640
+             MAKEDL.(SEE,LST)                                                   007650
+             E'L                                                                007660
+GO           READER=SEQRDR.(OLD                                                 007670
+READ         DATUM=SEQLR.(READER,FLAG)                                          007680
+             W'R FLAG .L. 0                                                     007690
+             W'R READER .L. 0                                                   007700
+             MRKNEG.(NEWBOT.(DATUM,LST))                                        007710
+             O'E                                                                007720
+             NEWBOTE'L                                                          007730
+             OR W'R FLAG .E. 0                                                  007740
+             SEE = ITSVAL.(DATUM,STACK)                                         007750
+             W'R SEE .E. 0, T'O NEW                                             007760
+             NEWBOT.(SEE,LST)                                                   007770
+             T'O READ                                                           007780
+NEW          NEWBOT.(DATUM,STACK)                                               007790
+             NEWBOT.(LIST.(9), STACK)                                           007800
+             NEWBOT.(BOT,(STACK),LST)                                           007810
+             NEWVAL.(DATUM,BOT.(STACK),STACK)                                   007820
+             OTHERWISE                                                          007830
+             T'O START                                                          007840
+             END OF CONDITIONAL                                                 007850
+             T'O READ                                                           007860
+DONE         IRALST.(STACK)                                                     007870
+             FUNCTION RETURN COPY                                               007880
+             END OF FUNCTION                                                    007890

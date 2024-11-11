@@ -1,0 +1,30 @@
+             EXTERNAL FUNCTION (*SLST,PART,SIGNAL)                              008690
+             NORMAL MODE IS INTEGER                                             008700
+             ENTRY TO PARTN.                                                    008710
+             TAG=SIGNAL                                                         008720
+             COUNT=0                                                            008730
+             READER=SEQRDR.(SLST)                                               008740
+READ         COUNT=COUNT+1                                                      008750
+             DATUM=SEQLR.(READER,FLAG)                                          008760
+             W.R FLAG .G. 0, T'O DONE                                           008770
+             W'R LNKL.(DATUM) .E. 0                                             008780
+             PART(COUNT) = DATUM                                                008790
+             T'O READ                                                           008800
+             O'E                                                                008810
+             W.R NAMTST.(DATUM) .NE. 0, T'0 PLAIN                               008820
+             W'R TOP.(DATUM) .NE. TAG, T'O PLAIN                                008830
+             COUNT=COUNT-1                                                      008840
+             LSSCPY.(DATUM,LIST.(IT))                                           008850
+             POPTOP.(IT)                                                        008860
+             MAKEDL.(IT,PART(COUNT))                                            008870
+             IRALST.(IT)                                                        008880
+             T'0 READ                                                           008890
+PLAIN        PLAIN NEWBOT.(DATUM,LIST.(PART(COUNT)))                            008900
+ATTCH        W'R READER .GE. 0, T'O READ                                        008910
+             LNKBOT.(SEQLR.(READER,FLAG),PART(COUNT))                           008920
+             T'0 ATTCH                                                          008930
+             E'L                                                                008940
+DONE         COUNT=COUNT-1                                                      008950
+             PART(0)=COUNT                                                      008960
+             F'N COUNT                                                          008970
+             E'N                                                                008980

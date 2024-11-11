@@ -1,0 +1,9 @@
+             EXTERNAL FUNCTION (X)                                              002600
+             NORMAL MODE IS INTEGER                                             002610
+             ENTRY TO MADIN.                                                    002620
+             ENTRY TO LOCT.                                                     002630
+             ENTRY TO INTLBL.                                                   002640
+             ENTRY TO FLTLBL.                                                   002650
+             ENTRY TO MADOUT.                                                   002660
+             FUNCTION RETURN X                                                  002670
+             END OF FUNCTION                                                    002680

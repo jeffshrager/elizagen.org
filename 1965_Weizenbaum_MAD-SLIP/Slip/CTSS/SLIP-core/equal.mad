@@ -1,0 +1,12 @@
+             EXTERNAL FUNCTION(ONE,OTHER)                                       002700
+             NORMAL MODE IS INTEER                                              002710
+             ENTRY TO EQUAL.                                                    002720
+             W'R ONE .E. OTHER,T'O SAME                                         002730
+             TST = 1                                                            002740
+             T'O OUT                                                            002750
+SAME         TEST = 0                                                           002760
+OUT          FUNCTION RFETURN TEST                                              002770
+             ENTRY TO AND.                                                      002780
+             TEST= ONE .A. OTHER                                                002790
+             TRANSFER TO OUT                                                    002800
+             END OF FUNCTION                                                    002810

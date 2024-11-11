@@ -1,0 +1,9 @@
+             EXTERNAL FUNCTION(A,B)                                             007040
+             NORMAL MODE IS INTEGER                                             007050
+             ENTRY TO XMINO.                                                    007060
+             W'R A .L. B                                                        007070
+             IT=A                                                               007080
+             OTHERWISEIT=B                                                      007090
+             E'L                                                                007100
+             FUNCTION RETURN IT                                                 007110
+             END OF FUNCTION                                                    007120

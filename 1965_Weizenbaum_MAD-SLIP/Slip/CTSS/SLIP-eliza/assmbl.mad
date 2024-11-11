@@ -1,0 +1,24 @@
+             EXTERNAL FUNCTION(RHS,PART,NEW)                                    010370
+             DIMENSION A(100)                                                   010380
+             ENTRY TO ASSMBL.                                                   010390
+             I=SEQRDR.(PART)                                                    010400
+             FLAG=0                                                             010410
+             T'H PLACE, FORI =1,1, FLAG .G. 0                                   010430
+ PLACE       A(I)=SEQLR.(S,FLAG)                                                010440
+             LIMIT=I-1                                                          010450
+             S=SEQRDR.(RHS)                                                     010460
+ READ        DATUM=SEQLR.(S,FLAG)                                               010470
+             W'R FLAG .G. 0, T'O END                                            010480
+             W'R LINKL.(DATUM) .E. 0                                            010490
+             W'R DATUM .GE. LIMIT,T'O FAIL                                      010500
+             INLSTS.(LSSCPY.(A(DATUM),LIST.(COPY)),NEW)                         010510
+             IRALST.(COPY)                                                      010520
+             O'E                                                                010630
+             NEWBOT.(DATUM,NEW)                                                 010540
+             T'H LONG, FOR I=I,0, S .G. 0                                       010550
+ LONG        LNKBOT.(SEQLR.(S,FLAG),NEW)                                        010560
+             E'L                                                                010570
+             T'O READ                                                           010580
+ END         F'N NEW                                                            010590
+ FAIL        F'N 0                                                              010600
+             E'N                                                                010610

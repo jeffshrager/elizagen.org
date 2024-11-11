@@ -1,0 +1,18 @@
+             EXTERNAL FUNTION(DATUM,ADDR)                                       003140
+             NORMAL MODE IS INTEGER                                             003150
+             ENTRY TO SUBST.                                                    003160
+             PRESNT = CONT.(ADDR+1                                              003170
+             W'R NAMSTS.(PRESNT) .NE. 0, T'O NONAME                             003180
+             N=NUCELL.(N)                                                       003190
+             EXECUTE SETIND.(1,0,0,N)                                           003200
+             EXECUTE STRIND.(PRESNT,N+1)                                        003210
+             EXECUTE RCELL. (N)                                                 003220
+             EXECUTE STRIND.(DATUM,ADDR + 1)                                    003230
+NONAME       W'R NAMTST.(DATUM) .E. 0                                           003240
+             EXECUTE SETIND.(1,-1,-1,ADDR)                                      003250
+             COUNT=LNKL.(DATUM)                                                 003260
+             EXECUTE SETIND.(-1,-1,LNKR.(CONT.(COJNT+1))+1,COUNT+1)             003270
+             EXECUTE STRIND.(DATUM,ADDR+1)                                      003280
+             END OF CONDITIONAL                                                 003290
+             FUNCTION RETURN PRESNT                                             003300
+             END OF FUNCTION                                                    003310

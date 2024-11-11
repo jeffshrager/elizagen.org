@@ -1,0 +1,13 @@
+             EXTERNAL FUNCTION(VALUE,LST)                                       011430
+             NORMAL MODE IS INTEGER                                             011440
+             ENTRY TO XLOOK.                                                    011450
+             DL=LSTNAM.(LST)                                                    011460
+             W'R DL .E. 0, T'O FAIL                                             011470
+             S=SEQRDR.(DL)                                                      011480
+READ         WORD=SEQLR.(S,F)                                                   011490
+             W'R F .G. 0, T'O FAIL                                              011500
+             W'R WORD .E. VALUE,T'O SUCCES                                      011510
+             T'O READ                                                           011520
+FAIL         F'N 1                                                              011530
+SUCCES       F'N 0                                                              011540
+             E'N                                                                011550

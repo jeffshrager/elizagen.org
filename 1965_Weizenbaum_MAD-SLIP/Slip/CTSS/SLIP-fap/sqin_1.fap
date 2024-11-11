@@ -1,0 +1,77 @@
+       ENTRY   SQIN                                                             001350
+       ENTRY   SQOUT                                                            001360
+       ENTRY   LANORM                                                           001370
+       ENTRY   SHININ                                                           001380
+       ENTRY   SHINBL                                                           001390
+SQOUT  SYN     *                                                                001400
+       CAL*    2,4                                                              001410
+       ANA*    1,4                                                              001420
+       STQ     SVQ                                                              001430
+       XCL                                                                      001440
+       CAL*    1,4                                                              001450
+       TRA     *+2                                                              001460
+       LGR     1                                                                001470
+       LBT                                                                      001480
+       TRA     *-2                                                              001490
+       STQ     TEMP                                                             001500
+       LDQ     SVQ                                                              001510
+       CLA     TEMP                                                             001520
+       TRA     3,4                                                              001530
+LANORM SYN     *                                                                001540
+       STQ     SVQ                                                              001550
+       CAL*    1,4                                                              001560
+       SLW     SAVE                                                             001570
+       LAS     =H                                                               001580
+       TRA     *+2                                                              001590
+       TRA     A                                                                001600
+       LDQ     =H                                                               001610
+       TRA     *+3                                                              001620
+       CAL     SAVE                                                             001630
+       LGL     6                                                                001640
+       SLW     SAVE                                                             001650
+       ANA     =077000000000                                                    001660
+       LAS     =H 0000                                                          001670
+       TRA     *+2                                                              001680
+       TRA     *-6                                                              001690
+A      CLA     SAVE                                                             001700
+       LDQ     SVQ                                                              001710
+       TRA     2,4                                                              001720
+SHININ SYN     *                                                                001730
+SHINBL SYN     *                                                                001740
+       CAL*    2,4                                                              001750
+       SLW     TEMP                                                             001760
+       SXA     SV1,1                                                            001770
+       CLA*    1,4                                                              001780
+       PAC     ,1                                                               001790
+       STQ     SVQ                                                              001800
+       CAL     TEMP                                                             001810
+       LGR     ,1                                                               001820
+       CAL*    3,4                                                              001830
+       LGL     ,1                                                               001840
+       SLW*    3,4                                                              001850
+       CLA*    3,4                                                              001860
+       LDQ     SVQ                                                              001870
+       LXA     SV1,1                                                            001880
+       TRA     4,4                                                              001890
+SQIN   SYN     *                                                                003120
+       CAL*    1,4                                                              001910
+       COM                                                                      001920
+       ANS*    3,4                                                              001930
+       STQ     SVQ                                                              001940
+       LDQ*    2,4                                                              001950
+       CAL*    1,4                                                              001960
+       IRA     *+3                                                              001970
+       ARS     1                                                                001980
+       RQL     1                                                                001990
+       LBT                                                                      002000
+       TA      *-3                                                              002010
+       XCL                                                                      002020
+       ANA*    1,4                                                              002030
+       QRW*    3,4                                                              002040
+       LDQ     SVQ                                                              002050
+       TRA     4,4                                                              002060
+TEMP   PZE     **                                                               002070
+SVQ    PZE     **                                                               002080
+SAVE   PZE     **                                                               002090
+SV1    PZE     **                                                               002100
+       END                                                                      002110

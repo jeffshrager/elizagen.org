@@ -1,0 +1,22 @@
+             EXTERNAL FUNCTION (IT,MODE,SIGN)                                   003580
+             PROGRAM COMMON AVSL,W                                              003590
+             DIMENSION W(100)                                                   003600
+             NORMAL MODE IS INTEGER                                             003610
+             FLOATING POINT WORT,SIGN                                           003620
+             EQUIVALENCE (WORD,WORT)                                            003630
+             ENTRY TO PUT.                                                      003640
+             WORD=IT                                                            003650
+             W'R WORD .E. $      $, T'O DONE                                    003660
+             W'R MODE .E. 0                                                     003670
+             EXECUTE NEWBOT.(LANORM.(WORD),TOP.(W(1)))                          003680
+             OR W'R MODE .E. O                                                  003690
+             WORD=WORT*SIGN                                                     003700
+             EXECUTE NEWBOT.(WORD,TOP,(W(1)))                                   003710
+             OTHERWISE                                                          003720
+             WORT=WORT*SIGN                                                     003730
+             EXECUTE NEWBOT.(WORT,TOP.(W(1)))                                   003740
+             E'L                                                                003750
+             FUNCTION RETURN 0                                                  003760
+DONE         MRKPOS.(LNKL.(CONT.(TOP.(W(1))))                                   003770
+             FUNCTION RETURN 0                                                  003780
+             END OF FUNCTION                                                    003790

@@ -1,0 +1,19 @@
+       ENTRY   POPTOP                                                           005220
+       ENTRY   POPBOT                                                           005230
+POPTOP CLA*    1,4                                                              005240
+       STA     *+1                                                              005250
+       CLA     **                                                               005260
+       STA     CELL                                                             005270
+       TRA     START                                                            005280
+POPBOT CLA*    1,4                                                              005290
+       STA     *+1                                                              005300
+       CLA     **                                                               005310
+       ARS     18                                                               005320
+       STA     CELL                                                             005330
+START  SXA     SV4,4                                                            005340
+       TSX     $REMOVE,4                                                        005350
+       TXH     CELL                                                             005360
+SV4    AXT     **,4                                                             005370
+       TRA     2,4                                                              005380
+CELL   PZE                                                                      005390
+       END                                                                      005400

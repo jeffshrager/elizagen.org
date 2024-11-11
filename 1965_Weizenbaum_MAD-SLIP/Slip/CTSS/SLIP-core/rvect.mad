@@ -1,0 +1,10 @@
+             EXTERNAL FUNCTION(M,J)                                             000350
+             NORMAL MODE IS INTEGER                                             000360
+             ENTRY TO RVECT.                                                    000370
+             THROUGH ADD, FOR I =M,2, I .G. J                                   000380
+             MZ = M                                                             000390
+             EXECUTE STRING.(0,MZ)                                              000400
+             M=M+2                                                              000410
+ADD          EXECUTE RCELL.(MZ)                                                 000420
+             FUNCTION RETURN 0                                                  000430
+             END OF FUNCTION                                                    000440

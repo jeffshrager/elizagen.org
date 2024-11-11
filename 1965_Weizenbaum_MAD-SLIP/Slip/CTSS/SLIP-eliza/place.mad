@@ -1,0 +1,54 @@
+             EXTERNAL FUNCTION(A,KOUNT)                                         005510
+             DIMENSION OUT(12)                                                  005520
+             NORMAL MODE IS INTEGER                                             005530
+             ENTRY TO PLACE.                                                    005540
+             WHENEVER KOUNT .L. 0                                               005550
+             AMAD=MADOUT.(A)                                                    005560
+             WHENEVER AMAD .E.E 1                                               005570
+             AFMT(0)=$(1P5E1)$                                                  005580
+             OR WHENEVER AMAD .E. 2                                             005590
+             AFMT(0)=$(5O14)$                                                   005600
+             END OF CONDITIONAL                                                 005610
+             WHENEVER  K .NE. 0,TRANSFER TO PRINT                               005620
+             OR WHENEVER KOUNT .E. 0                                            005630
+             N=MADOUT.(A)                                                       005640
+             AFMT(0)=$(12A6)$                                                   005650
+             K=0                                                                005660
+             OR WHENEVER KOUNT .G. 0                                            005670
+             WHENEVER K .E. 0                                                   005680
+             THROUGH BLBUF, FOR J=1,1,J.G.12                                    005690
+ BLBUF       OUT(J)=$      $                                                    005700
+             END OF CONDITIONAL                                                 005710
+             K=K+1                                                              005720
+             COUNT=MADOUT.(KOUNT)                                               005730
+             TRANSFER TO CONV(COUNT)                                            005740
+CONV(2)      OUT(K)=A                                                           005750
+             TRANSFER TO ISBFUL                                                 005760
+CONV(1)      F=FRBCD.(A,B)                                                      005770
+             OUT(K)=B                                                           005780
+             WHENEVER F.E.O,TRANSFER TO ISBFUL                                  005790
+             WHENEVER K.E.12                                                    005800
+             WHENEVER N.G.0                                                     005810
+             WRITE BCD TAPE N,AFMT,OUT(1) ... OUT(11)                           005820
+             OR WHENEVER N .E. 0                                                005830
+             PRINT ON LINE FORMAT AFMT,OUT(1) ... OUT(11)                       005840
+             END OF CONDITIONAL                                                 005850
+             THROUGH BLBU,FOR J=3,1,J.G.11                                      005860
+BLBU         OUT(J)=$                                                           005870
+             OUT(1)=B                                                           005880
+             K=1                                                                005890
+             END OF CONDITIONAL                                                 005900
+             K=K+1                                                              005910
+             OUT(K)=F                                                           005920
+ISBFUL       WHENEVER K.E.12                                                    005930
+PRINT        WHENEVER N.G.0                                                     005940
+             WRITE BCD TAPE N,AFMT,OUT(1) ... OUT(K)                            005950
+             OR WHENEVER N.E.0                                                  005960
+             PRINT ON LINE FORMAT AFMT,OUT(1) ... OUT(K)                        005970
+             END OF CONDITIONAL                                                 005980
+             K=0                                                                005990
+             END OF CONDITIONAL                                                 006000
+             END OF CONDITIONAL                                                 006010
+             FUNCTION RETURN 0                                                  006020
+             VECTOR VALUES AFM$(1P5E13.3)$                                      006030
+             END OF FUNCTION                                                    006040

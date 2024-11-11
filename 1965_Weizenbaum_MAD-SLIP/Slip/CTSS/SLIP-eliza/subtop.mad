@@ -1,0 +1,9 @@
+             EXTERNAL FUNCTION(OBJ,LST)                                         012220
+             NORMAL MODE IS INTEGER                                             012230
+             ENTRY TO SUBSTP.                                                   012240
+             ADDR=LNKR.(CONT.(LST))                                             012250
+             T'O START                                                          012260
+             ENTRY TO SUBSBT.                                                   012270
+             ADDR=LNKL.(CONT.(LST))                                             012280
+START        F'N SUBST.(OBJ,ADDR)                                               012290
+             E'N                                                                012300

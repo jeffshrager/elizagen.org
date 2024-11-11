@@ -1,0 +1,108 @@
+       ENTRY   INITAS                                                           000020
+       ENTRY   MTLIST                                                           000030
+       ENTRY   NUCELL                                                           000040
+       ENTRY   RCELL                                                            000050
+INITAS SXA     FOUR,4                                                           000060
+       AXT     1000,4                                                           000070
+ZERO   STZ     SPACE,4                                                          000080
+       TIX     ZERO,4,1                                                         000090
+       CLA     =99B                                                             000100
+       STO     N                                                                000110
+MORE   CLA     ZERO                                                             000120
+       SUB     N                                                                000130
+       STA     *+1                                                              000140
+       AXC     **,4                                                             000150
+       STA     -2,4                                                             000160
+       CLA     N                                                                000170
+       SUB     -Z                                                               000180
+       STO     N                                                                000190
+       INZ     MORE                                                             000200
+       CLA     ZERO                                                             000210
+       ALS     18                                                               000220
+       SUB     =02000000                                                        000230
+       STD     AVSL                                                             000240
+       ARS     18                                                               000250
+       SUB     =00B                                                             000260
+       STA     AVSL                                                             000270
+FOUR   AXT     **,4                                                             000280
+       TRA     2,4                                                              000290
+N      PZE                                                                      000300
+AVSL   PZE                                                                      000310
+SPACE  BES     1000                                                             000320
+MTLIST SXA     OUT,4                                                            000330
+       CLA*    1,4                                                              000340
+       STO     LIST                                                             000350
+       STA     *+1                                                              000360
+N      CLA     **                                                               000370
+       STO     READ                                                             000380
+       ISX     $LISTMT,4                                                        000390
+       FXH     LIST                                                             000400
+       TZE     OUT                                                              000410
+       CLA     HEAD                                                             000420
+       STA     TOP                                                              000430
+       STD     BOT                                                              000440
+       CLA     LIST                                                             000450
+       STA*    H                                                                000460
+       STD*    H                                                                000470
+       CLA     AVSL                                                             000480
+       ARS     18                                                               000490
+       STA     *+2                                                              000500
+       CLA     TOP                                                              000510
+       STA     **                                                               000520
+       CLA     BOT                                                              000530
+       STD                                                                      000540
+       ARS      18                                                              000550
+       STA     *+2                                                              000560
+       ZAC     0                                                                000570
+       STA     **                                                               000580
+OUT    AXT     **,4                                                             000590
+       LLA     LIST                                                             000600
+       IRA     2,4                                                              000610
+HEAC   PZE                                                                      000620
+LIST   PZE                                                                      000630
+TOP    PZE                                                                      000640
+BOT    PZE                                                                      000650
+NUCELL SXA     SAVE,1                                                           000660
+START  CLA     AVSL                                                             000670
+       STA     RESULT                                                           000680
+       STA     *+1                                                              000690
+       AXC     **,1                                                             000700
+       CLA     0,1                                                              000710
+       STO     CELL                                                             000720
+       ANA     =077777                                                          000730
+       TZE     MORA                                                             000740
+       STA     AVSL                                                             000750
+       CLA     CELL                                                             000760
+       ANA     =0700000                                                         000770
+       CAS     =0100000                                                         000780
+       TRA     NOLIST                                                           000790
+       TRA     LUST                                                             000800
+NOLIST CLA     ZERA                                                             000810
+       STO     0,1                                                              000820
+       STO     1,1                                                              000830
+       CLA     RESULT                                                           000840
+SAVE   AXT     **,1                                                             000850
+       TRA     2,4                                                              000860
+LUST   CLA     1,1                                                              000870
+       STO     NAME                                                             000880
+       SXA     SV4,4                                                            000890
+       TSX     $IRALST,4                                                        000900
+       TXH     NAME                                                             000910
+SV4    AXI     **,4                                                             000920
+       TRA     START                                                            000930
+ZERA   PZE                                                                      000940
+NAME   PZE                                                                      000950
+RESULT PZE                                                                      000960
+CELL   PZE                                                                      000970
+THOUS  DEC     1000                                                             000980
+RCELL  CLA     AVSL                                                             000990
+       ARS     18                                                               001000
+       STA     *+2                                                              001010
+       CLA*    1,4                                                              001020
+       STA     **                                                               001030
+       STA     *+3                                                              001040
+       ALS     18                                                               001050
+       STD     AVSL                                                             001060
+       STA     **                                                               001070
+       TRA     2,3                                                              001080
+       END                                                                      001090

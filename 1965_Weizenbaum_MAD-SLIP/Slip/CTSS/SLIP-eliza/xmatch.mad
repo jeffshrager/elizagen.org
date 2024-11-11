@@ -1,0 +1,88 @@
+             EXTERNAL FUNCTION(A,B,AA,AB.AC,BA)                                 009000
+             NORMAL MODE IS INTEGER                                             009010
+             ENTRY TO XMATCH.                                                   009020
+             BLAST=B(0)                                                         009030
+             LIST.(NUMBER)                                                      009040
+             W'R LNKL.(A(AB)) .NE. 0, T'O NORMAL                                009050
+             W'R BA .E. 1 .AND. A(AA) .NE. 0                                    009060
+             BB=1                                                               009070
+             T'H SUMB, FOR I=1,1, I.G. AB    009020                             009080
+SUMB         BB=BB + A(I)                                                       009090
+             BMARK=BB                                                           009100
+             O'E                                                                009110
+             BB = BLAST + 1                                                     009120
+             E'L                                                                009130
+             AB=AC                                                              009140
+             T'O ENDSTR                                                         009150
+NORMAL       AMARK=AB                                                           009160
+             BMARK=BA                                                           009170
+             T'H INIT, FOR I=AA,1, I .E. AB                                     009180
+INIT         BMARK=BMARK+A(I)                                                   009190
+START        OBJ=A(AB)                                                          009200
+             T'H LOCATE, FOR I=BMARK,1, I .G. BLAST                             009210
+             W'R LSTEQL.(OBJ,B(I)) .E. 0, T'O GOOD                              009220
+             W'R NAMTST.(TOP.(OBJ)) .E. 0                                       009230
+             LST=TOP.(OBJ)                                                      009240
+             W'R GOODY.(LST,B(I){) .NE. 0, T'O LOCATE                           009250
+             T'O GOOD                                                           009260
+             O'E                                                                009270
+             T'O LOCATE                                                         009280
+             E'L                                                                009290
+LOCATE       CONTINUE                                                           009300
+             T'O FAIL                                                           009310
+GOOD         BMARK=I                                                            009320
+             BB=I                                                               009330
+             OBJ=1                                                              009340
+             T'O FOUND                                                          009350
+GO           AMARK=AMARK+1                                                      009360
+             W'R AMARK .E. AC, T'O ENDSTR                                       009370
+             W'R BMARK .G. BLAST, T'O FAIL                                      009380
+             OBJ=A(AMARK)                                                       009390
+             W'R LNKL.(OBJ) .E. 0                                               009400
+FOUND        NEWBOT.(SETDIR.(0,OBJ,BMARK,(T),NUMBER)                            009410
+             BMARK=BMARK+OBJ                                                    009420
+             T'O GO                                                             009430
+             O'E                                                                009440
+             W'R LSTEQL.(OBJ,B(BMARK)) .E. O                                    009450
+             OBJ=1                                                              009460
+             T'O FOUND                                                          009470
+             O'E                                                                009480
+             W'R NAMTST.(TOP.(OBJ)) .NE. 0, T'O FEHLER                          009490
+             LST=TOP.(OBJ)                                                      009500
+             W'R GOODY.(LST,B(BMARK)) .NE. O, T'O FEHLER                        009510
+             OBJ=1                                                              009520
+             T'O FOUND                                                          009530
+FEHLER       MTLIST.(NUMBER)                                                    009540
+             BMARK=BB+1                                                         009550
+             AMARK=AB                                                           009560
+             T'O START                                                          009570
+             E'L                                                                009580
+             E'L                                                                009590
+ENDSTR       T'H MORE , FOR I=AB-1,-1, I .L. AA                                 009600
+             OBJ=A(I)                                                           009610
+             LIST.(A(I))                                                        009620
+             W'R OBJ .E. 0, OBJ = BB-BA                                         009630
+             BB=BB - OBJ                                                        009640
+             W'R BB .L. BA, T'O FAIL                                            009650
+             T'H CONC, FOR J=0,1, J .E. OBJ                                     009660
+CONC         INLSTL.(B(BB+J),A(I))                                              009670
+MORE         CONTINUE                                                           009680
+             I=AB-1                                                             009690
+FORWRD       W'R LISTMT.(NUMBER) .E. O                                          009700
+             IRALST.(NUMBER)                                                    009710
+             BA=BMARK                                                           009720
+             F'N 0                                                              009730
+             O'E                                                                009750
+             I=I+1                                                              009760
+             IT=POPTOP.(NUMBER)                                                 009770
+             OBJ=LNKL.(IT)                                                      009780
+             J=LNKR.(IT)                                                        009780
+             W'R NAMTST.(A(I)) .E. 0, IRALST.(A(I))                             009790
+             LIST.(A(I))                                                        009800
+             T'H PLACE, FOR K=0,1, K .E. OBJ                                    009810
+PLACE        INLSTL.(B(J+K),A(I))                                               009820
+             E'L                                                                009830
+             T'O FORWRD                                                         009840
+FAIL         IRALST.(NUMBER)                                                    009850
+             F'N 1                                                              009860
+             E'N                                                                009870

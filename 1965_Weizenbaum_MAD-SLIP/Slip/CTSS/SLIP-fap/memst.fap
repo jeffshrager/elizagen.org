@@ -1,0 +1,7 @@
+       ENTRY   MEMSET                                                           003950
+MEMSET CLA*    1,4                                                              003960
+       SXA     X,4                                                              003970
+       TSX     $SETMEM,4                                                        003980
+X      AXT     **,4                                                             003990
+       TRA     2,4                                                              004000
+       END                                                                      004010

@@ -1,0 +1,14 @@
+             EXTERNAL FUNCTION (AT,VAL,LST)                                     002990
+             NORMAL MODE IS INTEGER                                             003000
+             ENTRY TO NEWVAL.                                                   003010
+             W'R LNKL.(CONT.(LST+1)) .E. 0, T'O NEWDL                           003020
+             ADDR = MADATR.(AT.LST)                                             003030
+             W'R ADDR .E. -1, T'O NEWAT                                         003040
+             IT = SUBST.(VAL,LNKR.(CONT.(ADDR))                                 003050
+DONE         FUNCTION RETURN IT                                                 003060
+NEWDL        EXECUTE SETIND.(-1,LIST.(IT)\,-1,LST+1)                            003070
+NEWAT        IT=LSTNAM.(LST)                                                    003080
+             EXECUTE MANY.(IT,AT,VAL)                                           003090
+             IT = VAL                                                           003100
+             T'O DONE                                                           003110
+             END OF FUNCTION                                                    003120

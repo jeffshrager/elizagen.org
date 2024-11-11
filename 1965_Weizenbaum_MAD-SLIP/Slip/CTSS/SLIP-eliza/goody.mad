@@ -1,0 +1,31 @@
+             EXTERNAL FUNCTION (LST,B)                                          011110
+             NORMAL MODE IS INTEGER                                             011120
+             ENTRY TO GOODY.                                                    011130
+             W'R TOP.(LST) .E. $/$                                              011140
+             S=SEQRDR.(LST)                                                     011150
+READ         WORD=SEQLL.(S,F)                                                   011160
+             W'R WORD .E. $/$,T'O FAIL                                          011170
+             W'R XLOOK.(WORD,B) .E. 0,T'O SUCCES                                011180
+             T'O READ                                                           011190
+             O'E                                                                011200
+             W'R TOP.(LST) .NE. $*$, T'O FAIL                                   011210
+             S=SEQRDR.(LST)                                                     011220
+             SEQLR.(S,F)                                                        011230
+             LIST.(TEMP)                                                        011240
+RDA          WORD=SEQLR.(S,F)                                                   011250
+             W'R F .G. 0, T'O FAILA                                             011260
+PUT          NEWBOT.(WORD,TEMP)                                                 011270
+TST          W'R S .GE. 0                                                       011280
+             W'R LSTEQL.(TEMP,B) .E. 0, T'O GOOD                                011290
+             MTLIST.(TEMP)                                                      011300
+             T'O RDA                                                            011310
+             O'E                                                                011320
+RDB          WORD=SEQLR.(S,F)                                                   011330
+             T'O PUT                                                            011340
+             E'L                                                                011350
+             E'L                                                                011360
+GOOD         IRALST.(TEMP)                                                      011370
+SUCCES       F'N 0                                                              011380
+FAILA        IRALST.(TEMP)                                                      011390
+FAIL         F'N 1                                                              011400
+             E'N                                                                011410

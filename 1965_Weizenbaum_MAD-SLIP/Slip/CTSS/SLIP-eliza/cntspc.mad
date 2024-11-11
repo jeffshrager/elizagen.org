@@ -1,0 +1,17 @@
+             EXTERNAL FUNCTION(X)                                               010930
+             NORMAL MODE IS INTEGER                                             010940
+             ENTRY TO CNTSPC.                                                   010950
+             ALL=0                                                              010960
+COUNTS       COUNT = 0                                                          010970
+             M1=NUCELL.(X)                                                      010980
+             RCELL.(M1)                                                         010990
+ONE          M2=NUCELL.(X)                                                      011000
+             RCELL.(M2)                                                         011010
+             COUNT=COUNT+1                                                      011020
+             W'R M1 .E. M2, T'0 TWO                                             011030
+             T'0 ONE                                                            011040
+TWO          W'R COUNT .E. ALL, T'O FOUR                                        011050
+             ALL=COUNT                                                          011060
+             T'O COUNTS                                                         011070
+FOUR         F'N ALL                                                            011080
+             E'N                                                                011090

@@ -1,0 +1,36 @@
+       ENTRY   LIST                                                             006440
+LIST   SXA     SV1,1                                                            006450
+       SXA     SV4,4                                                            006460
+       CLA     1,4                                                              006470
+       STA     ADDR                                                             006480
+       CLA8    1,4                                                              006490
+       STO     DATUM                                                            006500
+       TSX     $NUCELL,4                                                        006510
+       TXH      *                                                               006520
+       STO     CELL                                                             006530
+       STA     *+4                                                              006540
+       STA     *+4                                                              006550
+       LXA     CELL,1                                                           006560
+       SXD     CELL,1                                                           006570
+       SXA     **,1                                                             006580
+       SXD     **,1                                                             006590
+       CLA     =0200000                                                         006600
+       SIT*    CELL                                                             006610
+       CLA     DATUM                                                            006620
+       CAS     =9                                                               006630
+       TRA     *+2                                                              006640
+       TRA     DONE                                                             006650
+       CLA     CELL                                                             006660
+       STA     *+1                                                              006670
+       AXC     **,1                                                             006680
+       CLA     =1                                                               006690
+       STO     1,1                                                              006700
+       CLA     CELL                                                             006710
+ADDR   STO     **                                                               006720
+DONE   CLA     CELL                                                             006730
+SV1    AXT     **,1                                                             006740
+SV4    AXT     **,4                                                             006750
+       TRA     2,4                                                              006760
+CELL   PZE                                                                      006770
+DATUM  PZE                                                                      006780
+       END                                                                      006790

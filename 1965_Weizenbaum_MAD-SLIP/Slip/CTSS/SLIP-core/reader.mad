@@ -1,0 +1,10 @@
+             EXTERNAL FUNCTION(LST)                                             002370
+             NORMAL MODE IS INTEGER                                             002380
+             ENTRY TO READER.                                                   002390
+             ENTRY TO LRDROB.                                                   002400
+             IT=NUCELL.(IT)                                                     002410
+             EXECUTE SETIND.(3,LST,0,IT)                                        002420
+             EXECUTE SETIND.(0,LST,0,IT+1)                                      002430
+             EXECUTE SETDIR.(0IT,IT,IT)                                         002440
+             FUNCTION RETURN IT                                                 002450
+             END OF FUNCTION                                                    002460

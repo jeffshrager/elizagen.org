@@ -1,0 +1,48 @@
+             EXTERNAL FUNCTION (LST,NAM)                                        012380
+             NORMAL MODE IS INTEGER                                             012390
+             ENTRY TO WBLST.                                                    012400
+             LIST.(SLSTS)                                                       012410
+             LIN=1                                                              012420
+             LNO=LIN                                                            012430
+             NEWVAL.(LST,LNO,SLSTS)                                             012440
+             TL=LNO                                                             012450
+             R=SEQRDR.(LSTNAM.(SLSTS))                                          012460
+             WBLSTO.(NAM)                                                       012470
+READ1        SL=SEQLR.(R,F)                                                     012480
+             W'R F .G. 0, T'O DONE4                                             012490
+             WBLST1.(2,ITSVAL.(SL,SLSTS))                                       012500
+             S=SEQRDR.(SL)                                                      012510
+READ2        A=SEQLR.(S,F)                                                      012520
+             W'R F .L. 0                                                        012530
+             W'R S .L.0                                                         012540
+             TAG=-1                                                             012550
+             O'E                                                                012560
+             TAG=0                                                              012570
+             E'L                                                                012580
+             MWBLST1.(TAG,A)                                                    012590
+             T'O READ2                                                          012600
+             OR W'R F .E. 0                                                     012610
+AVAL         IL=ITSVAL.(A,SLSTS)                                                012620
+             W'R IL .E. 0                                                       012630
+             LNO=LNO+LIN                                                        012640
+             NEWVAL.(A,LNO,SLSTS)                                               012650
+             IL=LNO                                                             012660
+             E'L                                                                012670
+             W'R F .E. 0                                                        012680
+             WBLST1.(1,IL)                                                      012690
+             T'O READ2                                                          012700
+             O'E                                                                012710
+             WBLST1.(3,IL)                                                      012720
+READ14       SL=SEQLR.(R,F)                                                     012730
+             T'O READ 1                                                         012740
+             E'L                                                                012750
+             O'E                                                                012760
+             A=LSTNAM.(SL)                                                      012770
+             W'R A .E. 0, T'O READ14                                            012780
+             T'O AVAL                                                           012790
+             E'L                                                                012800
+DONE4        WBLST1.(2,0)                                                       012810
+             WBLST2.                                                            012820
+             IRALST.(SLSTS)                                                     012830
+             E'N 0                                                              012840
+             E'N                                                                012850

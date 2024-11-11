@@ -1,0 +1,15 @@
+             EXTERNAL FUNCTION(AT,LST)                                          002830
+             NORMAL MODE IS INTEGER                                             002840
+             ENTRY TO MADATR.                                                   002850
+             ADDR = LNKL.(CONT.(LST+1))                                         002860
+             W'R ADDR .E. 0, T'O FAIL                                           002870
+START        ADDR=LNKR.(CONT.(ADDR))                                            002880
+             W'R ID.(CONT.(ADDR)) .E. 2, T'O FAIL                               002890
+             W'R CONT.(ADDR + 1) .E. AT, T'O SUCCES                             002900
+             ADDR= LNKR.(CONT.(ADDR))                                           002910
+             W'R ID.(CONT.ADDR)) E. 2, T'O FAIL                                 002920
+             T'O START                                                          002930
+SUCCES       FUNCTION RETURN ADDR                                               002940
+FAIL         ADDR=-1                                                            002950
+             T'O SUCCES                                                         002960
+             END OF FUNCTION                                                    002970

@@ -1,0 +1,16 @@
+       ENTRY   LISTMT                                                           007010
+LISTMT CLA*    1,4                                                              007020
+       STA     *+1                                                              007030
+       CLA     *                                                                007040
+       STO     HEAD                                                             007050
+       STA     *+1                                                              007060
+       CAL     **                                                               007070
+       CAS     HEAD                                                             007080
+       TRA     NOT                                                              007090
+       TRA     YES                                                              007100
+NOT    CLA     =1                                                               007110
+       TRA     2,4                                                              007120
+YES    CLA     =0                                                               007130
+       TRA     2,4                                                              007140
+HEAD   PZE                                                                      007150
+       END                                                                      007160
