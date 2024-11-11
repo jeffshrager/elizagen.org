@@ -1308,7 +1308,7 @@ LEFTP        WHENEVER PREV .NE. 13,TRANSFER TO W11                              
              DIMENSION OUT(12)                                                  005520
              NORMAL MODE IS INTEGER                                             005530
              ENTRY TO PLACE.                                                    005540
-             WHENEVER KOUNT .LE. 0                                              005550
+             WHENEVER KOUNT .L. 0                                               005550
              AMAD=MADOUT.(A)                                                    005560
              WHENEVER AMAD .E.E 1                                               005570
              AFMT(0)=$(1P5E1)$                                                  005580
@@ -1320,10 +1320,10 @@ LEFTP        WHENEVER PREV .NE. 13,TRANSFER TO W11                              
              N=MADOUT.(A)                                                       005640
              AFMT(0)=$(12A6)$                                                   005650
              K=0                                                                005660
-             OR WHEVER KOUNT .G. 0                                              005670
+             OR WHENEVER KOUNT .G. 0                                            005670
              WHENEVER K .E. 0                                                   005680
              THROUGH BLBUF, FOR J=1,1,J.G.12                                    005690
- BLBUF       OUT(J_=$      $                                                    005700
+ BLBUF       OUT(J)=$      $                                                    005700
              END OF CONDITIONAL                                                 005710
              K=K+1                                                              005720
              COUNT=MADOUT.(KOUNT)                                               005730
@@ -1339,7 +1339,7 @@ CONV(1)      F=FRBCD.(A,B)                                                      
              OR WHENEVER N .E. 0                                                005830
              PRINT ON LINE FORMAT AFMT,OUT(1) ... OUT(11)                       005840
              END OF CONDITIONAL                                                 005850
-             THROUGHT BLBU,FOR J=3,1,J.G.11                                     005860
+             THROUGH BLBU,FOR J=3,1,J.G.11                                      005860
 BLBU         OUT(J)=$                                                           005870
              OUT(1)=B                                                           005880
              K=1                                                                005890
