@@ -418,67 +418,6 @@ XXX    RFT     1000                                                             
        TRA     ADV                                                              003090
        TSX     $NUCELL,4                                                        003100
        TXH     *                                                                003110
-       OCT     770077777777,007777777777                                        001290
-PUTM   SYN     *                                                                001300
-TEMP   PZE     **                                                               001310
-SV1    PZE     **                                                               001320
-       END                                                                      001330
-        SQIN   FAP                                                              001340
-       ENTRY   SQIN                                                             001350
-       ENTRY   SQOUT                                                            001360
-       ENTRY   LANORM                                                           001370
-       ENTRY   SHININ                                                           001380
-       ENTRY   SHINBL                                                           001390
-SQOUT  SYN     *                                                                001400
-       CAL*    2,4                                                              001410
-       ANA*    1,4                                                              001420
-       STQ     SVQ                                                              001430
-       XCL                                                                      001440
-       CAL*    1,4                                                              001450
-       TRA     *+2                                                              001460
-       LGR     1                                                                001470
-       LBT                                                                      001480
-       TRA     *-2                                                              001490
-       STQ     TEMP                                                             001500
-       LDQ     SVQ                                                              001510
-       CLA     TEMP                                                             001520
-       TRA     3,4                                                              001530
-LANORM SYN     *                                                                001540
-       STQ     SVQ                                                              001550
-       CAL*    1,4                                                              001560
-       SLW     SAVE                                                             001570
-       LAS     =H                                                               001580
-       TRA     *+2                                                              001590
-       TRA     A                                                                001600
-       LDQ     =H                                                               001610
-       TRA     *+3                                                              001620
-       CAL     SAVE                                                             001630
-       LGL     6                                                                001640
-       SLW     SAVE                                                             001650
-       ANA     =077000000000                                                    001660
-       LAS     =H 0000                                                          001670
-       TRA     *+2                                                              001680
-       TRA     *-6                                                              001690
-A      CLA     SAVE                                                             001700
-       LDQ     SVQ                                                              001710
-       TRA     2,4                                                              001720
-SHININ SYN     *                                                                001730
-SHINBL SYN     *                                                                001740
-       CAL*    2,4                                                              001750
-       SLW     TEMP                                                             001760
-       SXA     SV1,1                                                            001770
-       CLA*    1,4                                                              001780
-       PAC     ,1                                                               001790
-       STQ     SVQ                                                              001800
-       CAL     EMP                                                              001810
-       LGR     ,1                                                               001820
-       CAL*    3,4                                                              001830
-       LGL     ,1                                                               001840
-       SLW*    3,4                                                              001850
-       CLA*    3,4                                                              001860
-       LDQ     SVQ                                                              001870
-       LXA     SV1,1                                                            001880
-       TRA     4,4                                                              001890
        PAC     ,4                                                               003120
        PAX     ,2                                                               003130
        CLA     CELL                                                             003140

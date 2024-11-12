@@ -97,8 +97,49 @@ XXX    RFT     1000                                                             
        TRA     ADV                                                              003090
        TSX     $NUCELL,4                                                        003100
        TXH     *                                                                003110
-       OCT     770077777777,007777777777                                        001290
-PUTM   SYN     *                                                                001300
-TEMP   PZE     **                                                               001310
-SV1    PZE     **                                                               001320
-       END                                                                      001330
+       PAC     ,4                                                               003120
+       PAX     ,2                                                               003130
+       CLA     CELL                                                             003140
+       STQ     0,4                                                              003150
+       CAL     LIST                                                             003160
+       SLW     1,4                                                              003170
+       ADD     =1                                                               003180
+       STA     LEVEL                                                            003190
+       SXA     NEXTR,2                                                          003200
+       LDC     CELL,4                                                           003210
+       CAL     1,4                                                              003220
+       STD     LIST                                                             003230
+       PDC     ,4                                                               003240
+       CAL     0,4                                                              003250
+       TRA     ADV1                                                             003260
+CELL   SYN     *                                                                003270
+NEXTR  SYN     *                                                                003280
+       PZE     ,3                                                               003290
+LIST   SYN     *                                                                003300
+LEVEL  SYN     *                                                                003310
+       PZE                                                                      003320
+CAND   PZE     **                                                               003330
+SV1    PZE     **                                                               003340
+SV4    SYN     *                                                                003350
+OKEXIT AXT     **,4                                                             003360
+       STZ*    2,4                                                              003370
+EXIT   CAL*    1,4                                                              003380
+       PDC     ,2                                                               003390
+       CLA     CELL                                                             003400
+       STO     0,2                                                              003410
+       CLA     LIST                                                             003420
+       STO     1,2                                                              003430
+       STQ     SVQ                                                              003440
+       LDQ     SVQ                                                              003450
+       LDC     CELL,2                                                           003460
+       CLA     1,3                                                              003470
+SV2    AXT     **,2                                                             003480
+       LDI     SV1                                                              003490
+       TRA     3,4                                                              003500
+FAIL   LXA     2V4,4                                                            003510
+       STL*    2,4                                                              003520
+       TRA     EXIT                                                             003530
+SVQ    PZE     **                                                               003540
+Z      PZE     0                                                                003550
+X      PZE     ,,**                                                             003560
+       END                                                                      003570
