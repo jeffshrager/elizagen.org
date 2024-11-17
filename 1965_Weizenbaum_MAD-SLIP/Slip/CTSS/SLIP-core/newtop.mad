@@ -5,14 +5,14 @@
              TRANSFER TO START                                                  001820
              ENTRY TO NEWBOT.                                                   001830
              ADDR=LST                                                           001840
-START        NEW=NEWCELL.(NEW)                                                  001850
+START        NEW=NUCELL.(NEW)                                                   001850
              LL=LNKL.(CONT.(ADDR))                                              001860
-             EXECUTE SETIND.(-1,-1,NEW.LL)                                      001870
+             EXECUTE SETIND.(-1,-1,NEW,LL)                                      001870
              EXECUTE SETIND.(-1,NEW,-1,ADDR)                                    001880
-             EXECUTE SETIND.(0,LL, ADR,NEW)                                     001890
+             EXECUTE SETIND.(0,LL, ADDR,NEW)                                    001890
              W'R NAMTST.(OBJ) .NE. 0, TRANSFER TO NOT                           001900
              EXECUTE SETIND.(1,-1,-1,NEW)                                       001910
              EXECUTE SETIND.(1,-1,LCNTR.(OBJ)+1,OBJ+1)                          001920
-NOT          EXECUTE STRING.(OBJ,NEW+1)                                         001930
+NOT          EXECUTE STRIND.(OBJ,NEW+1)                                         001930
              FUNCTION RETURN NEW                                                001940
              END OF FUNCTION                                                    001950

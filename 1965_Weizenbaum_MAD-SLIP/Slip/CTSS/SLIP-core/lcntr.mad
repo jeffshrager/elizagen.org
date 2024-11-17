@@ -1,0 +1,10 @@
+             EXTERNAL FUNCTION (LST)                                            001230
+             NORMAL MODE IS INTEGER                                             001240
+             ENTRY TO LCNTR.                                                    001250
+             LEVEL = LNKR.(CONT.(LST+1))                                        001260
+             T'O DONE                                                           001270
+             ENTRY TO LSTNAM.                                                   001280
+             LEVEL = LNKL.(CONT.(LST+1))                                        001290
+             SETDIR.(0,LEVEL,LEVEL,LEVEL)                                       001300
+DONE         FUNCTION RETURN LEVEL                                              001310
+             END OF FUNCTION                                                    001320

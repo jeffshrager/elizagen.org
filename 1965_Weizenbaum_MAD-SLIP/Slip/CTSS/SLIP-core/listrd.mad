@@ -1,6 +1,6 @@
              EXTERNAL FUNCTION (NEW,N)                                          000001
              PROGRAM COMMON AVSL,W                                              000002
-             DIMENSION W(100),CARD(15),KNOW(14)                                 000003
+             DIMENSION W(100),CARD(14),KNOW(14)                                 000003
              EQUIVALENCE (WORD,WORT)                                            000004
              NORMAL MODE IS INTEGER                                             000005
              FLOATING POINT WORD,SIGN,DEC,X                                     000006
@@ -22,10 +22,10 @@ START        M= MADOUT.(N)                                                      
              MODE=-1                                                            000166
              IS=0                                                               000176
              COUNT=1                                                            000186
-             WORT=$                                                             000196
+             WORT=$      $                                                      000196
             R******************************READ NEXT LINE*****************      000206
-TESM         WHENEVER M .E. 0,TRANSFER TO CARDS                                 000216
-             READ BCT TAPE M,DATFOR,CARD(1) ... CARD(14)                        000226
+TESTM        WHENEVER M .E. 0,TRANSFER TO CARDS                                 000216
+             READ BCD TAPE M,DATFOR,CARD(1) ... CARD(14)                        000226
              TRANSFER TO ANALIZ                                                 000236
 CARDS        W'R IS .E. 0                                                       000246
              PRINT ON LINE FORMAT STAR                                          000256
@@ -36,36 +36,36 @@ CARDS        W'R IS .E. 0                                                       
 READCR       READ FORMAT DATFOR, CARD(1) ... CARD(14)                           000316
              T'H ENDTST, FOR I=1,1, I .G. 14                                    000326
 ENDTST       W'R CARD(I) .NE. $ $, T'O ANALIZ                                   000336
-             T'H RP, FOR I=1,1, I.G. 14                                         000346
+             T'H RP, FOR I=1,1, I.G.14                                          000346
 RP           CARD(I)=343434343434K                                              000356
              E'L                                                                000366
 ANALIZ       THROUGH AA, FOR I=1,1,I .G. 14                                     000376
-AA           KNOW(I)=LETTR.(CARD(I))                                            000386
+AA           KNOW(I)=LETTER.(CARD(I))                                           000386
              IW=1                                                               000396
 A108         IC=1                                                               000406
             R******************************GET NEXT CHARACTER*************      000416
 A105         CHAR=KGETBL.(MADIN.(IC),CARD(IW))                                  000426
              PREV=IDENT                                                         000436
-             IDENT=MADOUT.(KGETIN.(MADIN.(IC),KNOW(IW))                         000446
+             IDENT=MADOUT.(KGETIN.(MADIN.(IC),KNOW(IW)))                        000446
             R******************************TRANSFER APPROPRIATLY**********      000456
              TRANSFER TO Z(IDENT)                                               000466
 Z(1)         TRANSFER TO W6                                                     000476
 Z(2)         W'R SWITCH .E. O .OR. TEXT .E. $TEXT$, T'O W6                      000486
              TRANSFER TO W5                                                     000496
 Z(3)         TRANSFER TO W6                                                     000506
-Z(4)         TRANSFER TO W8                                                     000516
-Z(5)         TRANSFER TO W9                                                     000526
-Z(6)         TRANSFER TO W5                                                     000536
+Z(4)         TRANSFER TO W4                                                     000516
+Z(5)         TRANSFER TO W8                                                     000526
+Z(6)         TRANSFER TO W9                                                     000536
 Z(7)         TRANSFER TO W6                                                     000546
 Z(8)         TRANSFER TO W6                                                     000556
 Z(9)         TRANSFER TO W10                                                    000566
-Z(10)        TRANSFER TO WLEDTP                                                 000576
+Z(10)        TRANSFER TO LEFTP                                                  000576
 Z(11)        TRANSFER TO W6                                                     000586
-Z(12)        WHENEVER PREV .NE 4,TRANSFER TO W12                                000596
+Z(12)        WHENEVER PREV .NE. 4,TRANSFER TO W12                               000596
              IDENT=4                                                            000606
              TRANSFER TO W4                                                     000616
 Z(13)        TRANSFER TO W10                                                    000626
-Z(14)        WHENEVER SWITCH .E. 0,TRANSFER TO S6                               000636
+Z(14)        WHENEVER SWITCH .E. 0,TRANSFER TO W6                               000636
              TRANSFER TO W4                                                     000646
             R******************************SINGUAR CHARACTER**************      000656
 W6           EXECUTE PUT.(WORD,MODE,SIGN)                                       000666
@@ -77,10 +77,10 @@ W11          WHENEVER IS .E. 0,TRANSFER TO A112                                 
              WHENEVER WORT .E. $ DLIST$,TRANSFER TO DLIST                       000726
              EXECUTE PUT.(WORD,MODE, SIGN)                                      000736
 REST         EXECUTE NEWBOT.(LIST.(MADIN.(9)),TOP.(W(1)))                       000746
-             EXECUTE NEWTOP.(BOT.(TOP.(W1))),W(1))                              000756
+             EXECUTE NEWTOP.(BOT.(TOP.(W(1))),W(1))                             000756
              TRANSFER TO A109                                                   000766
 DLIST        EXECUTE MAKEDL.(LIST.(MADIN.(9)),TOP.(W(1)))                       000776
-             EXECUTE NEWTOP.(LSTNAM.(TOP.(1(1))),W(1))                          000786
+             EXECUTE NEWTOP.(LSTNAM.(TOP.(W(1))),W(1))                          000786
              TRANSFER TO A109                                                   000796
             R******************************FIRST LEFT PARENTHESIS*********      000806
 A112         IS=1                                                               000816
@@ -96,7 +96,7 @@ W9           IS=IS-1                                                            
 A92          EXECUTE POPTOP.(W(1))                                              000916
              FUNCTION RETURN NEW                                                000926
             R*********************INTEGER**********************                 000936
-W12          WHENEVER MODE .L. 9                                                000946
+W12          WHENEVER MODE .L. 0                                                000946
              MODE = 0                                                           000956
              WORD= 0.0                                                          000966
              TRANSFER TO A122                                                   000976
@@ -110,17 +110,17 @@ W12          WHENEVER MODE .L. 9                                                
              TRANSFER TO A102                                                   001056
              END OF CONDITIONAL                                                 001066
             R******************************INTEGRAL PART******************      001076
-A122         X=MADOUT.(KGETIN.(MADIN.(ID),CARD(IW)))                            001086
+A122         X=MADOUT.(KGETIN.(MADIN.(IC),CARD(IW)))                            001086
              WORD=WORD*10.0+X                                                   001096
              TRANSFER TO A102                                                   001106
             R******************************PERIOD*************************      001116
-W8           W'R TEXT .E. $T4EXT$ .OR.L PERV .E. 4, T'O A101                    001126
-             WHENEVER MODE .LE. 0                                               001136
+W8           W'R TEXT .E. $TEXT$ .OR. PREV .E. 4, T'O A101                      001126
+             WHENEVER MODE .L. 0                                                001136
              WORD=0.0                                                           001146
-             TRANSFER TO S81                                                    001156
-             OR WHENVER MODE .E. 0                                              001166
+             TRANSFER TO W81                                                    001156
+             OR WHENEVER MODE .E. 0                                             001166
 W81          MODE=1                                                             001176
-             DEC=0.0                                                            001186
+             DEC=10.0                                                           001186
              TRANSFER TO A102                                                   001196
              OTHERWISE                                                          001206
              TRANSFER TO W10                                                    001216
@@ -131,31 +131,31 @@ W5           EXECUTE PUT.(WORD,MODE,SIGN)                                       
              TRANSFER TO MINUS                                                  001266
             R******************************ALPHABETIC CHARACTER***********      001276
 W4           WHENEVER IS .E. O,TRANSFER TO A102                                 001286
-             EXECUTE SHINBL.(MADIN.(16),CHAR,WORD)                              001296
+             EXECUTE SHINBL.(MADIN.(6),CHAR,WORD)                               001296
              WHENEVER COUNT .E. 6,TRANSFER TO A43                               001306
              COUNT=COUNT+1                                                      001316
              TRANSFER TO A102                                                   001326
-A43          MRKNEG.(NEWBOT.(WORD,TOP.(W(1)))                                   001336
+A43          MRKNEG.(NEWBOT.(WORD,TOP.(W(1))))                                  001336
              TRANSFER TO A109                                                   001346
             R******************************INITIALIZE AFTER PUT************     001356
 A109         SIGN=1.0                                                           001366
 MINUS        COUNT=1                                                            001376
-             WORT=$       $                                                     001386
+             WORT=$      $                                                      001386
              MODE=-1                                                            001396
             R******************************INPUT SCAN ADJUSTER*************     001406
 A102         WHENEVER IC .E. 6,TRANSFER TO A104                                 001416
              IC=IC+1                                                            001426
              TRANSFER TO A105                                                   001436
-A104         WHENEVER IW .E. 15,TRANSFER TO TESTM                               001446
+A104         WHENEVER IW .E. 14,TRANSFER TO TESTM                               001446
              IW=IW+1                                                            001456
              TRANSFER TO A108                                                   001466
             R******************************BLANK***************************     001476
 W10          WHENEVER IS .E. O, TRANSFER TO A102                                001486
 A101         EXECUTE PUT.(WORD,MODE,SIGN)                                       001496
              WHENEVER SWITCH .E. 0,TRANSFER TO A109                             001506
-             EXECUTE PUT.(CHAR,-1.0,1.0)                                        001516
+             EXECUTE PUT.(CHAR,-1.0,1,0)                                        001516
              TRANSFER TO A109                                                   001526
-            R******************************LEFT PARNTHESIS******************    001536
+            R******************************LEFT PARENTHESIS*****************    001536
 LEFTP        WHENEVER PREV .NE. 13,TRANSFER TO W11                              001546
              WHENEVER SWITCH .E. 1,TRANSFER TO W11                              001556
              EXECUTE PUT.(WORD,MODE,SIGN)                                       001566
@@ -163,6 +163,6 @@ LEFTP        WHENEVER PREV .NE. 13,TRANSFER TO W11                              
              IS=IS+1                                                            001586
              PREV=4                                                             001596
              TRANSFER TO REST                                                   001606
-             VECTOR VALUES START = $5HINPUT *$                                  001616
-             VECGTOR VALUES DATFOR = $14A6 *$                                   001626
+             VECTOR VALUES STAR = $5HINPUT *$                                   001616
+             VECTOR VALUES DATFOR = $14A6 *$                                    001626
              END OF FUNCTION                                                    001636

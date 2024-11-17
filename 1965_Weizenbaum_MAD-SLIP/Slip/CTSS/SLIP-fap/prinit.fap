@@ -6,7 +6,7 @@
        ENTRY   LNKL                                                             000070
        ENTRY   ID                                                               000080
        ENTRY   STRIND                                                           000090
-       ENTRY   SETIN                                                            000100
+       ENTRY   SETIND                                                           000100
        ENTRY   CONT                                                             000110
 LNKL   CAL*    1,4                                                              000120
        ANA     077777000000                                                     000130

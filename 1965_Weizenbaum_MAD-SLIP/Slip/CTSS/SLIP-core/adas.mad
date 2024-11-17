@@ -2,13 +2,13 @@
              NORMAL MODE IS INTEGER                                             000470
              ENTRY TO ADAS.                                                     000480
              M1 = GETMEM.(0)                                                    000490
-             W/R M1 .G. 32766, TRANSFER TO WRONG                                000500
+             W'R M1 .G. 32766, TRANSFER TO WRONG                                000500
              M2 = XMINO. (M1+N,32767)                                           000510
              EXECUTE MEMSET.(M2)                                                000520
              EXECUTE RVECT.(M1,M2-2)                                            000530
-             FUNCITON RETURN 0                                                  000540
+             FUNCTION RETURN 0                                                  000540
 WRONG        PRNTP.(MESS)                                                       000550
-             VECTOR VALUES MESS=$SPACE EXHAUSTD.  PROGRAMENDED.$,               000560
-             177777777777K                                                      000570
+             VECTOR VALUES MESS=$SPACE EXHAUSTD.  PROGRAM ENDED.$,              000560
+             1777777777777K                                                     000570
              EXECUTE EXIT.(0)                                                   000580
              END OF FUNCTION                                                    000590

@@ -7,16 +7,16 @@
              ENTRY TO PUT.                                                      003640
              WORD=IT                                                            003650
              W'R WORD .E. $      $, T'O DONE                                    003660
-             W'R MODE .E. 0                                                     003670
+             W'R MODE .L. 0                                                     003670
              EXECUTE NEWBOT.(LANORM.(WORD),TOP.(W(1)))                          003680
-             OR W'R MODE .E. O                                                  003690
+             OR W'R MODE .E. 0                                                  003690
              WORD=WORT*SIGN                                                     003700
-             EXECUTE NEWBOT.(WORD,TOP,(W(1)))                                   003710
+             EXECUTE NEWBOT.(WORD,TOP.(W(1)))                                   003710
              OTHERWISE                                                          003720
              WORT=WORT*SIGN                                                     003730
              EXECUTE NEWBOT.(WORT,TOP.(W(1)))                                   003740
              E'L                                                                003750
              FUNCTION RETURN 0                                                  003760
-DONE         MRKPOS.(LNKL.(CONT.(TOP.(W(1))))                                   003770
+DONE         MRKPOS.(LNKL.(CONT.(TOP.(W(1)))))                                  003770
              FUNCTION RETURN 0                                                  003780
              END OF FUNCTION                                                    003790

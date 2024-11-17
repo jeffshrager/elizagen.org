@@ -3,7 +3,8 @@
              ENTRY TO XMINO.                                                    007060
              W'R A .L. B                                                        007070
              IT=A                                                               007080
-             OTHERWISEIT=B                                                      007090
-             E'L                                                                007100
-             FUNCTION RETURN IT                                                 007110
-             END OF FUNCTION                                                    007120
+             OTHERWISE                                                          007090
+             IT=B                                                               007100
+             E'L                                                                007110
+             FUNCTION RETURN IT                                                 007120
+             END OF FUNCTION                                                    007130

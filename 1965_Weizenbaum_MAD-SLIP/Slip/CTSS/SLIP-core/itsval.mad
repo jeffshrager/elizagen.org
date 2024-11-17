@@ -1,12 +1,9 @@
              EXTERNAL FUNCTION (ATRBT,LST)                                      003350
              NORMAL MODE IS INTEGER                                             003360
-             ENTRY TO ITSTVL.                                                   003370
-             ADDR= MADATR.(ATRBT,LST)                                           003380
-             W'R ADDR .E. -1                                                    003390
-             RUNCTION RETURN -1                                                 003400
-             OTHERWISE                                                          003410
-             IT=REMOVE.(LNKR.(CONT.(ADDR)))                                     003420
-             EXECUTE REMOVE.(ADDR)                                              003430
-             FUNCTION RETURN IT                                                 003440
-             END OF CONDITIONAL                                                 003450
-             END OF FUNCTION                                                    003460
+             ENTRY TO ITSVAL.                                                   003370
+             W'R LNKL.(CONT.(LST+1)) .E. 0, T'O FAIL                            003380
+             ADDR = MADATR.(ATRBT,LST)                                          003390
+             W'R ADDR .E. -1, T'O FAIL                                          003400
+             FUNCTION RETURN CONT.(LNKR.(CONT.(ADDR))+1)                        003410
+FAIL         FUNCTION RETURN 0                                                  003420
+             END OF FUNCTION                                                    003430

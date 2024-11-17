@@ -2,10 +2,10 @@
              NORMAL MODE IS INTEGER                                             003460
              ENTRY TO NOATVL.                                                   003470
              ADDR= MADATR.(ATRBT,LST)                                           003480
-             W'R ADDR .E. =1                                                    003490
+             W'R ADDR .E. -1                                                    003490
              FUNCTION RETURN -1                                                 003500
              OTHERWISE                                                          003510
-             IT=REMOVE.(LINKR.(CONT.(ADDR)))                                    003520
+             IT=REMOVE.(LNKR.(CONT.(ADDR)))                                     003520
              EXECUTE REMOVE.(ADDR)                                              003530
              FUNCTION RETURN IT                                                 003540
              END OF CONDITIONAL                                                 003550

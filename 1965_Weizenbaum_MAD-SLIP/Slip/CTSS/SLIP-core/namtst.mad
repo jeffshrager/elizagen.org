@@ -3,11 +3,11 @@
              ENTRY TO NAMTST.                                                   001480
              LST=CANDAT                                                         001490
              LIMIT=GETMEM.(0)                                                   001500
-             LINK=LINKR.(LST)                                                   001510
-             W/R LNKL.(LST) .N. LINK .OR. LINK .G. LIMIT, T/O NO                001520
-             READ=CONT.(LINK)                                                   001530
-             W'R ID.(HEAD) .NE. 2 .OR. LINK.(HEAD( .G. LIMIT, T'0 NO            001540
+             LINK=LNKR.(LST)                                                    001510
+             W'R LNKL.(LST) .NE. LINK .OR. LINK .G. LIMIT, T'O NO               001520
+             HEAD=CONT.(LINK)                                                   001530
+             W'R ID.(HEAD) .NE. 2 .OR. LNKL.(HEAD) .G. LIMIT, T'O NO            001540
              W'R LNKR.(CONT.(LNKL.(HEAD))) .NE. LINK, T'O NO                    001550
              F'N 0                                                              001560
 NO           F'N 1                                                              001570
-             E'H                                                                001580
+             E'N                                                                001580

@@ -7,7 +7,7 @@ START        ADDR=LNKR.(CONT.(ADDR))                                            
              W'R ID.(CONT.(ADDR)) .E. 2, T'O FAIL                               002890
              W'R CONT.(ADDR + 1) .E. AT, T'O SUCCES                             002900
              ADDR= LNKR.(CONT.(ADDR))                                           002910
-             W'R ID.(CONT.ADDR)) E. 2, T'O FAIL                                 002920
+             W'R ID.(CONT.(ADDR)) .E. 2, T'O FAIL                               002920
              T'O START                                                          002930
 SUCCES       FUNCTION RETURN ADDR                                               002940
 FAIL         ADDR=-1                                                            002950

@@ -1,10 +1,13 @@
-             EXTERNAL FUNCTION (LST)                                            000600
-             NORMAL MODE IS INTEGER                                             000610
-             ENTRY TO IRALST.                                                   000620
-             EXECUTE SETIND.(-1,-1,LCNTR.(LST)-1,LST+I)                         000630
-             W'R LCNTR.(LST) .NE. O, TRANSFER TO RETHED                         000640
-             EXECUTE SETIND.(1,-1,-1,LST)                                       000650
-             EXECUT SETIND.(0,-1,MAYBE,LST+1)                                   000660
- RETHED      EXECUTE RCELL.(LST)                                                000670
- DONE        FUNCTION RETURN ST                                                 000680
-             END OF FUNCTION                                                    000690
+             EXTERNAL FUNCTION (LST)                                            000850
+             NORMAL MODE IS INTEGER                                             000860
+             ENTRY TO IRALST.                                                   000870
+             EXECUTE SETIND.(-1,-1,LCNTR.(LST)-1,LST+1)                         000880
+             W'R LCNTR.(LST) .NE. 0,TRANSFER TO DONE                            000890
+             EXECUTE MTLIST.(LST)                                               000900
+             MAYBE = LNKL.(CONT.(LST+1))                                        000910
+             W'R MAYBE .E. 0, TRANSFER TO RETHED                                000920
+             EXECUTE SETIND.(1,-1,-1,LST)                                       000930
+             EXECUTE SETIND.(0,-1,MAYBE,LST+1)                                  000940
+ RETHED      EXECUTE RCELL.(LST)                                                000950
+ DONE        FUNCTION RETURN LST                                                000960
+             END OF FUNCTION                                                    000970

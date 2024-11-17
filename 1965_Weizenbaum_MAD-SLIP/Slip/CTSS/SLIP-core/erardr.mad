@@ -6,6 +6,6 @@
 MORE         N=LNKR.(CONT.(M))                                                  002530
              EXECUTE RCELL.(M)                                                  002540
              M=N                                                                002550
-             1'R M .NE. 0, T'O MORE                                             002560
+             W'R M .NE. 0, T'O MORE                                             002560
              FUNCTION RETURN 0                                                  002570
-             END O0F FUNCTION                                                   002580
+             END OF FUNCTION                                                    002580

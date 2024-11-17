@@ -3,5 +3,10 @@
              ENTRY TO MAKEDL.                                                   002260
              W'R LNKL.(CONT.(LST+1)) .NE. 0, T'O NOTMT                          002270
 NORMAL       SETIND.(-1,DLST,-1,LST+1)                                          002280
-             SETIND.(-1,-1,LCNTR.(DLST)+1,DLST+1)]                              002290
+             SETIND.(-1,-1,LCNTR.(DLST)+1,DLST+1)                               002290
              FUNCTION RETURN LST                                                002300
+NOTMT        K=LNKL.(CONT.(LST+1))                                              002310
+             EXECUTE SETDIR.(0,K,K,X)                                           002320
+             IRALST.(X)                                                         002330
+             T'O NORMAL                                                         002340
+             END OF FUNCTION                                                    002350

@@ -2,9 +2,10 @@
              NORMAL MODE IS INTEGER                                             001350
              ENTRY TO LIST.                                                     001360
              CELL=NUCELL.(CELL)                                                 001370
-             EXECUTE SETDIR.(O,CELL,CELL,CELL)                                  001380
+             EXECUTE SETDIR.(0,CELL,CELL,CELL)                                  001380
              EXECUTE SETIND.(2,CELL,CELL,CELL)                                  001390
-             WR ADDR .E. 0, T'O DONE                                            001400
+             W'R ADDR .E. 9, T'O DONE                                           001400
              ADDR=CELL                                                          001410
-             EXECUTE SETIND.(-1,1,,1,CELL + 1)                                  001420
+             EXECUTE SETIND.(-1,-1,1,CELL + 1)                                  001420
 DONE         FUNCTION RETURN CELL                                               001430
+             END OF FUNCTION                                                    001440
