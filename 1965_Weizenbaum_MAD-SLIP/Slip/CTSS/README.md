@@ -18,6 +18,8 @@ the CACM article.
 - [`SLIP-duplicates`](SLIP-duplicates) - where there were items
   duplicated in both MAD and FAP, we have used the MAD version and
   placed the FAP duplicate in here
+- [`SLIP-discarded`](SLIP-discarded) - incomplete functions not called
+  by the rest of the code.
  
 ## License
 
