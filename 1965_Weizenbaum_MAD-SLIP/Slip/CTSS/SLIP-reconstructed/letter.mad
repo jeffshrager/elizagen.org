@@ -1,0 +1,35 @@
+            R RETURN CATEGORIES OF GIVEN SIX BCD CHARACTERS.
+            R CATEGORIES ARE -
+            R   1 =    EQUALS
+            R   2 -    MINUS
+            R   3 +    PLUS
+            R   4 A-Z  LETTER
+            R   5 .    PERIOD
+            R   6 )    RIGHT PARENTHESIS
+            R   7 $    DOLLAR
+            R   8 *    ASTERISK
+            R   9      SPACE
+            R  10 (    LEFT PARENTHESIS
+            R  11 /    SLASH
+            R  12 0-9  DIGIT
+            R  13 ,    COMMA
+            R  14 '    APOSTROPHE
+             EXTERNAL FUNCTION (CHARS)
+             NORMAL MODE IS INTEGER
+             DIMENSION MAP(64)
+             ENTRY TO LETTER.
+             VECTOR VALUES MAP=
+            1    12,  12,  12,  12,  12,  12,  12,  12,
+            2    12,  12,   4,   1,  14,   4,   4,   4,
+            3     3,   4,   4,   4,   4,   4,   4,   4,
+            4     4,   4,   4,   5,   6,   4,   4,   4,
+            5     2,   4,   4,   4,   4,   4,   4,   4,
+            6     4,   4,   4,   7,   8,   4,   4,   4,
+            7     9,  11,   4,   4,   4,   4,   4,   4,
+            8     4,   4,   4,  13,  10,   4,   4,   4
+             RESULT = 0
+             THROUGH END, FOR INDEX = 1, 1, INDEX .G. 6
+                RESULT = RESULT*64 + MAP(KGETBL.(INDEX, CHARS) .A. 77K)
+END          CONTINUE
+             FUNCTION RETURN RESULT
+             END OF FUNCTION

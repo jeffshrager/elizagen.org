@@ -20,7 +20,13 @@ the CACM article.
   placed the FAP duplicate in here
 - [`SLIP-discarded`](SLIP-discarded) - incomplete functions not called
   by the rest of the code.
- 
+
+We also created some new code not in the PDF
+
+- [`SLIP-reconstructed`](SLIP-reconstructed) - functions needed by
+  ELIZA but missing from the PDF
+- [`SLIP-tests`](SLIP-tests) - test functions
+
 ## License
 
  From
