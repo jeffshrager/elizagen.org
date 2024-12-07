@@ -10,41 +10,41 @@
        ENTRY   ADVSNL                                                           002220
        ENTRY   ADVSEL                                                           002230
        ENTRY   ADVSWL                                                           002240
-ADVLWR STI     SV1                                                              002250
-       LDI     =01011                                                           002260
+ADVLWR STI     SVI                                                              002250
+       LDI     =O1011                                                           002260
        TRA     START                                                            002270
-ADVLER STI     SV1                                                              002280
-       LDI     =01001                                                           002290
+ADVLER STI     SVI                                                              002280
+       LDI     =O1001                                                           002290
        TRA     START                                                            002300
-ADVLNR STI     SV1                                                              002310
-       LDI     =01010                                                           002320
+ADVLNR STI     SVI                                                              002310
+       LDI     =O1010                                                           002320
        TRA     START                                                            002330
-ADVLWL STI     SV1                                                              002340
-       LDI     =01111                                                           002350
+ADVLWL STI     SVI                                                              002340
+       LDI     =O1111                                                           002350
        TRA     START                                                            002360
-ADVLEL STI     SV1                                                              002370
-       LDI     =01101                                                           002380
+ADVLEL STI     SVI                                                              002370
+       LDI     =O1101                                                           002380
        TRA     START                                                            002390
-ADVLNL STI     SV1                                                              002400
-       LDI     =01110                                                           002410
+ADVLNL STI     SVI                                                              002400
+       LDI     =O1110                                                           002410
        TRA     START                                                            002420
-ADVSWR STI     SV1                                                              002430
-       LDI     =00011                                                           002440
+ADVSWR STI     SVI                                                              002430
+       LDI     =O0011                                                           002440
        TRA     START                                                            002450
 ADVSER STI     SVI                                                              002460
-       LDI     =00001                                                           002470
+       LDI     =O0001                                                           002470
        TRA     START                                                            002480
 ADVSNR STI     SVI                                                              002490
-       LDI     =00010                                                           002500
+       LDI     =O0010                                                           002500
        TRA     START                                                            002510
-SDVSWL STI     SV1                                                              002520
-       LDI     =00111                                                           002530
+ADVSWL STI     SVI                                                              002520
+       LDI     =O0111                                                           002530
        TRA     START                                                            002540
-SDVSEL STI     SV1                                                              002550
-       LDI     =00101                                                           002560
+ADVSEL STI     SVI                                                              002550
+       LDI     =O0101                                                           002560
        TRA     START                                                            002570
-SDVSNL STI     SV1                                                              002580
-       LDI     =00110                                                           002590
+ADVSNL STI     SVI                                                              002580
+       LDI     =O0110                                                           002590
        TRA     START                                                            002600
 START  SXA     SV4,4                                                            002610
        SXA     SV2,2                                                            002620
@@ -57,8 +57,8 @@ START  SXA     SV4,4                                                            
        PDC     ,4                                                               002690
        CAL     0,4                                                              002700
        SLW     CAND                                                             002710
-       ANA     =0700000                                                         002720
-       LAS     =0100000                                                         002730
+       ANA     =O700000                                                         002720
+       LAS     =O100000                                                         002730
        TRA     ADV                                                              002740
        TRA     XXX                                                              002750
 ADV    CAL     CAND                                                             002760
@@ -68,11 +68,11 @@ ADV1   RNT     0100                                                             
        PDC     ,4                                                               002800
        CAL     0,4                                                              002810
        SLW     CAND                                                             002820
-       ANA     -0700000                                                         002830
-       LAS     =0700000                                                         002840
+       ANA     =O700000                                                         002830
+       LAS     =O100000                                                         002840
        TRA     HEAD                                                             002850
        TRA     NAME                                                             002860
-ELEM   RFT     01                                                               002870
+ELEM   RFT     0001                                                             002870
        TRA     OKEXIT                                                           002880
        TRA     ADV                                                              002890
 HEAD   RFT     1000                                                             002900
@@ -91,7 +91,7 @@ HEAD   RFT     1000                                                             
        LDC     CELL,4                                                           003030
        CAL     0,4                                                              003040
        TRA     ADV1                                                             003050
-NAME   RFT     10                                                               003060
+NAME   RFT     0010                                                             003060
        TRA     OKEXIT                                                           003070
 XXX    RFT     1000                                                             003080
        TRA     ADV                                                              003090
@@ -119,7 +119,7 @@ LIST   SYN     *                                                                
 LEVEL  SYN     *                                                                003310
        PZE                                                                      003320
 CAND   PZE     **                                                               003330
-SV1    PZE     **                                                               003340
+SVI    PZE     **                                                               003340
 SV4    SYN     *                                                                003350
 OKEXIT AXT     **,4                                                             003360
        STZ*    2,4                                                              003370
@@ -132,11 +132,11 @@ EXIT   CAL*    1,4                                                              
        STQ     SVQ                                                              003440
        LDQ     SVQ                                                              003450
        LDC     CELL,2                                                           003460
-       CLA     1,3                                                              003470
+       CLA     1,2                                                              003470
 SV2    AXT     **,2                                                             003480
-       LDI     SV1                                                              003490
+       LDI     SVI                                                              003490
        TRA     3,4                                                              003500
-FAIL   LXA     2V4,4                                                            003510
+FAIL   LXA     SV4,4                                                            003510
        STL*    2,4                                                              003520
        TRA     EXIT                                                             003530
 SVQ    PZE     **                                                               003540

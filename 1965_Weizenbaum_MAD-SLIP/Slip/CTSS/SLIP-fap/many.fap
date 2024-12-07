@@ -1,4 +1,4 @@
-      ENTRY    MANY                                                             003590
+       ENTRY   MANY                                                             003590
 MANY   SYN     *                                                                003600
        SXA     SV4,4                                                            003610
        SXD     MANY-2,4                                                         003620
@@ -9,26 +9,26 @@ MANY   SYN     *                                                                
 BEGIN  CLA     START                                                            003670
        ADD     =1                                                               003680
        STO     START                                                            003690
-START  LDZ     1,4                                                              003700
+START  LDQ     1,4                                                              003700
        STQ     PARM                                                             003710
        ZAC                                                                      003720
-       LGL     S1                                                               003730
+       LGL     21                                                               003730
        SUB     TEST                                                             003740
        TNZ     OUT                                                              003750
        CLA     PARM                                                             003760
-       STA     *_1                                                              003770
+       STA     *+1                                                              003770
        CLA     **                                                               003780
        STO     PARM                                                             003790
        TSX     $NEWBOT,4                                                        003800
-       FXH     PARM                                                             003810
+       TXH     PARM                                                             003810
        TXH     LNAME                                                            003820
 SV4    AXT     **,4                                                             003830
        TRA     BEGIN                                                            003840
 OUT    CLA     START                                                            003850
-       STA     *_2                                                              003860
+       STA     *+2                                                              003860
        CLA     LNAME                                                            003870
        TRA     **,4                                                             003880
-ORGNL  LDZ     1,4                                                              003890
+ORGNL  LDQ     1,4                                                              003890
 LNAME  PZE     0                                                                003900
 PARM   PZE     0                                                                003910
 TEST   OCT     3000000                                                          003920

@@ -7,7 +7,7 @@ HASH   LDQ*    1,4                                                              
        MPY*    1,4                                                              007240
        LLS     **                                                               007250
        STA     TEMP                                                             007260
-       LDZ     =0777777777777                                                   007270
+       LDQ     =O777777777777                                                   007270
        ZAC                                                                      007280
 SHIFT  LLS     **                                                               007290
        ANA     TEMP                                                             007300
