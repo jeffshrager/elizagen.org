@@ -1,11 +1,12 @@
-       ENTRY   INITAS                                                           000020
-       ENTRY   MTLIST                                                           000030
-       ENTRY   NUCELL                                                           000040
-       ENTRY   RCELL                                                            000050
-INITAS SXA     FOUR,4                                                           000060
-       AXT     1000,4                                                           000070
-ZERO   STZ     SPACE,4                                                          000080
-       TIX     ZERO,4,1                                                         000090
+       ENTRY   INITAS                                                           000010
+       ENTRY   MTLIST                                                           000020
+       ENTRY   NUCELL                                                           000030
+       ENTRY   RCELL                                                            000040
+INITAS SXA     FOUR,4                                                           000050
+       AXT     1000,4                                                           000060
+ZERO   STZ     SPACE,4                                                          000070
+       TIX     ZERO,4,1                                                         000080
+       STZ     SPACE,4                                                          000090
        CLA     =998                                                             000100
        STO     N                                                                000110
 MORE   CLA     ZERO                                                             000120

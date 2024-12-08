@@ -12,7 +12,7 @@ START        NEW=NUCELL.(NEW)                                                   
              EXECUTE SETIND.(0,LL, ADDR,NEW)                                    001890
              W'R NAMTST.(OBJ) .NE. 0, TRANSFER TO NOT                           001900
              EXECUTE SETIND.(1,-1,-1,NEW)                                       001910
-             EXECUTE SETIND.(1,-1,LCNTR.(OBJ)+1,OBJ+1)                          001920
+             EXECUTE SETIND.(-1,-1,LCNTR.(OBJ)+1,OBJ+1)                          001920
 NOT          EXECUTE STRIND.(OBJ,NEW+1)                                         001930
              FUNCTION RETURN NEW                                                001940
              END OF FUNCTION                                                    001950

@@ -1,0 +1,46 @@
+           R Test of SLIP basic functionality
+           R INITAS - LIST - MANY - LISTMT - NEW|POP| TOP|BOT
+           R
+            NORMAL MODE IS INTEGER
+            PRINT COMMENT $TESTING BASIC LISTS$
+            INITAS.(0)
+           R Create a new list and add several items
+            LIST.(TEST)
+            MANY.(TEST, 22, 23, 24)
+           R Confirm top and bottom are correct
+            WHENEVER TOP.(TEST) .NE. 22
+                PRINT COMMENT $TOP NOT 22$
+            END OF CONDITIONAL
+            WHENEVER BOT.(TEST) .NE. 24
+                PRINT COMMENT $BOT NOT 24$
+            END OF CONDITIONAL
+           R Add a new bottom and confirm
+            NEWBOT.(25, TEST)
+            WHENEVER BOT.(TEST) .NE. 25
+                PRINT COMMENT $BOT NOT 25$
+            END OF CONDITIONAL
+           R Add a new top and confirm
+            NEWTOP.(21, TEST)
+            WHENEVER TOP.(TEST) .NE. 21
+                PRINT COMMENT $TOP NOT 21$
+            END OF CONDITIONAL
+           R Add a new top
+            NEWTOP.(20, TEST)
+           R Test POPBOT
+            WHENEVER POPBOT.(TEST) .NE. 25
+                PRINT COMMENT $POPBOT NOT 25$
+            END OF CONDITIONAL
+           R TEST Is now (20, 21, 22, 23, 24)
+           R Pop the head off the list and sum until list is empty
+            SUM = 0
+START       WHENEVER LISTMT.(TEST) .E. 0, TRANSFER TO END
+            SUM = SUM + POPTOP.(TEST)
+            T'O START
+END         WHENEVER SUM .NE. 110
+                PRINT COMMENT $SUM WRONG$
+            END OF CONDITIONAL
+           R The below will allow the next program in the runcom
+           R chain to execute. Remove if you want it to remain
+           R in core for analysis.
+            CHNCOM.(0)
+            END OF PROGRAM

@@ -39,4 +39,8 @@
             WHENEVER LETTER.($(XXX00$) .NE. 120404041414K
                 PRINT COMMENT $LETTER.((XXX00) FAILED$
             END OF CONDITIONAL
+           R The below will allow the next program in the runcom
+           R chain to execute. Remove if you want it to remain
+           R in core for analysis.
+            CHNCOM.(0)
             END OF PROGRAM
