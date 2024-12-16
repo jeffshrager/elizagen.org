@@ -1,7 +1,7 @@
-             EXTERNAL FUNCTOIN(LST)                                             008330
+             EXTERNAL FUNCTOIN (OBJ,LST)                                        008330
              NORMAL MODE IS INTEGER                                             008340
              ENTRY TO LNKBOT.                                                   008350
-             W'R LISTMT.(LST) .E.0, T'O PLACE                                   008360
+             W'R LISTMT.(LST) .E. 0, T'O PLACE                                  008360
              MRKNEG.(LNKL.(CONT.(LST)))                                         008370
 PLACE        F'N NEWBOT.(OBJ,LST)                                               008380
              E'N                                                                008390

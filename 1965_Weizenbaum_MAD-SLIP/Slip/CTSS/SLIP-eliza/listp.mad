@@ -5,28 +5,29 @@
              LEFTP = 606074606060K                                              006380
              RIGHTP= 606034606060K                                              006390
              BOTH  = 607460603460K                                              006400
-             EXECUTE NEWTOP.(SEQRDR.(LIST),LIST.(STACK))                        006410
+             EXECUTE NEWTOP.(SEQRDR.(LST),LIST.(STACK))                         006410
              S=POPTOP.(STACK)                                                   006420
 BEGIN        EXECUTE PLACE.(LEFTP,1)                                            006430
 NEXT         WORD=SEQLR.(S,FLAG)                                                006440
              W'R FLAG .E. 0                                                     006450
              EXECUTE PLACE.(WORD,1)                                             006460
              T'O NEXT                                                           006470
-             OR W'R FLAG .G. O                                                  006480
+             OR W'R FLAG .G. 0                                                  006480
              EXECUTE PLACE.(RIGHTP,1)                                           006490
-             W'R LISTMT.(STACKE) .E. 0, T'O DONE                                006500
+             W'R LISTMT.(STACK) .E. 0, T'O DONE                                 006500
              S=POPTOP.(STACK)                                                   006510
              T'O NEXT                                                           006520
              OTHERWISE                                                          006530
-             W'R LISTME.(WORD) .E. 0                                            006540
+             W'R LISTMT.(WORD) .E. 0                                            006540
              EXECUTE PLACE.(BOTH,1)                                             006550
              T'O NEXT                                                           006560
-             OTHERWISE EXECUTE NEWTOP.(S,STACK)                                 006570
-             S=SEQRDR.(WORD)                                                    006580
-             T'O BEGIN                                                          006590
-             E'L                                                                006600
+             OTHERWISE                                                          006570
+             EXECUTE NEWTOP.(S,STACK)                                           006580
+             S=SEQRDR.(WORD)                                                    006590
+             T'O BEGIN                                                          006600
              E'L                                                                006610
-DONE         EXECUTE PLACE.(0,-1)                                               006620
-             EXECUTE IRALST.(STACK)                                             006630
-             FUNCTION RETURN LST                                                006640
-             END OF FUNCTION                                                    006650
+             E'L                                                                006620
+DONE         EXECUTE PLACE.(0,-1)                                               006630
+             EXECUTE IRALST.(STACK)                                             006640
+             FUNCTION RETURN LST                                                006650
+             END OF FUNCTION                                                    006660

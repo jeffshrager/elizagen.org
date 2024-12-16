@@ -8,7 +8,7 @@
              LIST.(RHS)                                                         010700
              LIST.(INT)                                                         010710
              S=SEQRDR.(SPEC)                                                    010720
-             T'H LEFT, FOR I=0,0 DATUM .E. $=$                                  010730
+             T'H LEFT, FOR I=0,0, DATUM .E. $=$                                 010730
              DATUM=SEQLR.(S,F)                                                  010740
              CELL=NEWBOT.(DATUM,LHS)                                            010750
              W'R S .L. 0, MRKNEG.(CELL)                                         010760
@@ -19,8 +19,8 @@ LEFT         CONTINUE                                                           
              W'R S .L. 0, MRKNEG.(CELL)                                         010810
 RIGHT        CONTINUE                                                           010820
              POPBOT.(RHS)                                                       010830
-             W'R YMATCH.(LHS,OBJ,INT) .E. 0, T'0 END                            010840
-             W'R ASSMBL.(RHS,INT,NEW) .E. 0, T'0 END                            010850
+             W'R YMATCH.(LHS,OBJ,INT) .E. 0, T'O END                            010840
+             W'R ASSMBL.(RHS,INT,NEW) .E. 0, T'O END                            010850
              RESULT=NEW                                                         010860
 END          IRALST.(LHS)                                                       010870
              IRALST.(RHS)                                                       010880

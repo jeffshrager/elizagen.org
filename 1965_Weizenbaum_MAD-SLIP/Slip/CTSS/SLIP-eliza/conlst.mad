@@ -1,8 +1,8 @@
              EXTERNAL FUNCTION(LEFT,RIGHT)                                      008510
              NORMAL MODE IS INTEGER                                             008520
             R                                                                   008530
-            RTHIS FUNCTION ATTACHES THE LIST 'RIGHT' TO THE                     008540
-            RLIST 'LEFT'.  THE LIST 'RIGHT IS EMPTIED.                          008550
+            R THIS FUNCTION ATTACHES THE LIST 'RIGHT' TO THE                    008540
+            R LIST 'LEFT'.  THE LIST 'RIGHT' IS EMPTIED.                        008550
             R                                                                   008560
              ENTRY TO CONLST.                                                   008570
              W'R LISTMT.(RIGHT) .E. 0, T'O DONE                                 008580

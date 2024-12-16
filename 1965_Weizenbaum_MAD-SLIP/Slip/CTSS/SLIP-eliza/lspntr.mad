@@ -1,5 +1,5 @@
              EXTERNAL FUNCTION (SEQRDR)                                         007900
-             NORMAL IS INTEGER                                                  007910
+             NORMAL MODE IS INTEGER                                             007910
              ENTRY TO LSPNTR.                                                   007920
              ENTRY TO SEQPTR.                                                   007930
              F'N LNKL.(CONT.(LNKR.(SEQRDR)))                                    007940

@@ -1,4 +1,4 @@
-             EXTERNAL FUNCTION (*SLST,OLST,OUTLST)                              009890
+             EXTERNAL FUNCTION (SLST,OLST,OUTLST)                               009890
              NORMAL MODE IS INTEGER                                             009900
              DIMENSION A(100),B(100)                                            009910
              ENTRY TO YMATCH.                                                   009920
@@ -13,7 +13,7 @@
              W'R MKA .E. LIMIT, T'O AMARK                                       010010
              MKA=MKA+1                                                          000020
  FINDB       T'H FINDB, FOR I = MKA,1, I .E. LIMIT                              010030
-            1.OR. LINKL.(A(I)) .NE. 0 .OR. A(I) .E. 0                           010040
+            1.OR. LNKL.(A(I)) .NE. 0 .OR. A(I) .E. 0                            010040
              W'R A(I) .NE. 0, T'O BMARK                                         010050
              MARKB=I-1                                                          010060
              MARKC=I                                                            010070
@@ -34,13 +34,13 @@
  FAIL        T'H MTB, FOR I=1,1, I.G. B(0)                                      010220
  MTB         IRALST.(B(I))                                                      010230
              T'H MTA, FOR I=1,1, I .G. LIMIT                                    010240
-             W'R LINK.(A(I)) .NE. 0                                             010250
+             W'R LNKL.(A(I)) .NE. 0                                             010250
              NEWBOT.(A(I),OUTLST)                                               010260
              IRALST.(A(I))                                                      010270
              O'E                                                                010280
              E'L                                                                010290
  MTA         CONTINUE                                                           010300
-             T'O END(STITCH)                                                    010310
+             T'O END(SWITCH)                                                    010310
  END(1)      MTLIST.(OUTLST)                                                    010320
              F'N 0                                                              010330
  END(2)      F'N OUTLST                                                         010340

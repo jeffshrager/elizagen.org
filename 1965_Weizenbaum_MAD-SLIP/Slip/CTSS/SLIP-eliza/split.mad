@@ -11,16 +11,16 @@ COMMON       LIST=A                                                             
              W'R LISTMT.(LIST) .E. 0, T'O DONE                                  008070
              W'R ID.(CONT.(CELL)) .E. 2                                         008080
              STRIND.(CONT.(LIST),NEWLST)                                        008090
-             SETIND.(-1,LIST, LIST,LIST)                                        008100
+             SETIND.(-1,LIST,LIST,LIST)                                         008100
              T'O DONE                                                           008110
              OTHERWISE                                                          008120
              T'O CMPLX(SWITCH)                                                  008130
-CMPLX(1)     TOP=LINKR.(CONT.(LIST))                                            008140
+CMPLX(1)     TOP=LNKR.(CONT.(LIST))                                             008140
              NUTOP=LNKR.(CONT.(CELL))                                           008150
              SETIND.(-1,CELL,TOP,NEWLST)                                        008160
              SETIND.(-1,-1,NUTOP,LIST)                                          008170
              SETIND.(-1,LIST,-1,NUTOP)                                          008180
-             SET.(-1,NEWLST,-1,TOP)                                             008190
+             SETIND.(-1,NEWLST,-1,TOP)                                          008190
              SETIND.(-1,-1,NEWLST,CELL)                                         008200
              T'O DONE                                                           008210
 CMPLX(2)     BOT=LNKL.(CONT.(LIST))                                             008220

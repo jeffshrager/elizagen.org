@@ -10,7 +10,7 @@
 CLEAR        OUT(I)=BLANK                                                       011660
              WCOUNT=1                                                           011670
              CCOUNT=1                                                           011680
-SEQ          W'R S .G. 0 .AN. CARCTR .NE. BLANK, T'O BLANKS                     011690
+SEQ          W'R S .G. 0 .AND. CARCTR .NE. BLANK, T'O BLANKS                    011690
 SEQA         C=SEQLR.(S,F)                                                      011700
              W'R F .G. 0, T'O DONE                                              011710
              COUNT=1                                                            011720
@@ -20,7 +20,7 @@ FETCH        CARCTR=KGETBL.(COUNT,C)                                            
 SHIN         KPUTBL.(CCOUNT,CARCTR,OUT(WCOUNT))                                 011760
              W'R CCOUNT .E. 6, T'O UPW                                          011770
              CCOUNT=CCOUNT + 1                                                  011780
-TSTCNT       W'R COUNT 'E' 6. T'O SEQ                                           011790
+TSTCNT       W'R COUNT .E. 6, T'O SEQ                                           011790
              COUNT=COUNT + 1                                                    011800
              T'O FETCH                                                          011810
 UPW          W'R WCOUNT .E. 14, T'O TYPE                                        011820
@@ -48,12 +48,12 @@ NORMAL       W'R END .E. 0                                                      
 CLAR         OUT(I)=BLANK                                                       012040
              WCOUNT=1                                                           012050
              CCOUNT=1                                                           012060
-             T'0 TSTCNT                                                         012070
+             T'O TSTCNT                                                         012070
              O'E                                                                012080
              F'N LST                                                            012090
              E'L                                                                012100
 DONE         END=1                                                              012110
-             T'0 TYPE                                                           012120
+             T'O TYPE                                                           012120
 BLANKS       LASTS=S                                                            012130
              LASTW=C                                                            012140
              LASTC=COUNT                                                        012150

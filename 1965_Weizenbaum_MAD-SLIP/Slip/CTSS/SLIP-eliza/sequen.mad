@@ -1,7 +1,7 @@
-             EXTERNAL FUNCTION  (READER, FLAG)                                  006910
+             EXTERNAL FUNCTION (READER, FLAG)                                   006910
              NORMAL MODE IS INTEGER                                             006920
              ENTRY TO SEQLL.                                                    006930
-             LINK=LINKL.(READER)                                                006940
+             LINK=LNKL.(READER)                                                 006940
              TRANSFER TO START                                                  006950
              ENTRY TO SEQLR.                                                    006960
              LINK=LNKR.(READER)                                                 006970

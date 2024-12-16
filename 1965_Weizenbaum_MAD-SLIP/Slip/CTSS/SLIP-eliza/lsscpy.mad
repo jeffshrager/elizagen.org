@@ -1,47 +1,46 @@
              EXTERNAL FUNCTION ( ORGNL,COPY)                                    007430
-             NORMAL MODE IS INTGER                                              007440
+             NORMAL MODE IS INTEGER                                             007440
              ENTRY TO LSSCPY.                                                   007450
              NEWBOT.(ORGNL,LIST.(STACK))                                        007460
              NEWBOT.(COPY,STACK)                                                007470
              NEWVAL.(ORGNL,COPY,STACK)                                          007480
-START        W'R LISTMT.(STACK) .E. O, T'O DONE                                 007490
-             CLD=POPTOP.(STACK)                                                 007500
+START        W'R LISTMT.(STACK) .E. 0, T'O DONE                                 007490
+             OLD=POPTOP.(STACK)                                                 007500
              LST=POPTOP.(STACK)                                                 007510
              DLIST=LSTNAM.(OLD)                                                 007520
-             W'R DLIST .E. O,T'O GO                                             007530
-             SEE = ITSVAL.(DLSIT,STACK)                                         007540
+             W'R DLIST .E. 0,T'O GO                                             007530
+             SEE = ITSVAL.(DLIST,STACK)                                         007540
              W'R SEE .E. 0                                                      007550
-             SEE = ITSVAL.(DLIST,STACK)                                         007560
-             W'R SEE .E. 0                                                      007570
-             NEXT=LIST.(9)                                                      007580
-             MAKEDL.(NEXT,LST)                                                  007590
-             NEWBOT.(DLIST,STACK)                                               007600
-             NEWBOT.(NEXT,STACK)                                                007610
-             NEWVAL.(DLIST,NEXT,STACK)                                          007620
-             T'O GO                                                             007630
-             O'E                                                                007640
-             MAKEDL.(SEE,LST)                                                   007650
-             E'L                                                                007660
-GO           READER=SEQRDR.(OLD                                                 007670
-READ         DATUM=SEQLR.(READER,FLAG)                                          007680
-             W'R FLAG .L. 0                                                     007690
-             W'R READER .L. 0                                                   007700
-             MRKNEG.(NEWBOT.(DATUM,LST))                                        007710
-             O'E                                                                007720
-             NEWBOTE'L                                                          007730
-             OR W'R FLAG .E. 0                                                  007740
-             SEE = ITSVAL.(DATUM,STACK)                                         007750
-             W'R SEE .E. 0, T'O NEW                                             007760
-             NEWBOT.(SEE,LST)                                                   007770
-             T'O READ                                                           007780
-NEW          NEWBOT.(DATUM,STACK)                                               007790
-             NEWBOT.(LIST.(9), STACK)                                           007800
-             NEWBOT.(BOT,(STACK),LST)                                           007810
-             NEWVAL.(DATUM,BOT.(STACK),STACK)                                   007820
-             OTHERWISE                                                          007830
-             T'O START                                                          007840
-             END OF CONDITIONAL                                                 007850
-             T'O READ                                                           007860
-DONE         IRALST.(STACK)                                                     007870
-             FUNCTION RETURN COPY                                               007880
-             END OF FUNCTION                                                    007890
+             NEXT=LIST.(9)                                                      007560
+             MAKEDL.(NEXT,LST)                                                  007570
+             NEWBOT.(DLIST,STACK)                                               007580
+             NEWBOT.(NEXT,STACK)                                                007590
+             NEWVAL.(DLIST,NEXT,STACK)                                          007600
+             T'O GO                                                             007610
+             O'E                                                                007620
+             MAKEDL.(SEE,LST)                                                   007630
+             E'L                                                                007640
+GO           READER=SEQRDR.(OLD)                                                007650
+READ         DATUM=SEQLR.(READER,FLAG)                                          007660
+             W'R FLAG .L. 0                                                     007670
+             W'R READER .L. 0                                                   007680
+             MRKNEG.(NEWBOT.(DATUM,LST))                                        007690
+             O'E                                                                007700
+             NEWBOT.(DATUM,LST)                                                 007710
+             E'L                                                                007720
+             OR W'R FLAG .E. 0                                                  007730
+             SEE = ITSVAL.(DATUM,STACK)                                         007740
+             W'R SEE .E. 0, T'O NEW                                             007750
+             NEWBOT.(SEE,LST)                                                   007760
+             T'O READ                                                           007770
+NEW          NEWBOT.(DATUM,STACK)                                               007780
+             NEWBOT.(LIST.(9), STACK)                                           007790
+             NEWBOT.(BOT.(STACK),LST)                                           007800
+             NEWVAL.(DATUM,BOT.(STACK),STACK)                                   007810
+             OTHERWISE                                                          007820
+             T'O START                                                          007830
+             END OF CONDITIONAL                                                 007840
+             T'O READ                                                           007850
+DONE         IRALST.(STACK)                                                     007860
+             FUNCTION RETURN COPY                                               007870
+             END OF FUNCTION                                                    007880

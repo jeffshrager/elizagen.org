@@ -1,4 +1,4 @@
-             EXTERNAL FUNCTION(A,B,AA,AB.AC,BA)                                 009000
+             EXTERNAL FUNCTION(A,B,AA,AB,AC,BA)                                 009000
              NORMAL MODE IS INTEGER                                             009010
              ENTRY TO XMATCH.                                                   009020
              BLAST=B(0)                                                         009030
@@ -6,7 +6,7 @@
              W'R LNKL.(A(AB)) .NE. 0, T'O NORMAL                                009050
              W'R BA .E. 1 .AND. A(AA) .NE. 0                                    009060
              BB=1                                                               009070
-             T'H SUMB, FOR I=1,1, I.G. AB    009020                             009080
+             T'H SUMB, FOR I=1,1, I.G. AB                                       009080
 SUMB         BB=BB + A(I)                                                       009090
              BMARK=BB                                                           009100
              O'E                                                                009110
@@ -23,7 +23,7 @@ START        OBJ=A(AB)                                                          
              W'R LSTEQL.(OBJ,B(I)) .E. 0, T'O GOOD                              009220
              W'R NAMTST.(TOP.(OBJ)) .E. 0                                       009230
              LST=TOP.(OBJ)                                                      009240
-             W'R GOODY.(LST,B(I){) .NE. 0, T'O LOCATE                           009250
+             W'R GOODY.(LST,B(I)) .NE. 0, T'O LOCATE                            009250
              T'O GOOD                                                           009260
              O'E                                                                009270
              T'O LOCATE                                                         009280
@@ -39,17 +39,17 @@ GO           AMARK=AMARK+1                                                      
              W'R BMARK .G. BLAST, T'O FAIL                                      009380
              OBJ=A(AMARK)                                                       009390
              W'R LNKL.(OBJ) .E. 0                                               009400
-FOUND        NEWBOT.(SETDIR.(0,OBJ,BMARK,(T),NUMBER)                            009410
+FOUND        NEWBOT.(SETDIR.(0,OBJ,BMARK,IT),NUMBER)                            009410
              BMARK=BMARK+OBJ                                                    009420
              T'O GO                                                             009430
              O'E                                                                009440
-             W'R LSTEQL.(OBJ,B(BMARK)) .E. O                                    009450
+             W'R LSTEQL.(OBJ,B(BMARK)) .E. 0                                    009450
              OBJ=1                                                              009460
              T'O FOUND                                                          009470
              O'E                                                                009480
              W'R NAMTST.(TOP.(OBJ)) .NE. 0, T'O FEHLER                          009490
              LST=TOP.(OBJ)                                                      009500
-             W'R GOODY.(LST,B(BMARK)) .NE. O, T'O FEHLER                        009510
+             W'R GOODY.(LST,B(BMARK)) .NE. 0, T'O FEHLER                        009510
              OBJ=1                                                              009520
              T'O FOUND                                                          009530
 FEHLER       MTLIST.(NUMBER)                                                    009540
@@ -68,7 +68,7 @@ ENDSTR       T'H MORE , FOR I=AB-1,-1, I .L. AA                                 
 CONC         INLSTL.(B(BB+J),A(I))                                              009670
 MORE         CONTINUE                                                           009680
              I=AB-1                                                             009690
-FORWRD       W'R LISTMT.(NUMBER) .E. O                                          009700
+FORWRD       W'R LISTMT.(NUMBER) .E. 0                                          009700
              IRALST.(NUMBER)                                                    009710
              BA=BMARK                                                           009720
              F'N 0                                                              009730

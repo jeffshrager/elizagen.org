@@ -4,8 +4,8 @@
              ENTRY TO PLACE.                                                    005540
              WHENEVER KOUNT .L. 0                                               005550
              AMAD=MADOUT.(A)                                                    005560
-             WHENEVER AMAD .E.E 1                                               005570
-             AFMT(0)=$(1P5E1)$                                                  005580
+             WHENEVER AMAD .E. 1                                                005570
+             AFMT(0)=$(1P5E1$                                                   005580
              OR WHENEVER AMAD .E. 2                                             005590
              AFMT(0)=$(5O14)$                                                   005600
              END OF CONDITIONAL                                                 005610
@@ -26,7 +26,7 @@ CONV(2)      OUT(K)=A                                                           
              TRANSFER TO ISBFUL                                                 005760
 CONV(1)      F=FRBCD.(A,B)                                                      005770
              OUT(K)=B                                                           005780
-             WHENEVER F.E.O,TRANSFER TO ISBFUL                                  005790
+             WHENEVER F.E.0,TRANSFER TO ISBFUL                                  005790
              WHENEVER K.E.12                                                    005800
              WHENEVER N.G.0                                                     005810
              WRITE BCD TAPE N,AFMT,OUT(1) ... OUT(11)                           005820
@@ -34,7 +34,7 @@ CONV(1)      F=FRBCD.(A,B)                                                      
              PRINT ON LINE FORMAT AFMT,OUT(1) ... OUT(11)                       005840
              END OF CONDITIONAL                                                 005850
              THROUGH BLBU,FOR J=3,1,J.G.11                                      005860
-BLBU         OUT(J)=$                                                           005870
+BLBU         OUT(J)=$      $                                                    005870
              OUT(1)=B                                                           005880
              K=1                                                                005890
              END OF CONDITIONAL                                                 005900
@@ -50,5 +50,5 @@ PRINT        WHENEVER N.G.0                                                     
              END OF CONDITIONAL                                                 006000
              END OF CONDITIONAL                                                 006010
              FUNCTION RETURN 0                                                  006020
-             VECTOR VALUES AFM$(1P5E13.3)$                                      006030
+             VECTOR VALUES AFMT=$(1P5E14.3)$                                    006030
              END OF FUNCTION                                                    006040

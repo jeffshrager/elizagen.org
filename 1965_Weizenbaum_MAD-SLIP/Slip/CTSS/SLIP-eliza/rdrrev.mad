@@ -1,21 +1,22 @@
-             EXTERNAL FUNCTION (RADER)                                          006680
+             EXTERNAL FUNCTION (READER)                                         006680
              NORMAL MODE IS INTEGER                                             006690
              ENTRY TO LVLRV1.                                                   006700
              ENTRY TO UPONE.                                                    006710
              W'R LNKR.(CONT.(READER+1)) .E. 0, T'O DONE                         006720
-             COUNT =                                                            006730
-             ENTRY TO LVLRVT.                                                   006740
-             ENTRY TO UPALL.                                                    006750
-             COUNT=LNKR(CONT.(READER+1))                                        006760
-GENRL        THROUGH RAISE, ,FOR I=COUNT,-1, I .E. 0                            006770
-             LINK=LINKR.(CONT,(READER))                                         006780
-             FIRST=CONT.(LINK)                                                  006790
-             SECOND=CONT.(LINK+1)                                               006800
-             STRIND.(FIRST,READER)                                              006810
-             STRIND.(SECOND,READER+1)                                           006820
-RAISE        RCELL.(LINK)                                                       006830
-             T'O DONE                                                           006840
-             ENTRY TO INITRD.                                                   006850
-             SETIND.(-1,LNKL.(CONT.(READER+1)),-1,READER)                       006860
-DONE         FUNCTION RETURN READER                                             006870
-             END OF FUNCTION                                                    006880
+             COUNT = 1                                                          006730
+             T'O GENRL                                                          006740 
+             ENTRY TO LVLRVT.                                                   006750
+             ENTRY TO UPALL.                                                    006760
+             COUNT=LNKR.(CONT.(READER+1))                                       006770
+GENRL        THROUGH RAISE, FOR I=COUNT,-1, I .E. 0                             006780
+             LINK=LNKR.(CONT.(READER))                                          006790
+             FIRST=CONT.(LINK)                                                  006800
+             SECOND=CONT.(LINK+1)                                               006810
+             STRIND.(FIRST,READER)                                              006820
+             STRIND.(SECOND,READER+1)                                           006830
+RAISE        RCELL.(LINK)                                                       006840
+             T'O DONE                                                           006850
+             ENTRY TO INITRD.                                                   006860
+             SETIND.(-1,LNKL.(CONT.(READER+1)),-1,READER)                       006870
+DONE         FUNCTION RETURN READER                                             006880
+             END OF FUNCTION                                                    006890
