@@ -1,4 +1,6 @@
            R **** LETTER TEST CODE ****
+            PROGRAM COMMON AVSL,W
+            DIMENSION W(100)
             NORMAL MODE IS INTEGER
             PRINT COMMENT $TESTING LETTER$
             WHENEVER LETTER.($012345$) .NE. 141414141414K

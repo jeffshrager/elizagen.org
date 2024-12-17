@@ -1,0 +1,23 @@
+           R Test of BCDIT
+            PROGRAM COMMON AVSL,W
+            DIMENSION W(100)
+            NORMAL MODE IS INTEGER
+            PRINT COMMENT $TESTING BCDIT$
+            SHIFT = 262144
+            K = 0
+            WHENEVER BCDIT.(K) .NE. $000000$
+                PRINT COMMENT $NOT 000000$
+            END OF CONDITIONAL
+            K = 9080 * SHIFT
+            WHENEVER BCDIT.(K) .NE. $009080$
+                PRINT COMMENT $NOT 009080$
+            END OF CONDITIONAL
+            K = 123456 * SHIFT
+            WHENEVER BCDIT.(K) .NE. $123456$
+                PRINT COMMENT $NOT 123456$
+            END OF CONDITIONAL
+           R The below will allow the next program in the runcom
+           R chain to execute. Remove if you want it to remain
+           R in core for analysis.
+            CHNCOM.(0)
+            END OF PROGRAM

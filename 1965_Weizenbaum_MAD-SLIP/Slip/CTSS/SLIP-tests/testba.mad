@@ -1,6 +1,8 @@
            R Test of SLIP basic functionality
            R INITAS - LIST - MANY - LISTMT - NEW|POP| TOP|BOT
            R
+            PROGRAM COMMON AVSL,W
+            DIMENSION W(100)
             NORMAL MODE IS INTEGER
             PRINT COMMENT $TESTING BASIC LISTS$
             INITAS.(0)

@@ -1,0 +1,19 @@
+            R --------------------------------------------------------------
+            R Function BCDIT
+            R
+            R Convert leftmost 18 bits of binary number K to a string of
+            R BCD digits, right justified and zero padded.
+            R
+            R param K - the binary number to convert
+            R Return the BCD number
+            R
+            R Author:  Rupert Lane
+            R Date:    Dec. 14, 2024
+            R --------------------------------------------------------------
+            R
+             EXTERNAL FUNCTION (K)
+             NORMAL MODE IS INTEGER
+             ENTRY TO BCDIT.
+             BCD = DELBC.(K)
+             FUNCTION RETURN BCD
+             END OF FUNCTION

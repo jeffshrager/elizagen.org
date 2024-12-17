@@ -1,0 +1,25 @@
+            PROGRAM COMMON AVSL,W
+            DIMENSION W(100)
+            NORMAL MODE IS INTEGER
+            PRINT COMMENT $TESTING INLSTL$
+            LIST.(SRC)
+            NEWBOT.($CRUEL$, SRC)
+            LIST.(DEST)
+            NEWBOT.($HELLO$, DEST)
+            NEWBOT.($WORLD$, DEST)
+           R
+            WORLD = LNKR.(CONT.(LNKR.(CONT.(DEST))))
+            RESULT = INLSTL.(SRC, WORLD)
+            W'R LISTMT.(RESULT) .NE. 0, PRINT COMMENT $FAIL 5$
+           R
+            S = SEQRDR.(DEST)
+            W'R SEQLR.(S,F) .NE. $HELLO$, PRINT COMMENT $FAIL 10$
+            W'R SEQLR.(S,F) .NE. $CRUEL$, PRINT COMMENT $FAIL 20$
+            W'R SEQLR.(S,F) .NE. $WORLD$, PRINT COMMENT $FAIL 30$
+            SEQLR.(S,F)
+            W'R F .LE. 0, PRINT COMMENT $FAIL 40$
+           R The below will allow the next program in the runcom
+           R chain to execute. Remove if you want it to remain
+           R in core for analysis.
+            CHNCOM.(0)
+            END OF PROGRAM

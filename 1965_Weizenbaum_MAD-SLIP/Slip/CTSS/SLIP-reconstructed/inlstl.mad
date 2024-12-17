@@ -1,0 +1,39 @@
+            R --------------------------------------------------------------
+            R Function INLSTL
+            R
+            R Move a list to the left of another list. The move from list
+            R is emptied.
+            R
+            R param M - the list to move from
+            R param A - the address of a cell to move the contents of M to
+            R Return the now empty list M
+            R
+            R Author:  A. Hays
+            R Date:    Dec. 15, 2024
+            R --------------------------------------------------------------
+             EXTERNAL FUNCTION(M,A)
+             NORMAL MODE IS INTEGER
+            R Variables: all variables are integers
+            R    L
+            R    ITOP
+            R    IBOT
+            R    IPRE
+             ENTRY TO INLSTL.
+                WHENEVER LISTMT.(M) .NE. 0
+                   L = LOCT.(M)
+                   ITOP = LNKR.(CONT.(L))
+                   IBOT = LNKL.(CONT.(L))
+                   SETIND.(-1,L,L,L)
+                   IPRE = LNKL.(CONT.(A))
+            R
+            R Setup cell link pointers so that
+            R    Cell M is empty
+            R    Cell A left link points to the original contents of M
+            R
+                   SETIND.(-1,IBOT,-1,A)
+                   SETIND.(-1,-1,ITOP,IPRE)
+                   SETIND.(-1,IPRE,-1,ITOP)
+                   SETIND.(-1,-1,A,IBOT)
+                END OF CONDITIONAL
+                FUNCTION RETURN M
+             END OF FUNCTION
