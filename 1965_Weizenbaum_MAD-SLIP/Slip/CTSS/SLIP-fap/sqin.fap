@@ -30,7 +30,7 @@ LANORM SYN     *                                                                
        LGL     6                                                                001640
        SLW     SAVE                                                             001650
        ANA     =O770000000000                                                   001660
-       LAS     =H 0000                                                          001670
+       LAS     =H 00000                                                          001670
        TRA     *+2                                                              001680
        TRA     *-6                                                              001690
 A      CLA     SAVE                                                             001700

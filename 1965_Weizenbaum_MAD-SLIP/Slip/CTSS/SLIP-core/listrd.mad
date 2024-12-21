@@ -50,7 +50,7 @@ A105         CHAR=KGETBL.(MADIN.(IC),CARD(IW))                                  
             R******************************TRANSFER APPROPRIATLY**********      000456
              TRANSFER TO Z(IDENT)                                               000466
 Z(1)         TRANSFER TO W6                                                     000476
-Z(2)         W'R SWITCH .E. O .OR. TEXT .E. $TEXT$, T'O W6                      000486
+Z(2)         W'R SWITCH .E. 0 .OR. TEXT .E. $TEXT$, T'O W6                      000486
              TRANSFER TO W5                                                     000496
 Z(3)         TRANSFER TO W6                                                     000506
 Z(4)         TRANSFER TO W4                                                     000516
@@ -130,7 +130,7 @@ W5           EXECUTE PUT.(WORD,MODE,SIGN)                                       
              SIGN=-1.0                                                          001256
              TRANSFER TO MINUS                                                  001266
             R******************************ALPHABETIC CHARACTER***********      001276
-W4           WHENEVER IS .E. O,TRANSFER TO A102                                 001286
+W4           WHENEVER IS .E. 0,TRANSFER TO A102                                 001286
              EXECUTE SHINBL.(MADIN.(6),CHAR,WORD)                               001296
              WHENEVER COUNT .E. 6,TRANSFER TO A43                               001306
              COUNT=COUNT+1                                                      001316
@@ -150,10 +150,10 @@ A104         WHENEVER IW .E. 14,TRANSFER TO TESTM                               
              IW=IW+1                                                            001456
              TRANSFER TO A108                                                   001466
             R******************************BLANK***************************     001476
-W10          WHENEVER IS .E. O, TRANSFER TO A102                                001486
+W10          WHENEVER IS .E. 0, TRANSFER TO A102                                001486
 A101         EXECUTE PUT.(WORD,MODE,SIGN)                                       001496
              WHENEVER SWITCH .E. 0,TRANSFER TO A109                             001506
-             EXECUTE PUT.(CHAR,-1.0,1,0)                                        001516
+             EXECUTE PUT.(CHAR,-1.0,1.0)                                        001516
              TRANSFER TO A109                                                   001526
             R******************************LEFT PARENTHESIS*****************    001536
 LEFTP        WHENEVER PREV .NE. 13,TRANSFER TO W11                              001546

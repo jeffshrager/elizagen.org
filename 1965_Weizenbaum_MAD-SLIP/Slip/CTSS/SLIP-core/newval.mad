@@ -6,7 +6,7 @@
              W'R ADDR .E. -1, T'O NEWAT                                         003040
              IT = SUBST.(VAL,LNKR.(CONT.(ADDR)))                                003050
 DONE         FUNCTION RETURN IT                                                 003060
-NEWDL        EXECUTE SETIND.(-1,LIST.(IT)\,-1,LST+1)                            003070
+NEWDL        EXECUTE SETIND.(-1,LIST.(IT),-1,LST+1)                             003070
 NEWAT        IT=LSTNAM.(LST)                                                    003080
              EXECUTE MANY.(IT,AT,VAL)                                           003090
              IT = VAL                                                           003100

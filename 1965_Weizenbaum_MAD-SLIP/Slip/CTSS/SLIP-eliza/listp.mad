@@ -9,7 +9,7 @@
              S=POPTOP.(STACK)                                                   006420
 BEGIN        EXECUTE PLACE.(LEFTP,1)                                            006430
 NEXT         WORD=SEQLR.(S,FLAG)                                                006440
-             W'R FLAG .E. 0                                                     006450
+             W'R FLAG .L. 0                                                     006450
              EXECUTE PLACE.(WORD,1)                                             006460
              T'O NEXT                                                           006470
              OR W'R FLAG .G. 0                                                  006480
