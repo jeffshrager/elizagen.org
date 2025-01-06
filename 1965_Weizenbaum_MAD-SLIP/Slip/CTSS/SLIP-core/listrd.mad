@@ -105,7 +105,7 @@ W12          WHENEVER MODE .L. 0                                                
              OTHERWISE                                                          001006
             R******************************FRACTIONAL PART****************      001016
              X=MADOUT.(KGETIN.(MADIN.(IC),CARD(IW)))                            001026
-             WORD-WORD+(X/DEC)                                                  001036
+             WORD=WORD+(X/DEC)                                                  001036
              DEC=10.0*DEC                                                       001046
              TRANSFER TO A102                                                   001056
              END OF CONDITIONAL                                                 001066
