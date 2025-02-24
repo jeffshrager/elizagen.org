@@ -10,8 +10,8 @@ REMOVE SXA     SV1,1                                                            
        CLA     0,1                                                              004980
        STA     RIGHT                                                            004990
        STO     LEFT                                                             005000
-       ANA     =0700000                                                         005010
-       CAS     =0200000                                                         005020
+       ANA     =O700000                                                         005010
+       CAS     =O200000                                                         005020
        TRA     *+2                                                              005030
        TRA     DONE                                                             005040
        CLA     LEFT                                                             005050

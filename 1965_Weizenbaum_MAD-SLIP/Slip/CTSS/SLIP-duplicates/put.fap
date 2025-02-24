@@ -15,12 +15,12 @@ START  SXA     SV1,1                                                            
        STO     DATUM                                                            005560
        STA     DA                                                               005570
        TSX     $NUCELL,4                                                        005580
-       FXH     *                                                                005590
+       TXH     *                                                                005590
        STA     *+1                                                              005600
        AXC     **,1                                                             005610
        STA     NEW                                                              005620
 AA     CLA     **                                                               005630
-       ANA     =077777000000                                                    005640
+       ANA     =O77777000000                                                    005640
        STD     0,1                                                              005650
        ARS     18                                                               005660
        STA     LL                                                               005670
@@ -32,10 +32,10 @@ LL     STA     **                                                               
 AB     STD     **                                                               005730
        TSX     $NAMTST,4                                                        005740
        TXH     DATUM                                                            005750
-       TNZ     DONW                                                             005760
-       CLA     =0100000                                                         005770
+       TNZ     DONE                                                             005760
+       CLA     =O100000                                                         005770
        STT     0,1                                                              005780
-       CLA     DZ                                                               005790
+       CLA     DA                                                               005790
        ADD     =1                                                               005800
        STA     *+2                                                              005810
        STA     *+3                                                              005820

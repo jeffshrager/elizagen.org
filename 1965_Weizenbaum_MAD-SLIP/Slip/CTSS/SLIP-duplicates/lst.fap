@@ -3,10 +3,10 @@ LIST   SXA     SV1,1                                                            
        SXA     SV4,4                                                            006460
        CLA     1,4                                                              006470
        STA     ADDR                                                             006480
-       CLA8    1,4                                                              006490
+       CLA*    1,4                                                              006490
        STO     DATUM                                                            006500
        TSX     $NUCELL,4                                                        006510
-       TXH      *                                                               006520
+       TXH     *                                                                006520
        STO     CELL                                                             006530
        STA     *+4                                                              006540
        STA     *+4                                                              006550
@@ -14,8 +14,8 @@ LIST   SXA     SV1,1                                                            
        SXD     CELL,1                                                           006570
        SXA     **,1                                                             006580
        SXD     **,1                                                             006590
-       CLA     =0200000                                                         006600
-       SIT*    CELL                                                             006610
+       CLA     =O200000                                                         006600
+       STT*    CELL                                                             006610
        CLA     DATUM                                                            006620
        CAS     =9                                                               006630
        TRA     *+2                                                              006640

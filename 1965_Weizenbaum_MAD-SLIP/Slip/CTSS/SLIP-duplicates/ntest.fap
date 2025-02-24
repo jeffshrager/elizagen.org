@@ -18,8 +18,8 @@ NAMTST SXA     SV4,4                                                            
        TRA     *+1                                                              006140
        CLA*    LINK                                                             006150
        STO     HEAD                                                             006160
-       ANA     =0700000                                                         006170
-       CAS     =0200000                                                         006180
+       ANA     =O700000                                                         006170
+       CAS     =O200000                                                         006180
        TRA     NO                                                               006190
        TRA     *+2                                                              006200
        TRA     NO                                                               006210
@@ -30,14 +30,14 @@ NAMTST SXA     SV4,4                                                            
        TRA     *+1                                                              006260
        STA     *+1                                                              006270
        CLA     **                                                               006280
-       ANA     -077777                                                          006290
+       ANA     =O77777                                                          006290
        CAS     LINK                                                             006300
        TRA     NO                                                               006310
        TRA     YES                                                              006320
 NO     CLA     =1                                                               006330
        TRA     *+2                                                              006340
 YES    CLA     =0                                                               006350
-SV4    AXI     **,4                                                             006360
+SV4    AXT     **,4                                                             006360
        TRA     2,4                                                              006370
 CAND   PZE                                                                      006380
 HEAD   PZE                                                                      006390
