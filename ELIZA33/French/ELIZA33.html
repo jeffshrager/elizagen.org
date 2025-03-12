@@ -3930,19 +3930,25 @@ const CACM_1966_01_DOCTOR_SCRIPT_FRENCH =
     const typingspeed = 100;
 
     function playkeypress(){
-	keypresses[whichkey++].play();
-	if (whichkey == nkeys) whichkey = 0;
+        keypresses[whichkey++].play();
+        if (whichkey == nkeys) whichkey = 0;
     }
 
+    let typeWriterTyping = false;
+
     function typeWriter(text, index) {
-	if (index < text.length) {
-	    playkeypress();
+        if (index < text.length) {
+            typeWriterTyping = true;
+            playkeypress();
             let nextchar = text.charAt(index);
-	    addChar(nextchar);
+            addChar(nextchar);
             setTimeout(function() {
-		typeWriter(text, index + 1);
+                typeWriter(text, index + 1);
             }, typingspeed); 
-	}
+        }
+        else {
+            typeWriterTyping = false;
+        }
     }
 
     var input = "";
@@ -3954,6 +3960,11 @@ const CACM_1966_01_DOCTOR_SCRIPT_FRENCH =
     var startEliza = true;
 
     document.addEventListener('keypress', (e) => {
+        if (typeWriterTyping) {
+            // don't allow anyone to create havoc by holding down the enter key
+            return;
+        }
+
         const key = e.key;
         if (key === 'Enter') {
             if (startEliza) {
