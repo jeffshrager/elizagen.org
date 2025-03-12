@@ -195,6 +195,11 @@ function delimiter(s) {
 // e.g. split("one   two, three.") -> ["one", "two", ",", "three", "."]
 function split(s) {
     console.assert(typeof(s) === "string");
+    if (typeof(s) !== "string") {
+        console.log(typeof(s));
+        console.log(s);
+        return [];
+    }
     let result = [];
     let word = "";
     for (let ch of s) {
@@ -3908,11 +3913,10 @@ const CACM_1966_01_DOCTOR_SCRIPT_FRENCH =
     let currentScriptText = CACM_1966_01_DOCTOR_SCRIPT_FRENCH;
     let [status, script] = readScript(currentScriptText);
     console.assert(status === 'success');
-    let tracer = new Tracer();
+    let tracer = new nullTracer();
     const TRANSFORMATION_LIMIT_DEFAULT = 500;
     let currentTransformationLimit = TRANSFORMATION_LIMIT_DEFAULT;
     let eliza = new Eliza(script.rules, script.memoryRule, tracer, currentTransformationLimit);
-
 
 /////////////////////////////////////////////////////////////////////////////
 
