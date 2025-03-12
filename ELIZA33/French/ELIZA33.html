@@ -3933,9 +3933,15 @@ const CACM_1966_01_DOCTOR_SCRIPT_FRENCH =
 
     const typingspeed = 100;
 
+    let userInteracted = false;
+
     function playkeypress(){
-        keypresses[whichkey++].play();
-        if (whichkey == nkeys) whichkey = 0;
+        if (userInteracted) {
+            // (play() logs an error to the console if it is called
+            // before the user has interacted with the page.)
+            keypresses[whichkey++].play();
+            if (whichkey == nkeys) whichkey = 0;
+        }
     }
 
     let typeWriterTyping = false;
@@ -3957,13 +3963,9 @@ const CACM_1966_01_DOCTOR_SCRIPT_FRENCH =
 
     var input = "";
 
-    function ELIZAresponse(input) {
-        return("\nYou wrote: " + input+"\n");
-    }
-
-    var startEliza = true;
 
     document.addEventListener('keypress', (e) => {
+        userInteracted = true;
         if (typeWriterTyping) {
             // don't allow anyone to create havoc by holding down the enter key
             return;
@@ -3971,12 +3973,7 @@ const CACM_1966_01_DOCTOR_SCRIPT_FRENCH =
 
         const key = e.key;
         if (key === 'Enter') {
-            if (startEliza) {
-                typeWriter('\n' + join(script.helloMessage) + '\n\n',0);
-                startEliza = false;
-                input = '';
-            }
-            else if (elizaUppercase(input) === "ENGLISH" || elizaUppercase(input) === "ANGLAIS") {
+            if (elizaUppercase(input) === "ENGLISH" || elizaUppercase(input) === "ANGLAIS") {
                 currentScriptText = CACM_1966_01_DOCTOR_SCRIPT;
                 let [status, script] = readScript(currentScriptText);
                 console.assert(status === 'success');
@@ -4018,13 +4015,13 @@ var lines = Array(totalLines).fill('');
 
 function addChar(char){
     if (char === '\n') {
-	// Remove the first line to make space and add the new line at the end
-	lines.shift(); // Removes the first item
-	lines.push(''); // Adds the new line at the end
-	updateTextarea();
+        // Remove the first line to make space and add the new line at the end
+        lines.shift(); // Removes the first item
+        lines.push(''); // Adds the new line at the end
+        updateTextarea();
     } else {
-	lines[lines.length - 1] += char;
-	updateTextarea();
+        lines[lines.length - 1] += char;
+        updateTextarea();
     }
 }
 
@@ -4150,7 +4147,6 @@ document.addEventListener("DOMContentLoaded", function() {
 <body>
     <div id="container">
         <canvas id="backgroundCanvas"></canvas>
-        <h1 style="position: absolute; top: 0; left: 100px;">Press enter to start ELIZA.</h1>
         <textarea id="textField" readonly></textarea>
         <canvas id="Keyboard"></canvas>
     </div>
@@ -4169,6 +4165,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 var y = 0; 
 
                 context.drawImage(img, x, y, canvas.width, canvas.height);
+                typeWriter('\n' + join(script.helloMessage) + '\n\n',0);
             };
             img.src = 'ASR33_teletype.jpg';
         };
