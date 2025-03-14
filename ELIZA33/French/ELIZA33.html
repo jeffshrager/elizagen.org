@@ -3926,12 +3926,11 @@ const CACM_1966_01_DOCTOR_SCRIPT_FRENCH =
     // of the audio, otherwise it'll skip. 
     var whichkey = 0;
     const nkeys = 10;
-    // (I tried to do this with a comprehesion but couldn't figure out how.)
+    // (I tried to do this with a comprehension but couldn't figure out how.)
     const keypresses = Array(nkeys).fill().map(() => new Audio("asr33keypress.wav"));
 
     var keylocs = [];
 
-    const typingspeed = 100;
 
     let userInteracted = false;
 
@@ -3944,6 +3943,7 @@ const CACM_1966_01_DOCTOR_SCRIPT_FRENCH =
         }
     }
 
+    const typingspeed = 100;
     let typeWriterTyping = false;
 
     function typeWriter(text, index) {
@@ -3962,7 +3962,6 @@ const CACM_1966_01_DOCTOR_SCRIPT_FRENCH =
     }
 
     var input = "";
-
 
     document.addEventListener('keypress', (e) => {
         userInteracted = true;
@@ -4025,8 +4024,15 @@ function addChar(char){
     }
 }
 
+function addLine(line){
+    lines.shift();
+    lines.push(line);
+    updateTextarea();
+}
+
 function updateTextarea() {
-    textarea.value = lines.join('\n');}
+    textarea.value = lines.join('\n');
+}
 
 document.addEventListener("DOMContentLoaded", function() {
     var canvas = document.getElementById('Keyboard');
@@ -4165,7 +4171,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 var y = 0; 
 
                 context.drawImage(img, x, y, canvas.width, canvas.height);
-                typeWriter('\n' + join(script.helloMessage) + '\n\n',0);
+                addLine(join(script.helloMessage));
+                addLine('');
+                addLine('');
             };
             img.src = 'ASR33_teletype.jpg';
         };
