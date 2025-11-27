@@ -1,0 +1,62 @@
+#NEXUS 
+
+Begin trees;  [Treefile saved Thu Nov 27 13:39:29 2025]
+[!
+>Data file = paup.nexus
+>Heuristic search settings:
+>  Optimality criterion = parsimony
+>    Character-status summary:
+>      Of 10 total characters:
+>        All characters are of type 'unord'
+>        All characters have equal weight
+>        2 characters are constant (proportion = 0.2)
+>        1 variable character is parsimony-uninformative
+>        Number of parsimony-informative characters = 7
+>    Gaps are treated as "missing"
+>  Starting tree(s) obtained via stepwise addition
+>    Addition sequence: random
+>    Number of replicates = 200
+>    Starting seed = generated automatically
+>    Number of trees held at each step = 1
+>  Branch-swapping algorithm: tree-bisection-reconnection (TBR) with reconnection limit = 8
+>    Steepest descent option not in effect
+>  Initial 'Maxtrees' setting = 100 (will be auto-increased by 100)
+>  Branches collapsed (creating polytomies) if maximum branch length is zero
+>  'MulTrees' option in effect
+>  No topological constraints in effect
+>  Trees are unrooted
+>
+>Heuristic search completed
+>  Total number of rearrangements tried = 371010
+>  Score of best tree(s) found = 11
+>  Number of trees retained = 6
+>  Time used = 0.13 sec (CPU time = 0.14 sec)
+]
+	Translate
+		1 1966CosellELIZA,
+		2 1978_ITS_DSK_LIBDOC_DOCTOR_JONL1,
+		3 1979_EricPlatt_DR_CHALLENGER_CLEAN,
+		4 1997_Wallace_Dunlop_Javascript_Eliza,
+		5 20100310BellEliza,
+		6 20120310CherryEliza,
+		7 20120310NorvigEliza,
+		8 20120310ShragerNorthEliza,
+		9 20120311StroutEplerHigginsEliza,
+		10 20120311srijakEliza,
+		11 20130209_os9archive_rtsi_com_RSDOS_GAMES_ELIZA_BAS,
+		12 20130209_www_jesperjuul_net_eliza_ELIZA,
+		13 DaveBabcockEliza_20150910,
+		14 ITS_SRC_libdoc_doctor,
+		15 KMPs_ITS_Lisp_ELIZA_doc,
+		16 MAD_SLIP_transcription,
+		17 aheliza,
+		18 eliza,
+		19 samson_M46_gross
+		;
+tree 'PAUP_1' = [&U] (1:0,(2:0,(((((3:0,14:0,15:0,16:0):2,13:0):1,9:1,10:0):1,(4:0,17:0,18:0,19:0):1,7:0):1,5:1,6:0,8:0,11:0,12:0):3):0);
+tree 'PAUP_2' = [&U] (1:0,(2:0,(((((3:0,14:0,15:0,16:0):2,13:0):1,9:1,10:0):1,(5:1,6:0,8:0,11:0,12:0):1,7:0):1,4:0,17:0,18:0,19:0):3):0);
+tree 'PAUP_3' = [&U] (1:0,(2:0,((((((3:0,14:0,15:0,16:0):2,13:0):1,9:1,10:0):1,7:0):0,(4:0,17:0,18:0,19:0):1):1,(5:1,6:0,8:0,11:0,12:0):0):3):0);
+tree 'PAUP_4' = [&U] (1:0,(2:0,((((((3:0,14:0,15:0,16:0):2,13:0):1,9:1,10:0):1,7:0):1,4:0,17:0,18:0,19:0):1,(5:1,6:0,8:0,11:0,12:0):1):2):0);
+tree 'PAUP_5' = [&U] (1:0,(2:0,((((((3:0,14:0,15:0,16:0):2,13:0):1,9:1,10:0):1,7:0):1,5:1,6:0,8:0,11:0,12:0):1,(4:0,17:0,18:0,19:0):1):2):0);
+tree 'PAUP_6' = [&U] (1:0,(2:0,((((((3:0,14:0,15:0,16:0):2,13:0):1,9:1,10:0):1,7:0):0,(5:1,6:0,8:0,11:0,12:0):1):1,(4:0,17:0,18:0,19:0):0):3):0);
+End;

@@ -1,0 +1,41 @@
+#NEXUS
+
+Begin data;
+    Dimensions ntax=19 nchar=10;
+    Format datatype=standard symbols="01" gap=- missing=?;
+    Matrix
+1966CosellELIZA                               1111111111
+1978_ITS_DSK_LIBDOC_DOCTOR_JONL1              1111111111
+1979_EricPlatt_DR_CHALLENGER_CLEAN            1010010001
+1997_Wallace_Dunlop_Javascript_Eliza          1010011111
+20100310BellEliza                             1110011010
+20120310CherryEliza                           1110011110
+20120310NorvigEliza                           1010011110
+20120310ShragerNorthEliza                     1110011110
+20120311StroutEplerHigginsEliza               1010001100
+20120311srijakEliza                           1010011100
+20130209_os9archive_rtsi_com_RSDOS_GAMES_ELIZA_BAS 1110011110
+20130209_www_jesperjuul_net_eliza_ELIZA       1110011110
+DaveBabcockEliza_20150910                     1010011000
+ITS_SRC_libdoc_doctor                         1010010001
+KMPs_ITS_Lisp_ELIZA_doc                       1010010001
+MAD_SLIP_transcription                        1010010001
+aheliza                                       1010011111
+eliza                                         1010011111
+samson_M46_gross                              1010011111
+    ;
+End;
+
+Begin paup;
+    set criterion=parsimony;
+    set increase=auto warntree=no;
+
+    log start file=code_phylo_current_paup.log replace;
+
+    hsearch addseq=random nreps=200 swap=tbr;
+    savetrees file=code_phylo_current_trees.tre brlens=yes replace;
+
+    contree all/strict=yes majrule=yes savetrees=yes treefile=code_phylo_current_consensus.tre;
+
+    log stop;
+End;
