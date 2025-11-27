@@ -1,0 +1,10 @@
+program,initial_greeting_and_name_handling,keyword_based_response_routing,prefix_matching_on_input,tokenization_by_whitespace_scan,pronoun_and_possessive_referencing,topic_specific_subdialogues,yes_no_branching_logic,iterative_conversation_loop,minimal_state_persistence,hardcoded_string_comparisons,keyword_table_driven_routing,rotating_reply_index_per_keyword,repeated_input_detection,keyword_priority_selection,dictionary_based_conjugation,pattern_based_sentence_matching_with_regex,binding_list_variable_substitution,cyclic_default_response_sequence
+1979_EricPlatt_DR_CHALLENGER_CLEAN,True,True,True,True,True,True,True,True,True,True,False,False,False,False,False,False,False,False
+20100310BellEliza,False,True,False,False,False,True,False,True,True,True,True,True,True,False,True,False,True,False
+20120310CherryEliza,False,True,False,False,True,True,False,True,True,False,True,True,True,True,True,False,False,True
+20120310ShragerNorthEliza,False,True,False,False,True,True,False,True,True,False,True,True,True,False,True,False,False,True
+20120311StroutEplerHigginsEliza,False,False,False,False,False,True,False,True,True,False,True,False,False,False,True,True,True,False
+20120311srijakEliza,True,False,False,False,True,False,True,True,True,False,True,False,False,False,True,True,True,True
+20130209_os9archive.rtsi.com|RSDOS|GAMES|ELIZA.BAS,False,True,False,False,True,True,True,True,True,False,True,True,True,False,True,False,True,False
+20130209_www.jesperjuul.net|eliza|ELIZA,False,True,False,False,True,True,False,True,True,False,True,True,True,False,True,False,True,False
+samson_M46_gross,False,True,False,False,unknown,unknown,unknown,True,False,False,True,False,False,True,False,False,True,True
