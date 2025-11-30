@@ -1,15 +1,21 @@
 #!/usr/bin/env python3
 import argparse
 import yaml
-from elizagen import load_code_files, bootstrap_vocab_for_first_program, write_vocab_yaml
+
+from elizagen_library import (
+    load_code_files,
+    bootstrap_vocab_for_first_program,
+    write_vocab_yaml
+)
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Bootstrap initial feature vocabulary from the first program only."
+        description="Bootstrap initial feature vocabulary using only the first program."
     )
-    parser.add_argument("code_dir")
+    parser.add_argument("--code_dir", default="code/")
     parser.add_argument("--model", default="gpt-5.1")
-    parser.add_argument("--output", default="initial_feature_vocab.yaml")
+    parser.add_argument("--output",
+                        default="results/initial_feature_vocab.yaml")
     args = parser.parse_args()
 
     programs = load_code_files(args.code_dir)

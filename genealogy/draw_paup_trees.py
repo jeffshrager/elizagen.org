@@ -59,7 +59,6 @@ def relabel_tree_with_translate(tree, translate):
         if key in translate:
             clade.name = translate[key]
 
-
 def read_paup_trees(filename):
     """
     Read a PAUP .tre / .nex file that has a Translate block and
@@ -123,7 +122,7 @@ def draw_trees(trees, translate, prefix="tree"):
 
 if __name__ == "__main__":
     # Change this to your actual PAUP tree file, e.g. "eliza_trees.tre"
-    filename = "eliza_trees.tre"
+    filename = "best_trees.tre"
 
     translate, trees = read_paup_trees(filename)
     print("Translate mapping:")

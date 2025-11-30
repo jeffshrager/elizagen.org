@@ -16,12 +16,15 @@ programs.
 
 Overview of the Two-Stage Workflow
 
-Stage 1 (elizagen_bootstrap.py):
+Stage 1 (elizagen_bootstrap.py): 
 - Loads all code files from a directory.
 - Selects the first program (based on filename sorting).
 - Generates an initial set of features using GPT.
 - Writes those features to a YAML file.
 - Stops. You edit the YAML by hand.
+
+Stage 1 will probably only be used once over the whole lifetime of
+this project since once the YAML is created, the rest of the work is 
 
 Stage 2 (elizagen_round_robin.py):
 - Loads all code files again.
@@ -34,7 +37,7 @@ Stage 2 (elizagen_round_robin.py):
 
 File Structure
 
-elizagen.py
+elizagen_library.py
 - Shared library containing:
 - bootstrap pass
 - round-robin expansion
@@ -51,7 +54,7 @@ elizagen_round_robin.py
 
 Your input program corpus is simply a directory of code files, e.g.:
 
-my_code_dir/
+my_code_dir/ (default code/)
     00_original_version.py
     01_variant_A.c
     02_variant_B.lisp
@@ -63,12 +66,12 @@ Stage 1: Bootstrap Initial Vocabulary
 
 Command:
 
-python3 elizagen_bootstrap.py my_code_dir --model gpt-5.1
+conda activate test
+python3 elizagen_bootstrap.py
 
 This produces:
 
-initial_feature_vocab.yaml
-
+results/initial_feature_vocab.yaml
 
 You are expected to open and edit this YAML file before continuing. You may:
 
@@ -77,7 +80,6 @@ You are expected to open and edit this YAML file before continuing. You may:
 - merge overlapping features
 - delete irrelevant features
 - add new features based on domain knowledge
-
 
 Stage 2 will treat your version as authoritative.
 
