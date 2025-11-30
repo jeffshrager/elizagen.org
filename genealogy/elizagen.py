@@ -11,7 +11,6 @@ from openai import OpenAI
 # -------------- CONFIG DEFAULTS --------------
 
 DEFAULT_MODEL = "gpt-5.1"
-# Be conservative with rounds; you can increase if needed
 DEFAULT_MAX_ROUNDS = 3
 
 # -------------- PROMPT TEMPLATES --------------
@@ -70,9 +69,8 @@ RULES
 - No subjective judgments (e.g., “optimized”, “clean code”).
 - Features should be atomic (non-compound) and must be properties that other
   implementations could also have.
-- Ignore the programming language; classify features based only on algorithmic behavior, 
+- Ignore the programming language; classify features based only on algorithmic behavior,
   not syntactic or language-specific constructs.
-
 
 SCHEMA (for both existing and new features):
 
@@ -128,13 +126,9 @@ OUTPUT
 Return ONLY a YAML list of features with assigned values.
 """
 
-
 # -------------- OPENAI CLIENT WRAPPER --------------
 
 def call_openai(model: str, prompt: str, temperature: float = 0.0) -> str:
-    """
-    Simple wrapper around the Chat Completions API.
-    """
     client = OpenAI()
 
     resp = client.chat.completions.create(
@@ -146,23 +140,16 @@ def call_openai(model: str, prompt: str, temperature: float = 0.0) -> str:
         ],
         temperature=temperature,
     )
-
     return resp.choices[0].message.content
-
 
 # -------------- UTILITIES --------------
 
 def load_code_files(directory: str) -> Dict[str, str]:
-    """
-    Load all regular files in the directory as code.
-    Program name = filename (without extension).
-    """
     programs = {}
     for fname in sorted(os.listdir(directory)):
         path = os.path.join(directory, fname)
         if not os.path.isfile(path):
             continue
-        # Skip hidden files
         if fname.startswith("."):
             continue
         prog_name, _ext = os.path.splitext(fname)
@@ -171,11 +158,7 @@ def load_code_files(directory: str) -> Dict[str, str]:
         programs[prog_name] = code
     return programs
 
-
 def parse_yaml_list(yaml_str: str) -> List[Dict[str, Any]]:
-    """
-    Parse YAML expected to be a list of feature dicts.
-    """
     try:
         data = yaml.safe_load(yaml_str)
         if not isinstance(data, list):
@@ -184,13 +167,9 @@ def parse_yaml_list(yaml_str: str) -> List[Dict[str, Any]]:
     except Exception as e:
         raise RuntimeError(f"Failed to parse YAML from model: {e}\n--- RAW ---\n{yaml_str}")
 
-
-# -------------- MAIN PIPELINE --------------
+# -------------- MAIN PIPELINE PIECES --------------
 
 def bootstrap_vocab_for_first_program(model: str, prog_name: str, code: str) -> List[Dict[str, Any]]:
-    """
-    Use FIRST_PASS_PROMPT on the first program to create initial vocabulary.
-    """
     prompt = FIRST_PASS_PROMPT.replace("<<<CODE>>>", code)
     print(f"[BOOTSTRAP] Extracting initial features from {prog_name}...")
     yaml_str = call_openai(model, prompt)
@@ -198,91 +177,80 @@ def bootstrap_vocab_for_first_program(model: str, prog_name: str, code: str) -> 
     print(f"[BOOTSTRAP] Got {len(features)} initial features.")
     return features
 
-
 def round_robin_expand_vocab(
     model: str,
     programs: Dict[str, str],
     max_rounds: int = DEFAULT_MAX_ROUNDS,
+    skip_bootstrap: bool = False,
+    initial_vocab: List[Dict[str, Any]] = None,
 ) -> List[Dict[str, Any]]:
-    """
-    Iteratively expand the feature vocabulary by looping over programs.
 
-    Strategy:
-      - Round 0: pick the first program, run FIRST_PASS, get initial vocab.
-                 Then run ROUND_ROBIN on the remaining programs.
-      - Rounds 1..max_rounds-1: for all programs, run ROUND_ROBIN.
-      - Track new features per round; stop when a full round adds none.
-      - We don't keep per-program values here; final classification is done later.
-    """
     prog_items = list(programs.items())
     if not prog_items:
         raise ValueError("No programs found.")
 
-    # --- Round 0: bootstrap with first program ---
-    vocab = bootstrap_vocab_for_first_program(model, prog_items[0][0], prog_items[0][1])
-    vocab_by_name = {f["feature_name"]: f for f in vocab}
+    # --- Bootstrap selection ---
+    if skip_bootstrap:
+        if initial_vocab is None:
+            raise ValueError("skip_bootstrap=True but initial_vocab is None.")
+        vocab_by_name = {f["feature_name"]: f for f in initial_vocab}
+        start_index_for_round0 = 0
+    else:
+        first_name, first_code = prog_items[0]
+        initial = bootstrap_vocab_for_first_program(model, first_name, first_code)
+        vocab_by_name = {f["feature_name"]: f for f in initial}
+        start_index_for_round0 = 1
 
-    # Also process remaining programs in round 0 using round-robin prompt
-    def run_round(start_index: int, vocab_by_name: Dict[str, Any]) -> int:
-        """
-        Run a single round of round-robin feature extraction starting at program index `start_index`.
-        Returns the number of new features added in this round.
-        """
-        new_features_this_round = 0
-        for i in range(start_index, len(prog_items)):
+    # Helper: run a single RR round
+    def run_round(start_idx: int, vocab_map: Dict[str, Any]) -> int:
+        new_features = 0
+        for i in range(start_idx, len(prog_items)):
             prog_name, code = prog_items[i]
             print(f"[ROUND] Processing {prog_name}...")
-            vocab_yaml = yaml.safe_dump(list(vocab_by_name.values()), sort_keys=False)
+
+            vocab_yaml = yaml.safe_dump(list(vocab_map.values()), sort_keys=False)
             prompt = ROUND_ROBIN_PROMPT.replace("<<<FEATURE_VOCABULARY>>>", vocab_yaml)\
                                        .replace("<<<CODE>>>", code)
             yaml_str = call_openai(model, prompt)
             features = parse_yaml_list(yaml_str)
 
-            # Incorporate any new features
+            # Incorporate new features
             for f in features:
                 fname = f.get("feature_name")
-                if not fname:
-                    continue
-                if fname not in vocab_by_name:
-                    vocab_by_name[fname] = {
+                if fname and fname not in vocab_map:
+                    vocab_map[fname] = {
                         "feature_name": fname,
                         "type": f.get("type"),
                         "states": f.get("states"),
                         "definition": f.get("definition"),
                     }
-                    new_features_this_round += 1
-        return new_features_this_round
+                    new_features += 1
+        return new_features
 
-    print("[ROUND 0] Expanding vocabulary with remaining programs...")
-    new0 = run_round(start_index=1, vocab_by_name=vocab_by_name)
+    # Round 0
+    print("[ROUND 0] Expanding vocabulary...")
+    new0 = run_round(start_index_for_round0, vocab_by_name)
     print(f"[ROUND 0] New features added: {new0}")
 
-    # --- Subsequent rounds ---
+    # Rounds 1..N
     for r in range(1, max_rounds):
-        print(f"[ROUND {r}] Starting full round over all programs...")
-        new_features = run_round(start_index=0, vocab_by_name=vocab_by_name)
-        print(f"[ROUND {r}] New features added: {new_features}")
-        if new_features == 0:
-            print(f"[STOP] No new features in round {r}; vocabulary converged.")
+        print(f"[ROUND {r}] Starting full round...")
+        new_f = run_round(0, vocab_by_name)
+        print(f"[ROUND {r}] New features added: {new_f}")
+        if new_f == 0:
+            print(f"[STOP] No new features in round {r}; converged.")
             break
         if r == max_rounds - 1:
-            print("[WARN] Reached max_rounds without convergence; using current vocabulary.")
+            print("[WARN] max_rounds reached; vocabulary may not be converged.")
 
-    # Return vocabulary as a list in a stable order
     final_vocab = list(vocab_by_name.values())
     print(f"[RESULT] Final vocabulary size: {len(final_vocab)}")
     return final_vocab
 
+def final_classification(model: str,
+                         programs: Dict[str, str],
+                         vocab: List[Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
 
-def final_classification(
-    model: str,
-    programs: Dict[str, str],
-    vocab: List[Dict[str, Any]],
-) -> Dict[str, Dict[str, Any]]:
-    """
-    With vocabulary frozen, classify each program to assign feature values.
-    Returns: dict[program_name][feature_name] = value
-    """
     feature_matrix: Dict[str, Dict[str, Any]] = {}
     vocab_yaml = yaml.safe_dump(vocab, sort_keys=False)
 
@@ -297,72 +265,29 @@ def final_classification(
         for f in features:
             fname = f.get("feature_name")
             value = f.get("value_for_this_program")
-            if fname is None:
-                continue
-            row[fname] = value
+            if fname is not None:
+                row[fname] = value
         feature_matrix[prog_name] = row
 
     return feature_matrix
 
+# -------------- WRITE FUNCTIONS --------------
 
 def write_vocab_yaml(vocab: List[Dict[str, Any]], path: str) -> None:
     with open(path, "w", encoding="utf-8") as f:
         yaml.safe_dump(vocab, f, sort_keys=False)
     print(f"[WRITE] Feature vocabulary written to {path}")
 
-
-def write_matrix_csv(feature_matrix: Dict[str, Dict[str, Any]], vocab: List[Dict[str, Any]], path: str) -> None:
-    # Make sure all feature columns are present
+def write_matrix_csv(feature_matrix: Dict[str, Dict[str, Any]],
+                     vocab: List[Dict[str, Any]], path: str) -> None:
     feature_names = [f["feature_name"] for f in vocab]
 
     with open(path, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         header = ["program"] + feature_names
         writer.writerow(header)
-
         for prog_name, row in sorted(feature_matrix.items()):
             values = [row.get(fname, "") for fname in feature_names]
             writer.writerow([prog_name] + values)
 
     print(f"[WRITE] Program-feature matrix written to {path}")
-
-
-# -------------- MAIN ENTRY POINT --------------
-
-def main():
-    parser = argparse.ArgumentParser(
-        description="Iteratively extract algorithmic features from a directory of code using the OpenAI API."
-    )
-    parser.add_argument("code_dir", help="Directory containing code files (one program per file).")
-    parser.add_argument("--model", default=DEFAULT_MODEL, help=f"OpenAI model name (default: {DEFAULT_MODEL})")
-    parser.add_argument("--max-rounds", type=int, default=DEFAULT_MAX_ROUNDS,
-                        help=f"Maximum number of round-robin rounds (default: {DEFAULT_MAX_ROUNDS})")
-    parser.add_argument("--output-prefix", default="code_phylo",
-                        help="Prefix for output files (default: code_phylo)")
-
-    args = parser.parse_args()
-
-    programs = load_code_files(args.code_dir)
-    if not programs:
-        print("No code files found in directory.")
-        return
-
-    print(f"Found {len(programs)} programs in {args.code_dir}.")
-
-    # 1) Round-robin vocabulary construction
-    vocab = round_robin_expand_vocab(model=args.model, programs=programs, max_rounds=args.max_rounds)
-
-    # 2) Final classification
-    feature_matrix = final_classification(model=args.model, programs=programs, vocab=vocab)
-
-    # 3) Write outputs
-    vocab_path = f"{args.output_prefix}_feature_vocab.yaml"
-    matrix_path = f"{args.output_prefix}_program_features.csv"
-    write_vocab_yaml(vocab, vocab_path)
-    write_matrix_csv(feature_matrix, vocab, matrix_path)
-
-    print("[DONE]")
-
-
-if __name__ == "__main__":
-    main()
