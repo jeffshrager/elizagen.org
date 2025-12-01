@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
-'''
-Need to add to nexus at the end:
+import pandas as pd
+import math
+import argparse
 
+PAUP_COMMAND_BLOCK = """
 BEGIN PAUP;
 
     [ Rooting / basic settings ]
@@ -19,14 +21,8 @@ BEGIN PAUP;
 
     contree all/strict=yes majrule=yes savetrees treefile=code_phylo_current_consensus.tre;
 
-
 END;
-'''
-
-
-import pandas as pd
-import math
-import argparse
+"""
 
 def csv_to_nexus(input_csv, output_nexus):
     # Load CSV
@@ -93,14 +89,15 @@ def csv_to_nexus(input_csv, output_nexus):
     # Write file
     with open(output_nexus, "w") as f:
         f.write("\n".join(lines))
+        f.write("\n"+PAUP_COMMAND_BLOCK+"\n")
 
     print(f"Wrote NEXUS file to: {output_nexus}")
-    print(f"********* REMEMBER TO ADD THE NEXUS COMMANDS FROM MY SOURCE!!!!!!!!!!!!!!!!!!")
+    print(f"cd results; /Users/jeffshrager/Desktop/AIHistory/bin/paup4a168_osx elizas.nexus ")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Convert CSV feature matrix to PAUP NEXUS format.")
-    parser.add_argument("input_csv", help="Input CSV file (must contain 'program' column first).")
-    parser.add_argument("output_nexus", help="Output NEXUS filename.")
+    parser.add_argument("--input_csv", default="results/program_features.csv", help="Input CSV file (must contain 'program' column first).")
+    parser.add_argument("--output_nexus", default="results/elizas.nexus", help="Output NEXUS filename.")
     args = parser.parse_args()
 
     csv_to_nexus(args.input_csv, args.output_nexus)

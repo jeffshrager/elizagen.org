@@ -1,0 +1,91 @@
+#NEXUS
+
+BEGIN TAXA;
+    DIMENSIONS NTAX=20;
+    TAXLABELS
+        E01_Cosell66Lisp
+        E02_Trembly17Cobol
+        E03_SamsonXXLisp
+        E04_KMPXXLisp
+        E05_JonLXXLisp_Test1
+        E06_Babcock15BASIC
+        E07_Hay21CPP
+        E08_Jull23BASIC
+        E09_DavenportXXBASIC
+        E10_Srijak08Python
+        E11_Strout05Python
+        E12_Shrager73BASIC_Test1
+        E13_Norvig91Lisp
+        E14_Cherry82Lisp
+        E15_Bell79BASIC
+        E16_Dunlop97JS
+        E17_Platt79BASIC
+        E18_JonLXXLisp_Test2
+        E19_Weizenbaum65MADSLIP
+        E20_Shrager73BASIC_Test2
+    ;
+END;
+
+BEGIN CHARACTERS;
+    DIMENSIONS NCHAR=13;
+    FORMAT SYMBOLS="01" GAP=- MISSING=?;
+
+    CHARSTATELABELS
+        1 rule_based_pattern_matching /
+        2 keyword_priority_ranking /
+        3 synonym_translation_table /
+        4 backtracking_pattern_matcher /
+        5 wildcard_and_class_tokens /
+        6 parse_segment_storage /
+        7 template_based_reconstruction /
+        8 conversational_memory_rules /
+        9 fallback_last_resort_rule /
+        10 punctuation_sensitive_tokenization /
+        11 ordered_memory /
+        12 list&symbol_processing_v_string_processing /
+        13 separable_script /
+    ;
+
+    MATRIX
+        E01_Cosell66Lisp    1 1 1 1 1 1 1 1 1 1 1 1 1
+        E02_Trembly17Cobol    1 0 1 0 0 1 1 0 1 1 1 0 0
+        E03_SamsonXXLisp    1 1 1 1 1 1 1 1 1 1 1 1 1
+        E04_KMPXXLisp    1 0 1 0 0 1 1 1 1 1 1 1 0
+        E05_JonLXXLisp_Test1    1 1 1 1 1 1 1 1 1 1 1 1 1
+        E06_Babcock15BASIC    1 1 0 0 0 1 1 0 1 1 1 0 0
+        E07_Hay21CPP    1 1 1 1 1 1 1 1 1 1 1 1 1
+        E08_Jull23BASIC    1 1 1 0 0 1 1 0 1 0 1 0 0
+        E09_DavenportXXBASIC    1 0 1 0 1 0 1 0 1 0 1 0 0
+        E10_Srijak08Python    1 0 0 1 1 1 1 1 1 0 1 1 0
+        E11_Strout05Python    1 0 1 0 1 1 1 0 1 0 1 0 0
+        E12_Shrager73BASIC_Test1    1 1 1 0 0 1 1 0 1 0 1 0 0
+        E13_Norvig91Lisp    1 0 0 1 1 1 1 0 0 1 1 1 0
+        E14_Cherry82Lisp    1 1 0 0 0 0 1 0 1 ? 1 1 0
+        E15_Bell79BASIC    1 0 1 0 1 1 1 0 1 0 1 0 0
+        E16_Dunlop97JS    1 0 1 0 0 0 1 0 1 1 1 0 0
+        E17_Platt79BASIC    1 0 0 0 0 1 1 0 1 0 0 0 0
+        E18_JonLXXLisp_Test2    1 1 1 1 1 1 1 1 1 1 1 1 1
+        E19_Weizenbaum65MADSLIP    1 1 ? 1 1 1 1 1 1 1 1 1 1
+        E20_Shrager73BASIC_Test2    1 1 1 0 0 1 1 0 1 0 1 0 0
+    ;
+END;
+
+
+BEGIN PAUP;
+
+    [ Rooting / basic settings ]
+    SET criterion=parsimony;
+    set increase=auto warntree=no;
+
+    log start file=code_phylo_current_paup.log replace;
+
+    [ Heuristic search: branch-and-bound-like ]
+    HSEARCH ADDSEQ=random NREPS=100 HOLD=20 swap=tbr;
+
+    [ Save the best trees ]
+    SAVETREES from=1 to=20 FILE=best_trees.tre REPLACE=yes brlens=yes;
+
+    contree all/strict=yes majrule=yes savetrees treefile=code_phylo_current_consensus.tre;
+
+END;
+

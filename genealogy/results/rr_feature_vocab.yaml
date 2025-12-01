@@ -51,3 +51,23 @@
     and breaker characters so that punctuation affects how tokens and phrases are
     formed.
   value_for_this_program: true
+- feature_name: ordered_memory
+  type: binary
+  definition: Indicates whether the recall is ordered (True) or random (False) when memory is
+      called upon to produce a response.
+  value_for_this_program: true
+- feature_name: list&symbol_processing_v_string_processing
+  type: binary
+  definition: A value of True for this feature indicates that the program primarily uses an
+      list and symbol processing paradigm. A value of False indicates that the program
+      uses a primarily string based representation.
+  value_for_this_program: true
+- feature_name: separable_script
+  type: binary
+  definition: A value of True for this feature indicates that the script is essentially separate
+      from the language processing code, possibly (although not nesessarily) in a separate
+      file. A value of False indicates that the script is a built-in part of the program.
+      (Just because the script appears in the given code doesn't necessarily mean that it
+      is inseperable. If there is code that reads the script in at the beginning, even from
+      its own file, the value here could be True.)
+  value_for_this_program: true
