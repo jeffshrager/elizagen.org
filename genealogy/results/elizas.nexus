@@ -1,7 +1,7 @@
 #NEXUS
 
 BEGIN TAXA;
-    DIMENSIONS NTAX=20;
+    DIMENSIONS NTAX=26;
     TAXLABELS
         E01_Cosell66Lisp
         E02_Trembly17Cobol
@@ -23,6 +23,12 @@ BEGIN TAXA;
         E18_JonLXXLisp_Test2
         E19_Weizenbaum65MADSLIP
         E20_Shrager73BASIC_Test2
+        E21_Ciston25LadyMouthPython
+        E22_Shrager15FilerCPP
+        E23_Jull99Java
+        E24_HaydenXXJava
+        E25_Haxpor15PHP
+        E26_Duquet70SNOBOL
     ;
 END;
 
@@ -47,7 +53,7 @@ BEGIN CHARACTERS;
     ;
 
     MATRIX
-        E01_Cosell66Lisp    1 1 1 1 1 1 1 1 1 1 1 1 1
+        E01_Cosell66Lisp    1 1 1 1 1 1 1 1 1 1 1 ? 1
         E02_Trembly17Cobol    1 0 1 0 0 1 1 0 1 1 1 0 0
         E03_SamsonXXLisp    1 1 1 1 1 1 1 1 1 1 1 1 1
         E04_KMPXXLisp    1 0 1 0 0 1 1 1 1 1 1 1 0
@@ -55,18 +61,24 @@ BEGIN CHARACTERS;
         E06_Babcock15BASIC    1 1 0 0 0 1 1 0 1 1 1 0 0
         E07_Hay21CPP    1 1 1 1 1 1 1 1 1 1 1 1 1
         E08_Jull23BASIC    1 1 1 0 0 1 1 0 1 0 1 0 0
-        E09_DavenportXXBASIC    1 0 1 0 1 0 1 0 1 0 1 0 0
-        E10_Srijak08Python    1 0 0 1 1 1 1 1 1 0 1 1 0
-        E11_Strout05Python    1 0 1 0 1 1 1 0 1 0 1 0 0
-        E12_Shrager73BASIC_Test1    1 1 1 0 0 1 1 0 1 0 1 0 0
-        E13_Norvig91Lisp    1 0 0 1 1 1 1 0 0 1 1 1 0
-        E14_Cherry82Lisp    1 1 0 0 0 0 1 0 1 ? 1 1 0
-        E15_Bell79BASIC    1 0 1 0 1 1 1 0 1 0 1 0 0
-        E16_Dunlop97JS    1 0 1 0 0 0 1 0 1 1 1 0 0
-        E17_Platt79BASIC    1 0 0 0 0 1 1 0 1 0 0 0 0
-        E18_JonLXXLisp_Test2    1 1 1 1 1 1 1 1 1 1 1 1 1
+        E09_DavenportXXBASIC    1 1 1 0 1 0 1 0 1 0 1 0 0
+        E10_Srijak08Python    1 0 1 0 1 1 1 1 1 0 1 1 0
+        E11_Strout05Python    1 0 1 0 1 1 1 0 1 1 1 0 0
+        E12_Shrager73BASIC_Test1    1 1 1 0 0 0 1 0 1 0 1 0 0
+        E13_Norvig91Lisp    1 0 0 1 1 1 1 0 0 1 1 1 1
+        E14_Cherry82Lisp    1 1 0 0 0 0 0 0 0 ? 0 1 0
+        E15_Bell79BASIC    1 1 1 0 1 1 1 0 1 0 1 0 0
+        E16_Dunlop97JS    1 0 0 0 0 0 1 0 1 1 1 0 0
+        E17_Platt79BASIC    1 0 0 0 0 1 1 0 1 0 ? 0 0
+        E18_JonLXXLisp_Test2    1 1 1 1 1 1 1 1 1 1 1 ? 1
         E19_Weizenbaum65MADSLIP    1 1 ? 1 1 1 1 1 1 1 1 1 1
-        E20_Shrager73BASIC_Test2    1 1 1 0 0 1 1 0 1 0 1 0 0
+        E20_Shrager73BASIC_Test2    1 0 1 0 0 0 1 0 1 0 1 0 0
+        E21_Ciston25LadyMouthPython    0 0 0 0 0 0 0 0 0 0 0 0 0
+        E22_Shrager15FilerCPP    1 0 0 1 1 1 1 0 0 0 0 0 0
+        E23_Jull99Java    1 0 1 0 0 0 1 0 1 0 1 0 0
+        E24_HaydenXXJava    1 1 1 1 1 1 1 1 1 1 1 1 1
+        E25_Haxpor15PHP    1 1 1 1 1 1 1 1 1 1 0 0 1
+        E26_Duquet70SNOBOL    1 1 1 1 1 1 1 1 1 1 1 1 1
     ;
 END;
 
@@ -80,10 +92,10 @@ BEGIN PAUP;
     log start file=code_phylo_current_paup.log replace;
 
     [ Heuristic search: branch-and-bound-like ]
-    HSEARCH ADDSEQ=random NREPS=100 HOLD=20 swap=tbr;
+    HSEARCH ADDSEQ=random NREPS=100 HOLD=10 swap=tbr;
 
     [ Save the best trees ]
-    SAVETREES from=1 to=20 FILE=best_trees.tre REPLACE=yes brlens=yes;
+    SAVETREES from=1 to=10 FILE=best_trees.tre REPLACE=yes brlens=yes;
 
     contree all/strict=yes majrule=yes savetrees treefile=code_phylo_current_consensus.tre;
 

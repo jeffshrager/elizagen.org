@@ -112,7 +112,8 @@ def draw_trees(trees, translate, prefix="tree"):
         fig = plt.figure(figsize=(8, 6))
         ax = fig.add_subplot(1, 1, 1)
         Phylo.draw(tree, do_show=False, axes=ax)
-
+        ax.set_yticklabels([])
+        ax.set_yticks([])
         out_name = f"{prefix}_{idx}.png"
         plt.tight_layout()
         plt.savefig(out_name, dpi=300)

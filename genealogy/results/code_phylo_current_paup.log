@@ -1,7 +1,7 @@
 
 P A U P *
 Version 4.0a (build 168) for macOS (built on Aug  2 2020 at 06:41:30)
-Sun Nov 30 18:49:24 2025
+Tue Dec  2 18:20:11 2025
 
 
 Heuristic search settings:
@@ -10,15 +10,14 @@ Heuristic search settings:
       Of 13 total characters:
         All characters are of type 'unord'
         All characters have equal weight
-        2 characters are constant (proportion = 0.153846)
-        2 variable characters are parsimony-uninformative
-        Number of parsimony-informative characters = 9
+        1 character is parsimony-uninformative
+        Number of parsimony-informative characters = 12
     Gaps are treated as "missing"
   Starting tree(s) obtained via stepwise addition
     Addition sequence: random
     Number of replicates = 100
     Starting seed = generated automatically
-    Number of trees held at each step = 20
+    Number of trees held at each step = 10
   Branch-swapping algorithm: tree-bisection-reconnection (TBR) with reconnection limit = 8
     Steepest descent option not in effect
   Initial 'Maxtrees' setting = 100 (will be auto-increased by 100)
@@ -28,23 +27,24 @@ Heuristic search settings:
   Trees are unrooted
 
 Heuristic search completed
-  Total number of rearrangements tried = 453005
-  Score of best tree(s) found = 21
-  Number of trees retained = 19
-  Time used = 0.36 sec (CPU time = 0.36 sec)
+  Total number of rearrangements tried = 30865778
+  Score of best tree(s) found = 32
+  Number of trees retained = 7500
+  Time used = 15.37 sec (CPU time = 15.38 sec)
 
 Tree-island profile:
                      First      Last                        First    Times
 Island      Size      tree      tree           Score    replicate      hit
 --------------------------------------------------------------------------
-     1        19         1        19              21            1     100
+     1         1      7500      7500              32            8       1
+     2      7499         1      7499              32            1      99
 
-19 trees saved to file "~/Desktop/AIHistory/ELIZA_See_also_GDrive/elizagen_repo/genealogy/results/best_trees.tre"
+10 trees saved to file "~/Desktop/AIHistory/ELIZA_See_also_GDrive/elizagen_repo/genealogy/results/best_trees.tre"
 
 Error(#143): Keyword "savetrees" is not recognized.
                  If the keyword is valid for the current command and it is spelled correctly, look for problems in a previous command,
                  such as a missing semicolon.
 
-Error occurred while processing line 88 of file elizas.nexus
+Error occurred while processing line 100 of file elizas.nexus
 
 Processing of input file "elizas.nexus" terminated due to errors.
