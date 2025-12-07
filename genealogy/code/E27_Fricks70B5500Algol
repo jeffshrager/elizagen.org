@@ -1,0 +1,361 @@
+     %                                                                  00000100
+     %                                                                  00000200
+     %      E L I Z A  /  S O U R C E                                   00000300
+     %                                                                  00000400
+     %                                                                  00000500
+     %     SOURCE FILE FOR ELIZA/ELIZA                                  00000600
+     %     WRITTEN BY CHARLES L. FRICKS                                 00000700
+     %     JUNE 12, 1970.                                               00000800
+     %                                                                  00000900
+     %     REMEMBER-RECALL AND TIMEOUT                                  00001000
+     %     ADDED ON 15 FEBRUARY 1971 BY JOHN COVERT.                    00001100
+     %                                                                  00001200
+BEGIN                                                                   00001300
+SYMBOL PLEX;           % FOR NEXTAVL FUNCTION                           00001400
+DEFINE VERSIONDATE=71048#,PASSWORD=STR(1,5)="XM92P"#;                   00001500
+FILE RECALLFILE DISK SERIAL(1,540);                                     00001600
+FILE REMEM DISK SERIAL[1:65](1,540,SAVE 999);                           00001700
+ARRAY SEA[0:49];                                                        00001800
+FILE SC DISK SERIAL "ELIZA""SCRIPT"(2,10,300);                          00001900
+FILE AA 0 (2,10);     % REMOTE TERMINAL INPUT FILE                      00002000
+FILE BB 0 (2,15);     % REMOTE TERMINAL OUTPUT FILE                     00002100
+       %FILL WITH TYPE 19 IS DONE LATER                                 00002200
+STRING STR(80),        % INPUT STRING                                   00002300
+       SOUT(120),      % OUTPUT STRING                                  00002400
+       HOLDSTR(80);    % HOLD STRING                                    00002500
+DEFINE MAXSEG = 9#,    % MAXIMUM NUMBER OF SEGMENTS                     00002700
+       MEMCON = 5#;    % MEMORY DELAY CONSTANT                          00002800
+INTEGER I,P,COUNT,CYCOUNT,ENDTIME; ALPHA USERCODE;                      00002900
+SYMBOL S,T,DL,Q,W,KEYSTACK,POINT,R,NEXT,REPLY,MEM,MEMLIST;              00003000
+INTEGER ZS,ZT,ZDL,ZQ,ZW,ZKEYSTACK,ZPOINT,ZR,ZNEXT,ZREPLY,               00003100
+     ZMEM,ZMEMLIST;                                                     00003200
+SYMBOL ARRAY TABL[1:MAXSEG];                                            00003300
+BOOLEAN INIT,QUOTE,MORE,PRIV;                                           00003400
+LABEL L1,EOF,L2,L3,L0,L1A,TIMEBYE;                                      00003500
+          %%%%%                                                         00003600
+          %%%%%                                                         00003700
+          %%%%%                                                         00003800
+SYMBOL PROCEDURE RANDOM(S);                                             00003900
+     VALUE S;                                                           00004000
+     SYMBOL S;                                                          00004100
+     BEGIN                                                              00004200
+     INTEGER I;                                                         00004300
+     SYMBOL T;                                                          00004400
+     I:=LENGTH(S)|TIME(4)/63;                                           00004500
+     FOR T IN S DO                                                      00004600
+     IF I:=I-1 LEQ 0 THEN RETURN T;                                     00004700
+END OF RANDOM;                                                          00004800
+          %%%%%                                                         00004900
+          %%%%%                                                         00005000
+          %%%%%                                                         00005100
+BOOLEAN PROCEDURE SEARCHIT;                                             00005200
+     BEGIN                                                              00005300
+                                                                        00005400
+     SEARCH(SC,SEA[*]);                                                 00005500
+     IF SEA[0] GTR 0 THEN RETURN TRUE;                                  00005600
+     IF SEA[0] = 0 THEN                                                 00005700
+     PRINT #INVALID USER OF SCRIPT FILE#                                00005800
+        ELSE                                                            00005900
+     PRINT #SCRIPT FILE NOT ON DISK#;                                   00006000
+     RETURN FALSE;                                                      00006100
+END OF SEARCHIT;                                                        00006200
+          %%%%%                                                         00006300
+          %%%%%                                                         00006400
+          %%%%%                                                         00006500
+PROCEDURE CONTROL;                                                      00006600
+     BEGIN                                                              00006700
+     IF STR(1,5) = "USAGE" THEN BEGIN                                   00006800
+     I:=NEXTAVL(SYMBOL);                                                00006900
+     PRINT #NUMBER OF RECORDS IN USE IS#,I;                             00007000
+     RETURN;   END;                                                     00007100
+     IF STR(1,4)="MORE" AND PRIV THEN BEGIN                             00007200
+         COL:=6;ENDTIME:=*+READN|60; RETURN END;                        00007300
+     IF PRIV:=PASSWORD THEN RETURN;                                     00007400
+     IF STR(1,4) = "STOP" OR STR(1,4) = "QUIT" THEN BEGIN               00007500
+     PRINT #GOODBYE#;                                                   00007600
+     GO TO EOF;   END;                                                  00007700
+     PRINT #INVALID REQUEST#;                                           00007800
+     RETURN;                                                            00007900
+END OF CONTROL;                                                         00008000
+          %%%%%                                                         00008100
+          %%%%%                                                         00008200
+          %%%%%                                                         00008300
+BOOLEAN PROCEDURE ASSEMBLE;                                             00008400
+     BEGIN                                                              00008500
+     LABEL L1,L3,L5,L6,P1,ASSEMB,MIS;                                   00008600
+MIS: IF NULL(POINT:=CDR(POINT)) THEN RETURN FALSE;                      00008700
+L3:  NEXT:=CAAR(POINT);                                                 00008800
+     FOR I:=1 STEP 1 UNTIL MAXSEG DO TABL[I]:=0;                        00008900
+     I:=0;                                                              00009000
+     R:=W;                                                              00009100
+L1:  IF CAR(NEXT)= "0" THEN BEGIN                                       00009200
+     IF NULL(CDR(NEXT)) THEN BEGIN                                      00009300
+     TABL[I:=I+1]:=R;                                                   00009400
+     GO TO ASSEMB;  END;                                                00009500
+     I:=I+1;                                                            00009600
+P1:  IF ATOM(CADR(NEXT)) THEN BEGIN                                     00009700
+     IF CADR(NEXT)=CAR(R) THEN BEGIN                                    00009800
+     NEXT:=CDR(NEXT);                                                   00009900
+     GO TO L1;                  END;                                    00010000
+     GO TO L6;   END;                                                   00010100
+     DL:=IF CAADR(NEXT)= "*" THEN CDADR(NEXT) ELSE CDADADR(NEXT);       00010200
+     IF MEMBER(CAR(R),DL) THEN BEGIN                                    00010300
+     NEXT:=CDR(NEXT);                                                   00010400
+     GO TO L1;  END;                                                    00010500
+L6:  TABL[I]:=NCONC(TABL[I],CONS(CAR(R),0));                            00010600
+     IF NULL(R:=CDR(R)) THEN GO TO MIS                                  00010700
+     ELSE GO TO P1;                                                     00010800
+                                 END;                                   00010900
+     IF ATOM(CAR(NEXT)) THEN                                            00011000
+     IF CAR(R)=CAR(NEXT) THEN TABL[I:=I+1]:=CONS(CAR(R),0)              00011100
+     ELSE GO TO MIS                                                     00011200
+     ELSE BEGIN                                                         00011300
+     DL:=IF CAAR(NEXT)= "*" THEN CDAR(NEXT) ELSE CDADAR(NEXT);          00011400
+     IF MEMBER(CAR(R),DL) THEN                                          00011500
+     TABL[I:=I+1]:=CONS(CAR(R),0)                                       00011600
+     ELSE GO TO MIS; END;                                               00011700
+     IF NULL(NEXT:=CDR(NEXT)) THEN                                      00011800
+     IF NULL(R:=CDR(R)) THEN GO TO ASSEMB                               00011900
+     ELSE GO TO MIS;                                                    00012000
+     IF CAR(NEXT)= "0" THEN                                             00012100
+     IF NULL(R:=CDR(R)) THEN                                            00012200
+     IF NULL(CDR(NEXT)) THEN GO TO ASSEMB                               00012300
+     ELSE GO TO MIS                                                     00012400
+     ELSE GO TO L1;                                                     00012500
+     IF NULL(R:=CDR(R)) THEN GO TO MIS                                  00012600
+     ELSE GO TO L1;                                                     00012700
+ASSEMB:                                                                 00012800
+     R:=RANDOM(CDAR(POINT));                                            00012900
+     IF CAR(R)= "=" THEN BEGIN                                          00013000
+     POINT:=CDADR(R);                                                   00013100
+     GO TO MIS;          END;                                           00013200
+     REPLY:=0;                                                          00013300
+     FOR I:=3 STEP 1 UNTIL MAXSEG DO                                    00013400
+     FOR T ON TABL[I] DO                                                00013500
+     IF CAR(T)= "I" THEN CAR(T):="ME";                                  00013600
+L5:  WHILE TRUE DO BEGIN                                                00013700
+     IF NOT NUMBERP(CAR(R)) THEN REPLY:=NCONC(REPLY,CONS(CAR(R),0))     00013800
+       ELSE                                                             00013900
+     IF NOT NULL(TABL[CAR(R)]) THEN                                     00014000
+     REPLY:=NCONC(REPLY,TABL[CAR(R)]);                                  00014100
+     IF NULL(R:=CDR(R)) THEN RETURN TRUE;   END;                        00014200
+END OF ASSEMBLE;                                                        00014300
+          %%%%%                                                         00014400
+          %%%%%                                                         00014500
+          %%%%%                                                         00014600
+PROCEDURE FORM;                                                         00014700
+     BEGIN                                                              00014800
+     LABEL L1,L2,L3,L4,L7,WRITEIT;                                      00014900
+     COUNT:=COUNT+1;                                                    00015000
+L2:  IF NULL(KEYSTACK) THEN                                             00015100
+     IF COUNT GEQ MEMCON AND NOT NULL(MEMLIST)                          00015200
+     THEN BEGIN                                                         00015300
+     REPLY:=CAR(MEMLIST);                                               00015400
+     MEMLIST:=CDR(MEMLIST);                                             00015500
+     COUNT:=0;                                                          00015600
+     GO TO WRITEIT;  END                                                00015700
+        ELSE                                                            00015800
+     BEGIN                                                              00015900
+     POINT:=CDR("NONE");                                                00016000
+     GO TO L3;   END;                                                   00016100
+     POINT:=CAR(KEYSTACK);                                              00016200
+     FOR T IN MEM DO                                                    00016300
+     IF POINT = T THEN BEGIN                                            00016400
+     POINT:=CDR("MEMRULE");                                             00016500
+     IF ASSEMBLE THEN BEGIN                                             00016600
+     COUNT:=IF NULL(MEMLIST) THEN 0 ELSE COUNT/2;                       00016700
+     MEMLIST:=APPEND(MEMLIST,CONS(APPEND(REPLY,0),0));                  00016800
+     END;                                                               00016900
+     GO TO L1;                                                          00017000
+                      END;                                              00017100
+L1:  POINT:=CDAR(KEYSTACK);                                             00017200
+     KEYSTACK:=CDR(KEYSTACK);                                           00017300
+     IF CTR(POINT)= "=" THEN POINT:=CDR(POINT);                         00017400
+L3:  IF NOT ASSEMBLE THEN GO TO L2;                                     00017500
+WRITEIT:                                                                00017600
+     QUOTE:=FALSE;                                                      00017700
+     WHILE TRUE DO BEGIN                                                00017800
+     PRIN CAR(REPLY);  PRIN # #;                                        00017900
+L7:  IF NULL(REPLY:=CDR(REPLY)) THEN GO TO L4;                          00018000
+     IF CAR(REPLY)= "Q" THEN BEGIN                                      00018100
+     SOUT(TAB-1,1):=QMARK;                                              00018200
+     GO TO L7;            END;                                          00018300
+     IF CAR(REPLY)= ";" THEN BEGIN                                      00018400
+     SOUT(TAB-1,2):=", ";                                               00018500
+     TAB:=TAB+1;                                                        00018600
+     GO TO L7;              END;                                        00018700
+     IF CAR(REPLY)= """ THEN                                            00018800
+     IF QUOTE THEN BEGIN                                                00018900
+     SOUT(TAB-1,1):=""";                                                00019000
+     SOUT(TAB,1):=" ";                                                  00019100
+     TAB:=TAB+1;                                                        00019200
+     QUOTE:=FALSE;                                                      00019300
+     GO TO L7;     END                                                  00019400
+     ELSE BEGIN                                                         00019500
+     PRIN #"#;                                                          00019600
+     QUOTE:=TRUE;                                                       00019700
+     GO TO L7;  END;                                                    00019800
+                               END;                                     00019900
+L4:  TERPRI;                                                            00020000
+END OF FORM;                                                            00020100
+          %%%%%                                                         00020200
+          %%%%%                                                         00020300
+          %%%%%                                                         00020400
+BOOLEAN PROCEDURE READIT;                                               00020500
+     BEGIN                                                              00020600
+     LABEL  L1,L2,L3,PAR;                                               00020700
+     INTEGER J,K;                                                       00020800
+     IF INIT THEN                                                       00020900
+     IF NOT NULL(KEYSTACK) OR NOT MORE THEN FORM                        00021000
+        ELSE                                                            00021100
+     BEGIN                                                              00021200
+     W:=0;                                                              00021300
+     STR:=HOLDSTR;                                                      00021400
+     MORE:=FALSE;                                                       00021500
+     GO TO L3;                                                          00021600
+     END;                                                               00021700
+     P:=0;  KEYSTACK:=0;                                                00021800
+L2:  IF CYCOUNT:=*+1=5 THEN BEGIN                                       00021900
+         CYCOUNT:=0; IF ENDTIME LEQ TIME(1) THEN GO TO TIMEBYE;         00022000
+      END;                                                              00022100
+     READ(AA[*,200],10,STR)[L1:PAR];                                    00022300
+     IF STR(0,1)= "*" THEN BEGIN                                        00022400
+     CONTROL;                                                           00022500
+     GO TO L2;     END;                                                 00022600
+L3:  FOR J:=0 STEP 63 UNTIL RMARGI DO                                   00022700
+     IF I:=SEARCH(STR(J,K:=MIN(63,RMARGI-J))= ",")+J                    00022800
+     LSS J+K THEN J:=960;                                               00022900
+     IF J=1023 THEN BEGIN                                               00023000
+     MORE:=TRUE;                                                        00023100
+     HOLDSTR:=STR(I+1,RMARGI-I-1)&SPACE;                                00023200
+     STR(I):=SPACE;                                                     00023300
+     END;                                                               00023400
+     INIT:=TRUE;  W:=0;                                                 00023500
+     RETURN FALSE;                                                      00023600
+L1:  RETURN TRUE;                                                       00023700
+PAR: READ(AA,10,STR);                                                   00023800
+     IF 1 LEQ STR(7,1) LEQ 4 THEN                                       00023900
+     CASE STR(7,1) OF BEGIN                                             00024000
+     ;    %  NULL STATEMENT                                             00024100
+     BEGIN                                                              00024200
+     PRINT #WOULD YOU SAY THAT AGAIN PLEASE#;                           00024300
+     GO TO L2;                                                          00024400
+     END;                                                               00024500
+     BEGIN                                                              00024600
+     PRINT #THAT WAS A RATHER LONG SENTENCE#;                           00024700
+     GO TO L2;                                                          00024800
+     END;                                                               00024900
+     BEGIN                                                              00025000
+     PRINT #TIME-OUT ON READ STATEMENT... GOODBYE#;                     00025100
+     GO TO EOF;                                                         00025200
+     END;                                                               00025300
+     BEGIN  GO TO EOF;  END;                                            00025400
+     END OF CASE STATEMENT;                                             00025500
+     PRINT #WOULD YOU SAY THAT AGAIN PLEASE#;                           00025600
+     GO TO L2;                                                          00025700
+END OF READIT;                                                          00025800
+          %%%%%                                                         00025900
+          %%%%%                                                         00026000
+          %%%%%                                                         00026100
+% BEGINNING OF PROGRAM                                                  00026200
+FILL AA WITH *,*,*,*,*,19;FILL BB WITH *,*,*,*,*,19;                    00026300
+OUTPUT(BB,SOUT,120,0,72);                                               00026400
+SOUT:=SPACE;                                                            00026500
+ENDTIME:=TIME(1)+54000;                                                 00026600
+PRIV:=USERCODE:=TIME(-1)="RIS7REP";                                     00026700
+FILL RECALLFILE WITH "ELIZAR ",USERCODE;                                00026800
+FILL REMEM WITH "ELIZAR ",USERCODE;                                     00026900
+SEARCH(RECALLFILE,SEA[*]);                                              00027000
+IF SEA[0] NEQ 7 THEN GO TO L0;                                          00027100
+STR(0,5):=I:=SEA[13].[30:18];                                           00027200
+IF REAL(STR(0,5))=TIME(0) THEN ENDTIME:=ENDTIME-36000;                  00027300
+IF I LSS VERSIONDATE THEN BEGIN                                         00027400
+      READ(RECALLFILE); GO TO L0; END;                                  00027500
+RECALL(RECALLFILE);                                                     00027600
+READ(RECALLFILE,*,I,P,COUNT,ZS,ZT,ZDL,ZQ,ZW,ZKEYSTACK,ZPOINT,           00027700
+    ZR,ZNEXT,ZMEM,ZMEMLIST,QUOTE,MORE);                                 00027800
+S:=ATSM(ZS);T:=ATSM(ZT);DL:=ATSM(ZDL);Q:=ATSM(ZQ);                      00027900
+W:=ATSM(ZW);KEYSTACK:=ATSM(ZKEYSTACK);POINT:=ATSM(ZPOINT);              00028000
+R:=ATSM(ZR);NEXT:=ATSM(ZNEXT);MEM:=ATSM(ZMEM);                          00028100
+MEMLIST:=ATSM(ZMEMLIST);                                                00028200
+PRINT#I THINK I REMEMBER YOU,#,USERCODE#.#;                             00028300
+GO TO L1A;                                                              00028400
+L0:  INPUT(SC,STR,80);                                                  00028500
+     IF NOT SEARCHIT THEN GO TO EOF;                                    00028600
+     PRINT #ONE MOMENT PLEASE...#;                                      00028700
+     WHILE TRUE DO BEGIN                                                00028800
+     IF S:=READ=QMARK THEN GO TO L1;                                    00028900
+     CDAR(S):=POINT:=CDR(S);                                            00029000
+     IF CAR(POINT)= "=" THEN GO TO L2;                                  00029100
+     IF CAR(POINT)= "/" THEN BEGIN                                      00029200
+     CDADR(POINT):=NCONC(CDADR(POINT),CONS(CAR(S),0));                  00029300
+     GO TO L2;             END;                                         00029400
+     IF CADR(POINT)= "=" THEN BEGIN                                     00029500
+     CTR(POINT):= "=";                                                  00029600
+     CDR(POINT):=CDDR(POINT);                                           00029700
+     POINT:=CDR(POINT);  END;                                           00029800
+     IF CAADR(POINT)= "=" THEN BEGIN                                    00029900
+     Q:=CDADADR(POINT);                                                 00030000
+     IF CTR(Q)= "=" THEN                                                00030100
+     Q:=CDDR(Q) ELSE Q:=CDR(Q);                                         00030200
+     CDR(POINT):=Q;                                                     00030300
+L2:  END;                                                               00030400
+     END;                                                               00030500
+L1:  W:=0;  P:=0;  INIT:=FALSE;                                         00030600
+     MEM:=CDR("MEM");                                                   00030700
+L1A: INPUT(READIT,STR,80);                                              00030800
+     PRIN #HELLO.  HOW ARE YOU TODAY#;                                  00030900
+     PRIN QMARK;                                                        00031000
+     TERPRI;                                                            00031100
+L3:  DO CASE READCON(FALSE) OF BEGIN                                    00031200
+   %CASE 0 = EOF                                                        00031300
+     GO TO EOF;                                                         00031400
+   %CASE 1 = ILLEGAL NUMBER                                             00031500
+     BEGIN                                                              00031600
+     COL:=RMARGI;                                                       00031700
+     INIT:=FALSE;                                                       00031800
+     GO TO L3;                                                          00031900
+     END;                                                               00032000
+   %CASE 2 = NUMBER                                                     00032100
+     W:=NCONC(W,CONS(INREAL,0));                                        00032200
+   %CASE 3 = EXISITING ATOMIC SYMBOL                                    00032300
+     IF NULL(CDR(INSYM)) THEN                                           00032400
+     W:=NCONC(W,CONS(INSYM,0))                                          00032500
+        ELSE                                                            00032600
+     BEGIN                                                              00032700
+     IF NUMBERP(CADR(INSYM)) THEN                                       00032800
+     BEGIN                                                              00032900
+     IF P LSS CADR(INSYM) THEN                                          00033000
+     BEGIN                                                              00033100
+     KEYSTACK:=(INSYM).(KEYSTACK);                                      00033200
+     P:=CADR(INSYM)                                                     00033300
+     END                                                                00033400
+        ELSE                                                            00033500
+     KEYSTACK:=NCONC(KEYSTACK,CONS(INSYM,0));                           00033600
+     IF CTDR(INSYM)= "=" THEN                                           00033700
+     W:=IF ATOM(CADDR(INSYM)) THEN                                      00033800
+     NCONC(W,CONS(CADDR(INSYM),0))                                      00033900
+        ELSE                                                            00034000
+     NCONC(W,APPEND(CADDR(INSYM),0))                                    00034100
+        ELSE                                                            00034200
+     W:=NCONC(W,CONS(INSYM,0));                                         00034300
+     END                                                                00034400
+        ELSE                                                            00034500
+     IF CADR(INSYM)= "=" THEN                                           00034600
+     W:=NCONC(W,APPEND(CDDR(INSYM),0))                                  00034700
+        ELSE                                                            00034800
+     W:=NCONC(W,CONS(INSYM,0));                                         00034900
+     END;                                                               00035000
+   %CASE 4 = MULTICHARACTER IDENTIFIER STRING                           00035100
+     W:=NCONC(W,CONS(MKATOM,0));                                        00035200
+     END UNTIL FALSE;                                                   00035300
+TIMEBYE:                                                                00035400
+PRINT#I AM VERY SORRY, BUT YOU HAVE USED UP YOUR TIME.#;                00035500
+EOF:                                                                    00035600
+REMEMBER(REMEM);                                                        00035700
+WRITE(REMEM,*,I,P,COUNT,SMTA(S),SMTA(T),SMTA(DL),SMTA(Q),               00035800
+     SMTA(W),SMTA(KEYSTACK),SMTA(POINT),SMTA(R),                        00035900
+     SMTA(NEXT),SMTA(MEM),SMTA(MEMLIST),QUOTE,MORE);                    00036000
+CLOSE(RECALLFILE,PURGE);                                                00036100
+LOCK(REMEM,*);                                                          00036200
+END OF PROGRAM.                                                         00036300
