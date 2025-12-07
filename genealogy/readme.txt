@@ -1,3 +1,24 @@
+How to:
+
+Clean up results/ in the obivious way, leave rr_feature_vocab.yaml
+Put all the code in code/ -- The naming scheme is obvious
+
+cd ~/Desktop/AIHistory/ELIZA_See_also_GDrive/elizagen_repo/genealogy/
+
+conda activate test
+
+(If you don't need to recreate the .yaml then just:)
+
+python3 elizagen_classify.py
+
+python3 cvs2nexus.py
+
+cd results; /Users/jeffshrager/Desktop/AIHistory/bin/paup4a168_osx elizas.nexus
+
+For some reason you have to ^z this and then kill -9 %1 it....?
+
+python3 ../draw_paup_trees.py
+
 ELIZA-GEN: Two-Stage Feature Vocabulary Construction and Program
 Classification
 

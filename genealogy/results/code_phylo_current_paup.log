@@ -1,7 +1,7 @@
 
 P A U P *
 Version 4.0a (build 168) for macOS (built on Aug  2 2020 at 06:41:30)
-Tue Dec  2 18:20:11 2025
+Sun Dec  7 10:36:42 2025
 
 
 Heuristic search settings:
@@ -10,8 +10,8 @@ Heuristic search settings:
       Of 13 total characters:
         All characters are of type 'unord'
         All characters have equal weight
-        1 character is parsimony-uninformative
-        Number of parsimony-informative characters = 12
+        2 characters are parsimony-uninformative
+        Number of parsimony-informative characters = 11
     Gaps are treated as "missing"
   Starting tree(s) obtained via stepwise addition
     Addition sequence: random
@@ -27,17 +27,16 @@ Heuristic search settings:
   Trees are unrooted
 
 Heuristic search completed
-  Total number of rearrangements tried = 30865778
-  Score of best tree(s) found = 32
-  Number of trees retained = 7500
-  Time used = 15.37 sec (CPU time = 15.38 sec)
+  Total number of rearrangements tried = 4008507
+  Score of best tree(s) found = 30
+  Number of trees retained = 342
+  Time used = 2.63 sec (CPU time = 2.63 sec)
 
 Tree-island profile:
                      First      Last                        First    Times
 Island      Size      tree      tree           Score    replicate      hit
 --------------------------------------------------------------------------
-     1         1      7500      7500              32            8       1
-     2      7499         1      7499              32            1      99
+     1       342         1       342              30            1     100
 
 10 trees saved to file "~/Desktop/AIHistory/ELIZA_See_also_GDrive/elizagen_repo/genealogy/results/best_trees.tre"
 
@@ -45,6 +44,6 @@ Error(#143): Keyword "savetrees" is not recognized.
                  If the keyword is valid for the current command and it is spelled correctly, look for problems in a previous command,
                  such as a missing semicolon.
 
-Error occurred while processing line 100 of file elizas.nexus
+Error occurred while processing line 102 of file elizas.nexus
 
 Processing of input file "elizas.nexus" terminated due to errors.

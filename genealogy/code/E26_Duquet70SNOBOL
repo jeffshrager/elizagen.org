@@ -1,364 +1,111 @@
-q
-ELIZA IN SNOI3OL R T DUQUET SUNYA FALL 196 9
-ANCHOR 1 INPUT1'INPUT'•5 .72 ) PRE .TRIM = SPAN('') I NUL L
-P.0 a •KEY.
-P.1 a PRE .TRIM BREAK(' ') • WORD . ' ' P.2 a •LEN(NEWSIZE .) '/ '
-P.3 = BREAK(' ;') • CONTENT . ' :' f',4 a PRE•TRIM REM • CONTENT .
-P.5 a PRE
-SHORTEN,
-X .REF
-aU'P .
-PAREJ1,
-STASH,
-CALL•TO•SNOBOL PRE .TRIM 'SNOBOL ' ATTENTION . PRE .TRIM '• '
-INTRODUCTION a 'HOW DO YOU D0 .' CLUELESS = '•• VERY INTERESTING '
-RETAIN a 'MY '
-wE N3. READ THE SCRIPT AND FORM STRINGS AS FOLLOWS .
-FOR EACH KEY WORD 'XXXX' WE FORM THE FOLLOWIN G VARIABLES ;
-RPL .XXXX
-IS A REPLACEMENT WORD . (OPTIONAL )
-IS A LEVEL NUMBER (IF ABSENT KEY IS IGNORED )
-A COUNT OF THE NUMBER OF DECOMPOSITION S
-o LEV,XXXX
-u N ,X X X X
-54
-1970 December
-.TRIM ANY('SLD') • WORD . ' '
-a BREAK(' .,') , PHRASE . ANY('• .') REM • TRAILER . = PRE .TRIM 'CF '
-PRE .TRIM 'NEWKEY '
-= PRE•TRIM '/' BREAK('/') • CONTENT . '/ ' a PRE .TRIM '/' BREAK('/') • •SSTORE . '/ '
-o 3EC•I•XXXX IS THE I'TH DECOMPOSITION PATTER N
-RULE•I .X XXX
-OUTPUT KEY1 ORDS •
-IS A STRING OF RECOMPOSITION RULES FOR THE I'T H DECOMPOSITION• RULES ARE SEPARATED BY ' :'.
-HIGGINS SCRIPT .
-= 'ENTER SCRIPT '
-a TRIM(INPUT) SCRIPT . ATTENTION . a
-F(END ) :S(FLAG ) :F(HIGGINS )
-S(LESSON )
-:F(HIGGINS)S(SORD .) ERR OUTPUT a 'SCRIPT ERROR : ' WORD, ' ' SCRIPT . :(HIGGINS )
-S STORE, a 'RPL' KEY .
-SCRIPT . STASH . a :F(ERR)S(LESSON )
-L SCRIPT . PAREN . :F(ERR ) $('LEV' KEY .) = INTEGER(CONTENT .) CONTENT . :(LESSON )
-SCRIPT . P .1 a KEY, _ ' .' WORD.
-KEYWORDS . P .0
-KEYWORDS . a KEY . KEYWORDS .
-LESSON SCRIPT . P .5 =
-0 N.N = S('N' KEY .) + 1 $ ('N' KEY .) a N .N
-SCRIPT . PAREN .
-CONTENT . CALL .TO•SNOBOL a
-S('DEC.' N.N KEY.) a ARB
-:F(ERR ) S(SPECIAL )
-CONTENT.REM o POS T
-RULES STORE, 'RULE .' N .N KEY .
-SSTORE . a DIFFER(SCRIPT•) SCRIPT .
-LOOP NEWS I ZE, SIZE ($STORE . ) •• 1 SSTORE . P .2
-,L:':.CARD SSTORE• a SSTORE• TRIM(INPUT) Duquet . ELIZA IN SNOBOL4
-:F(NEW,CARD )
-:S(HIGGINS ) F(END)S(LOOP )
- SIGPLAN Notices 55
-1970 December
-•
-THE FOLLOWING ARE SPECIAL SCRIPT-HANDLING STATEMENT S
-SPECIAL s('NDEC•.'N KEY.)aEVAL(CONTENT.) (RULES)
-ENCODE SCRIPT . n SCRIPT . ' H(HIGGINS) ;' .000DE(SCR1PT .) J
-FLAG SCRIPT . CALL .TO .SNOBOL •~ S(ENCODE ) w
-• WE: N0 HOLD A CONVERSATION . FIRST WE READ A SENTENCE AN D + SEARCH FOR KEY WORDS REPLACING APPROPRIATE ONE S
-AND STACKING THE KEYS IN A QUASI-ORDERED LIST (STRING) .
-INTRO OUTPUT a INTRODUCTIO N
-HEAR P'riRASE . a TRIM(INPUT) ' .' :F(ENO) HEARLESS PHRASE . SHORTEN . ; PHRASE . a PHRASE . ' '
-SPLIT
-REPLACE STACK
-LOCuE
-KEEP
-•
-&ANCHOR a I : PHRASE . P.) a &ANCHOR m 0
-KEYWORDS . WORD .
-NEW.WORD DIFFER(S('RPL .' WORD.))
-F(KEEP ) S(REPLACE )
-:(STACK)
-F(SPLIT )
-:F(LOCUE )
-(SPLIT )
-:(SPLIT) (SPLIT)
-REPLY NEXTCUE
-ANALYSE
-CUES . P .3 8
-CUE . a ' .' CONTENT .
-N.N n0: NMAX.8'$('N'CUE.) N .N LT(N .N,NMAX .) N .N + ) COPY . S('DEC .' N .N CUE .)
-S('RULE .' N .N CUE .) P .3 a
-:F(NOCUE )
-F(NOCUE ) :F(ANALYSE )
-COPY . : CUES . (
-CUE .LEVEL a 0 :F(REPLY )
-$('RPL .' WORD ') COPY.a COPY. WORD. ' •
-COPY . a COPY . NEW .WORD . '
-NEW .LEVEL = DIFFER(S('LEV .' WORD .) )
-s('LEV .' WORD .)
-CUE .LEVEL GT(NEW .LEVEL ►CUE .LEVEL )
-NEW .LEVEL
-CUES . a WORD. ' :' CUES . CUES . a CUES . WORD . ' : ► COPY. COPY. WORD. ► '
-THIS PART FORMS OUR REPLY TO THE INPUT SENTENC E
-CONTENT. '/ '
-:i('RULE .' N .N CUE .) : $('RULE .' N .N CUE .) CONTENT . ' :°
-CONTENT . X .REE .c
-CONTENT . BUMP .
-OUTPUT a '•• ' EVAL(CONTENT .) MEMORY.a IDENT(CUE .o' .' RETAIN )
-S(NEWCUE ) S(REPLY )
-►:►
-THIS IS WHAT WE DO IF THERE ARE NO KEY WORDS IN THE INPU T
-LT(SIZE(MEMORY .) .200 )
-MEMORY. COPY.
-:(HEAR
-)
-'vEWCUE CONTENT, P .'4
-NOCUE PHRASE. as DIFFER_(TRAILERt.) TRAILER .
-:(NEXTCUE )
-S(HEARLESS )
-MEMORY . P .3 =
-ER'.AH .UM OUTPUT " CLUELESS S(HEAR ) END
-F(ER .AH .UM ) OUTPUT " ' . . EARLIER YOU SAID ►CONTENT. :(HEAR)
-Duquet . ELIZA IN SNOBOL4
-
- SIGPLAN Notices 56
-1970 December
-APPENDIX B - SCRIPT
-osNoilOL FAm1 v 'MOTHER' 'FATHER' ! *SISTER' ! 'BROTHER' I 'DAUOrITLr '
-•StiO:;CL FAM2 ° 'MUM' .I 'DAD' I 'wIFE' I 'CHILDREN° 4SNJ6oL FAMILY (FAMI I FAM2) . RELATIV E
-'HUSBAND' 'EON '
-0sEo5OL BELIEF
-u ('FEEL'I'THINK'I'BELIEVE'!'WISH') PENSE
-QSNOOOL HIGH z ('HAPPY' 'ELATED' 'GLAD' I 'BETTER' I 'HIGH') . BIEN
-a ('SAD' ! 'UNHAPPY' 'DEPRESSED' 'SICK') e MALADE
-, sNODOL ICKY
-•SNOBOL MULTI = ('EVERYONE' I 'EVERYBODY' I 'NOBODY' I 'NOONE')
-ALWAYS. L /2/ D / /
-'CAN YOU THINK OF A SPECIFIC EXAMPLE ?' :'WHEN ?' :
-',`,HAT INCIDENT ARE YOU REALLY THINKING OF?' :'REALLYe ALWAYS?' :!
-AM L /2/ 5 /ARE/ 0 /ARE YOU/
-';:0 YOU iIEL1CVE YOU ARE' POST '?' :
-'WOULD YOU WANT TO BE' POS T
-. ALLE S
-'YOU wISH I WOULD
-SAY YOU ARE , POST '7' :CF WHAT :/
-M D //
-'WHY DO YOU SAY -AM- ?' :'I DONT UNDERSTAND THAT' :/
-D //CF DIT ;/ ARE L /2/ D /ARE 1/
-';Ely AKE YOU INTERESTED IN WHETHER I AM' POST 'OR NOT ?' : 'E0:;';.i; YoU PREFER IF 1 WERENT' POST '?' :
-'PERHAPS I AM' POST 'IN YOUR DREAMS' :
-too YOU SOMETIMES THINK I AM' POST '?' :?CF WHAT :/
-ALIKE L /11/
-ARE
-D /ARE/
-'DID YOUTHINK THEYMIGHTNOTBE'POST'?': ''AOULD YOU LIKE IT, IF THEY WERE NOT' POST '?' :
-'WHAT IF THEY ,';ERE NOT' POST '?' :'POSSIBLY THEY ARE' POST :/ AUTRE L /1 ! 0 / /
-YOURSELF RATHER THAN ABOUT OTHERS' : ►1 Am MORE INTE RESTED IN YOU THAN IN OTHERS .' :
-'PLEASE TELL ME ABOUT
-SOLVE YOUR PROBLEM?' ;/
-'IS THAT THE REAL REASON?' :'DONT ANY OTHER QUESTIONS COME TO MIND?' :
-'DOES TALKING ABOUT OTHERS HELP YOU BECAUSE L /2/ D / /
-'DOES THAT REASON SEEM To EXPLAIN ANYTHING
-',';HAT OTHER REASONS MIGHT THERE BE?' :/ CAN L /2/ D /CAN 1/
-'YOU BELIEVE I CAN' POST 'DONT YOU?' :
-'DO YOU ',iANT ME TO BE ABLE TO' POST '?' ;
-ELSE?' ;
-CF WHAT :'PERHAPS YOU WOULD LIKE TO BE ABLE TO' POST 'YOURSELF' :/ CAN D /CAN YOU /
-'DO YOU WANT TO BE ABLE TO' POST '?' :
-'PLRHAPS YOU DONTwANTTO'POST;
-' ,-HE ; riER OR NOT YOU CAN' POST *DEPENDS ON YOU, NOT ME' ; /
-CAN ' T E, /CANT /
-CERTAINLY L /2 / COMPUTER
-D//CF YES;/ L /10/ D //
-YOU?' :'WHY DO YOU MENTION COMPUTERS?' :
-'DO COMPUTERS WORRY
-',•HAT DO YOU THINK MACHINES HAVE TO DO WITH YOUR PROBLEM' : 'DONT YOU THINK COMPUTERS CAN HELP PEOPLE' :
-'.HAT IS IT ABOUT MACHINES THAT WORRIES YOU' :
-'HAT DO YOU THINK ABOUT MACHINES?' :/
-COMPUTERS L /10/ D //CF COMPUTER ;/
-D:T
-0 //
-'IN .HAT NAY?' :'WHAT RESEMBLANCE DO YOU SEE?' :
-'HAT DOES THAT-SIMILARITY SUGGEST TO YOU?' : '7lHAT CONNECTIONS DO YOU SEE?' :
-'IS THAT THE RE AL CONNECTION?' :
-Duquet. ELIZA IN SN0B0L4
-
- SIGPLAN Notices 57 1970 December
-+E1;AT DO YOU SUPPOSE THAT RESEMBLANCE MEANS?' : +AHAT IS THE CONNECTION DO YOU SUPPOSE?' :
-'IS TriERE REALLY SOME CONNECTION?' :'HOW?' :/ DON'T S / DONT /
-DREAM L /4/ D / /
-'RHAT DOES THAT DREAM SUGGEST TO You?' :'DO YOU DREAM OFTEN?' : ''.HAT PERSONS APPEAR IN YOUR DREAMS?' :
-'DOLT -YOU THINK THAT DREAM
-DRrAN D L /5/ S /DREAMT/ .D //CF DREAMT ;/ DMEANS L /4/ S /DREAM/ D //CF DREAM :/ DREAMT L /S/ D /YOU OREAMT /
-'RE ALLY, ' POST '?' :
-HAVE YOu EVER PANYASIED ' POST ' WHILE EVERYBODY L /3/ D //CF EVERYONE :/'
-EVERYONE
-'CAN YOU THINK OF ANYONE IN PARTICULAR?' :
-'YOU ARE THINKING OF A VERY SPECIAL
-'RHO MAY I ASK?' :'SOMEONE SPECIAL PERHAPS?' :
-'YOU HAVE A PARTICULAR
-',,HO DO YOU THINK YOU ARE TALKING ABOUT?' :/
-HE
-HO-W
-i
-L /I/ D //CF AUTRE :/
-L /2/ 0 //CF WHAT :/
-L /2/ S /YOU/ D /YOU WAS/CF WAS :/
-D /SNOBOL ARB 'YOU ' ('WANT '
-'NEED ') REM . POST/
-''r'rHAT DOES RANTING' POST 'HAVE TO DO WITH THIS
-DISCUSSION?' :/
-D /SNOBOL ARO 'YOU ARE '
-'I Am SORRY TO HEAR YOU ARE ' MALADE ;
-IS RELATED TO YOUR PROBLEM?' :NEWKEY :/
-L /3/ D /SNOBOL ARB MULTI REM . POST /
-'REALLY, ' ALLES '?' :'SURELY NOT ' ALLES 41' :'WHO FOR EXAMPLE?' :
-''SHAT WOULD IT MEAN TO YOU IF YOU GOT ' POST '?' :
-',"SHY DO YOU ;'ANT ' POST '?' :'SUPPOSE YOU GOT ' POST 'SOON?' :
-'OHAT IF YOU NEVER GOT ' POST '?' :'WHAT WOULD GETTING ' POST 'MEAN' :
-'DO YOU THINK THAT COMING HERE WILL HELP YOU NOT TO BE 0 MALADE '?' ;
-°I AM ROT SURE IT
-IS NOT PLEASANT TO BE ' MALADE ;
-'CAN YOU EXPLAIN WHAT MADE YOU ' MALADE '?' :/ D /SNOBOL ARB 'YOU ARE ' ARB HIGH /
-'Ro.', NAVE I HELPED YOU TO
-HAS YOUR TREATMENT MADE YOU ' BIEN '?' :
-BE ' BIEN '?' : ',',HAT RAKES YOU ' BIEN ' JUST NOw?' :
-'CAN YOU EXPLAIN WHY YOU ARE
-1 D /SNOBOL ARB 'YOU ' BELIEF ' YOU' REM • POST /
-'DC You REALLY THINK YOU' POST °?' :
-%BUT YOU ARE NOT SURE YOU' POST '?' :'DO YOU REALLY DOUBT YOU' POST '?' :/ D /YOU ARE/
-IS BECAUSE YOU ARE' POST 'THAT YOU CAME TO ME ? 0:
-'HoE EON HAVE YOU BEEN' POST '?0 :'DO YOU %DC YOU DELIEVE IT NORMAL TO BE' POST '?' : /
-RRAPS You COULD' POST 'NOW?' :
-I D /SNOBOL ARB YOU ' ('CANNOT'
-YOU WERE AWAKE7' :CF DREAM :/
-PERSON!' :
-PERSON IN MIND DONT YOU ?' :
-ARB ICKY/
-SUDDENLY ' BIEN '?' :/
-! 'CANT') REM . POST / 'HOWDOYOUKNOW YOUCANT'.POST '?';'.HAVEYOUTRIEDT00POST'?':
-'OCi YOU REALLY WANT TO BE
-ABLE TO' POST '?' :/
-D /YOU DONT / +0ONT YOU REALLY' POST '?' :
-DONT YOU' POST '?' :'DO YOU WISH TO BE ABLE TO' POST '?' : %GOES THAT TROUBLE YOU ?' :/
-0 /YOU FEEL /
-'TEE_ RE MORE ABOUT SUCH FEELINGS .' :
-+DO YJu OFTEN FEEL' POST '?' :'DO
-YOU ENJOY FEELING' POST '?' :
-Duquet. ELIZA IN SNOBOL4
-ENJOY BEING' POST '7 ' :
-
- SIGPLAN Notices 58 1970 December
-'WHAT DOES FEELING' POST 'REMIND YOU OF ?' :/
-1 0 /SNOi)OL ARB 'YOU' ARB . POST 'I ' /
-'PERHAPS IN YOUR FANTASY NE' POST ' EACH OTHER?' :
-'DO YOU WISH TO ' POST ' ME?' ;'Y-OU SEEM TO NEED TO ' POST ' ME .' : '00 YOU ' POST ' ANYONE ELSE ?' :/
-I 0 //
-'YOU SAY ' COPY '?' :'CAN YOU ELABORATE ON THAT?° ;
-'1)0 YOU SAY ' COPY ' FOR SOME SPECIAL REASON?' :/
-I'M L /2/ S /YOU ARE/ D //CF I:/
-LIKE L /11 /
-LIKE 0 /SNOBOL ARB (' AM ' ; ' IS ' : ' ARE ' 1 ° ,WAS ARB 'LIKE' / CF DIT :/
-LIKE
-MACHINE '
-MACHINES
-MAYBE
-ME S /YOU/
-MY
-L /10/ L /10/ L /2/
-0 //NEWKEY :/
-D //CF COMPUTER :/
-0 //CF COMPUTER :/ D //CF PERHAPS :/
-L /3/ S /YOUR/ D /SNOBOL ARE3 'YOUR ' ARB FAMILY REM . POST / 'TELL ME ABOUT YOUR FAMILY' :'WHO ELSE IN YOUR FAMILY' POST '?' :
-'YOUR ' RELATIVE '?' :
-',NHAT ELSE COMES TO MIND WHEN YOU THINK OF YOUR ' RELATIVE '?' :/ MY D ./YOUR/'YOUR" POST '? '
-RELATIVE '?' :/D /YOUR/ 'YOUR'POST'?':
-'WHY DO YOU SAY YOUR , POST '?' :'IS YOUR' POST ' IMPORTANT TO YOU?' : 'DOES THAT SUGGEST ANYTHING ELSE THAT BELONGS TO YOU?' :/
-MYSELF S /YOURSELF / NAME L /15/ 0 //
-'I AN NOT INTERESTED IN NAMES' :'IVE TOLD YOU BEFORE, I AM NO T INTERESTED IN NAMES - PLEASE CONTINUE' :,
-NO L /2/ D // ',1HY -NO- ?' :' ;':HY NOT 7' ;
-'ARE YCU SAYING NO JUST TO BE NEGATIVE?' : 'YOU ARE BEING RATHER NEGATIVE;':/
-NOBODY
-NOONE
-PERHAPS
-'YOU DONT SEEM TO BE QUITE CERTAIN .' :'WHY THE UNCERTAIN TONE?' :
-'CANT YOU BE MORE DEFINITE?' :'YOU ARENT SURE?' :'DONT YOU KNOW?' :/ REMEMBER L /6/ D /YOU REMEMBER/.
-'DO YoU OFTEN THINK OF' POS T
-'DOES THINKIN.G OF' POST ' BRING ANYTHING ELSE TO MIND?' :
-'AHAT ELSE DO YOU REMEMBER?' :'WHY DO YOU REMEMBER' POST ' JUST NOW?' : 'i`iHAT IN THE PRESENT SITUATION REMINDS YOU OF'POST '?' :
-'IS THEREACONNECTION BETWEEN ME AND'POST '?' :/
-REMEMBER D /DO I REMEMBER /
-'DID YOU THINK I WOULD FORGET' POST '?' :
-'WHY DO YOU THINK I SHOULD RECALL' POST ' JUST NOW?' :
-';;HAT ABOUT' POST '?':CF WHAT:'YOU MENTIONED' POST ' :' :/
-L /3/
-L./3/
-0 //CF EVERYONE ;/
-D//CF EVERYONE:/
-L /2/
-D //
-REMEMBER
-SAME
-SHE
-SORRY
-'PLEASE DO NOT FEEL APOLOGETIC,' :'A•POLOGIES ARE NOT NECESSARY .' : ';i,-AT FEELINGS DO YOU HAVE WHEN YOU APOLOGIZE?' :
-'IVE TOLD YOU THAT APOLOGIES ARE NOT REQUIREDI' :/ WAS L /3/`0 /WAS YOU/
-'WHAT 'IF YOU WERE' POST '?' :'DO YOU THINK YOU WERE' POST '?' ; Duquet . ELIZA IN SNOBOL4
-0 //NEWKEY :/
-L /11/ D //CF DIY:/
-L /1/ D //CF AUTRE:/ L /2/ D //
-
- SIGPLAN Notices 59
-1970 December
-'WERE YOU' POST '?' :'WHAT WOULD IT MEAN IF YOU WERE ► POST '7' 1 'AHAT DOES' POST ' SUGGEST TO YOU?' :CF WHAT :/
-WAS D /YOU WAS/ 'WERE You REALLY!' : 'EHY DO YOU, TELL ME YOU WERE' POST ' NOW?' :
-+PERHAPS I ALREADY KNEW YOU WERE' POST ' .' :/ WAS D /WAS 1 /
-,WOULDYOULIKETOBELIEVEIWAS,POST'?':
-'HAT IF 1 HAD BEEN' POST '?' :'WHAT SUGGESTS THAT I WAS' POST '?' :
-'WHAT DO YOU THINK?' :'PERHAPS I WAS' POST '!' :/ WERE L /3/ 5 /WAS/ D //CF WAS :/
-WHAT L /2/ 0 //
-'WHY DO YOU ASK THAT?' ;'DOES THAT QUESTION INTEREST YOU?' : ''WHAT IS IT YoU REALLY WANT TO KNOW?' :'WHAT DO YOU THINK?' :
-@ ARE SUCH QUESTIONS MUCH ON YOUR MIND?' :
-'WHAT ANSWER WOULD PLEASE YOU MOST?' :'HAVE YOU ASKED ANYONE ELSE?' : 'WHAT COMES TO MIND WHEN YOU ASK THAT?' :
-+HAVE YOU ASKED SUCH QUESTIONS BEFORE?' ;/
-WHEN
-L /2/
-D //CF WHAT :/
-EHY
-too you
-,PERHAPS I WILL' POST ' IN GOOD TIMEI' :'SHOULD YOU , POST ' YOURSELF?' : 'YOU WANT ME TO' POST ' DO YOU?' :CF WHAT ;/
-WHY D /WHY CANT YOU/
-'Do YOU THINK YoU SHOULD BE ABLE TO' POST '7' :
-'DO YOU ,ANT TO BE ABLE TO ' POST '?':
-'DO YOU ;BELIEVE OUR CONVERSATION WILL HELP YOU TO' POST '7' :
-'HAVE YOu ANY IDEA WHY YOU CANT' POST '?' :CF WHAT :/
-WHY
-WON'T
-YES
-'YOU
-D //CF WHAT :I
-L /2/ BELIEVE
-S /oONT/
-D /WHY DONT I /
-THAT I DONT' POST '7':
-L /2/ D //
-SEEM TO BE QUITE POSITIVE!'
-:'ARE YOU SURE7':'I
-SEE!':
-+I UNDERSTAND .'+ /
-YOU L /2/ S /I/ D /I ARE/
-'WHAT MAKES YOU THINK I AM' POST '7' :
-'DOES IT PLEASE YOU TO BELIEVE I AM' POST '?' : 'DO YOU SOMETIMES WISH THAT YOU WERE' POST '7' : 'PERHAPS YOU WOULD LIKE TO BE' POST ►YOURSELF?' :/ YOU D /SNOPoL ARB '1 ' AREA • POST 'YOU' /
-'WHY DO YOU THINK I ' POST 'YOU?' :
-'DO YOU LIKE TO THINK I ' POS1 'YOU?' :
-'WHAT MAKES YOU THINK I ' POST 'YOU?' :
-'REALLY? ' POST 'YOU?' :'DO YOU WISH TO BELIEVE I ' POST 'YOU?' : 'SuPPOSE I DID ' POST 'YOU, WHAT WOULD THAT MEANT' :
-'DOES ANYONE ELSE THINK I ' POST 'YOU?' :/
-YoU 0 /I /
-' .'GENE DISCUSSING YOU - NOT ME !' :'OHI I' POST '7' 1
-+ARE YOU REALLY TALKING ABOUT ME 7' :/
-YOUR L /2/ S /MY/ 0 /MY/
-''WHY ARE YOU CONCERNED OVER MY' POST '?' :
-'WHAT ABOUT YOUR OWN' POST '?' 1
-'ARE YOu WORRIED ABOUT SOMEONE,ELSES' POST '7' :/
-YOURSELF S /MYSELF /
-ASNO50L INTRODUCTION 'HOW DO YOU DO' PLEASE TELL ME YOUR PROBLEM .' . END or SCRIPT
+*   ELIZA IN SNOBOL      R T DUQUET    SUNYA    FALL 1969                       
+*
+         &ANCHOR = 1      |   INPUT('INPUT',5,72)                               
+         PRE.TRIM = SPAN(' ') | NULL                                            
+         P.0 = *KEY.                                                            
+         P.1 = PRE.TRIM BREAK(' ') . WORD. ' '                                  
+         P.2 = *LEN(NEWSIZE.) '/'                                               
+         P.3 = BREAK(':') . CONTENT. ':'                                        
+         P.4 = PRE.TRIM REM . CONTENT.                                          
+         P.5 = PRE.TRIM ANY('SLD') . WORD. ' '                                  
+         SHORTEN. = BREAK('.,') . PHRASE. ANY('.,') REM . TRAILER.              
+         X.REF    = PRE.TRIM 'CF'                                               
+         BUMP.    = PRE.TRIM 'NEWKEY'                                           
+         PAREN.   = PRE.TRIM '/' BREAK('/') . CONTENT. '/'                      
+         STASH.   = PRE.TRIM '/' BREAK('/') . *$STORE. '/'                      
+         CALL.TO.SNOBOL = PRE.TRIM 'SNOBOL'                                     
+         ATTENTION.     = PRE.TRIM '*'                                          
+*                                                                               
+         INTRODUCTION = 'HOW DO YOU DO.'                                        
+         CLUELESS = '.. VERY INTERESTING'                                       
+         RETAIN = 'MY'                                                          
+*                                                                               
+*   WE NOW READ THE SCRIPT AND FORM STRINGS AS FOLLOWS.                         
+*   FOR EACH KEY WORD 'XXXX' WE FORM THE FOLLOWING VARIABLES:                   
+*      SPL.XXXX      IS A REPLACEMENT WORD.    (OPTIONAL)                       
+*      LEV.XXXX      IS A LEVEL NUMBER (IF ABSENT KEY IS IGNORED)               
+*      N.XXXX        A COUNT OF THE NUMBER OF DECOMPOSITIONS                    
+*      DEC.I.XXXX    IS THE I'TH DECOMPOSITION PATTERN             .            
+*      RULE.I.XXXX   IS A STRING OF RECOMPOSITION RULES FOR THE I'TH            
+*                    DECOMPOSITION. RULES ARE SEPARATED BY ':'.                 
+*                                                                               
+         OUTPUT    = 'ENTER SCRIPT'                                             
+         KEYWORDS. = '.'                                                        
+HIGGINS  SCRIPT.   = TRIM(INPUT)                :F(END)                         
+         SCRIPT. ATTENTION. =                   :S(FLAG)                        
+         SCRIPT. P.1 =                          :F(HIGGINS)                     
+         KEY. = ',' WORD.                                                       
+         KEYWORDS. P.0                          :S(LESSON)                      
+         KEYWORDS.   = KEY. KEYWORDS.                                           
+LESSON   SCRIPT. P.5 =                          :F(HIGGINS)S($WORD.)            
+ERR      OUTPUT = 'SCRIPT ERROR: ' WORD. ' ' SCRIPT. :(HIGGINS)                 
+S        STORE. = 'RPL' KEY.                                                    
+         SCRIPT. STASH. =                       :F(ERR)S(LESSON)                
+L        SCRIPT. PAREN. =                       :F(ERR)                         
+         $('LEV' KEY.) = INTEGER(CONTENT.) CONTENT.  :(LESSON)                  
+D        N.N = $('N' KEY.) + 1                                                  
+         S('N' KEY.) = N.N                                                      
+         SCRIPT. PAREN. =                       :F(ERR)                         
+         CONTENT. CALL.TO.SNOBOL =              :S(SPECIAL)                     
+         S('DEC.' N.N KEY.) = ARB CONTENT. REM . POST                           
+RULES    STORE.   = 'RULE.' N.N KEY.                                            
+         $STORE.  = DIFFER(SCRIPT.) SCRIPT.     :F(NEW.CARD)                    
+LOOP     NEWSIZE. = SIZE($STORE.) - 1                                           
+         $STORE. P.2                            :S(HIGGINS)                     
+NEW.CARD $STORE. = $STORE. TRIM(INPUT)          :F(END)S(LOOP)                  
+*                                                                               
+*   THE FOLLOWING ARE SPECIAL SCRIPT-HANDLING STATEMENTS                        
+*                                                                               
+SPECIAL  $('DEC.' N.N KEY.) = EVAL(CONTENT.)    :(RULES)                        
+ENCODE   SCRIPT. = SCRIPT. ' :(HIGGINS) ;'      :[CODE(SCRIPT.)]                
+FLAG     SCRIPT. CALL.TO.SNOBOL =               :S(ENCODE)                      
+*                                                                               
+*   WE NOW HOLD A CONVERSATION. FIRST WE READ A SENTENCE AND                    
+*   SEARCH FOR KEY WORDS  REPLACING APPROPRIATE ONES                            
+*   AND STACKING THE KEYS IN A QUASI-ORDERED LIST (STRING).                     
+*                                                                               
+INTRO    OUTPUT  = INTRODUCTION                                                 
+HEAR     PHRASE. = TRIM(INPUT) '.'              :F(END)                         
+HEARLESS PHRASE. SHORTEN.  ;   PHRASE. = PHRASE. ' '                            
+         COPY.   =   ;   CUES. =   ;   CUE.LEVEL = 0                            
+SPLIT    &ANCHOR = 1 ;   PHRASE.  P.1 =         :F(REPLY)                       
+         &ANCHOR = 0                                                            
+         KEYWORDS. WORD.                        :F(KEEP)                        
+         NEW.WORD = DIFFER($('RPL.' WORD.))                                     
+                    $('RPL.' WORD.)             :S(REPLACE)                     
+         COPY. = COPY. WORD. ' '                :(STACK)                        
+REPLACE  COPY. = COPY. NEW.WORD ' '                                             
+STACK    NEW.LEVEL = DIFFER($('LEV.' WORD.))                                    
+.                    $('LEV.' WORD.)            :F(SPLIT)                       
+         CUE.LEVEL = GT(NEW.LEVEL,CUE.LEVEL)                                    
+.                    NEW.LEVEL                  :F(LOCUE)                       
+         CUES. = WORD. ':' CUES.                :(SPLIT)                        
+LOCUE    CUES. = CUES. WORD. ':'                :(SPLIT)                        
+KEEP     COPY. = COPY. WORD. ' '                :(SPLIT)                        
+*                                                                               
+*   THIS PART FORMS OUR REPLY TO THE INPUT SENTENCE                             
+*                                                                               
+REPLY    CUES. P.3 =                            :F(NOCUE)                       
+NEXTCUE  CUE. = '.' CONTENT.                                                    
+         N.N  = 0 ;  NMAX. = $('N' CUE.)                                        
+ANALYSE  N.N  = LT(N.N,NMAX.) N.N + 1           :F(NOCUE)                       
+         COPY. $('DEC.' N.N CUE.)               :F(ANALYSE)                     
+         $('RULE.' N.N CUE.) P.3 =                                              
+         CONTENT. '/' =                                                         
+         $('RULE.' N.N CUE.) = $('RULE.' N.N CUE.) CONTENT. ';'                 
+         CONTENT. X.REF =                       :S(NEWCUE)                      
+         CONTENT. BUMP.                         :S(REPLY)                       
+         OUTPUT  = '.. ' EVAL(CONTENT.)                                         
+         MEMORY. = IDENT(CUE.,'.' RETAIN)                                       
+*                  LT(SIZE(MEMORY.),200)                                        
+*                  MEMORY. COPY. ':'            :(HEAR)                         
+*                                                                               
+*   THIS IS WHAT WE DO IF THERE ARE NO  KEY WORDS IN THE INPUT                  
+*                                                                               
+NEWCUE   CONTENT. P.4                           :(NEXTCUE)                      
+NOCUE    PHRASE. = DIFFER(TRAILER.) TRAILER.    :S(HEARLESS)                    
+         MEMORY. P.3 =                          :F(ER.AH.UM)                    
+         OUTPUT = '.. EARLIER YOU SAID ' CONTENT.   :(HEAR)                     
+ER.AH.UM OUTPUT = CLUELESS                      :(HEAR)                         
+*                                                                               
+END                                                                             

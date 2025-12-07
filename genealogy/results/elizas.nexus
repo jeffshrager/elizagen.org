@@ -1,34 +1,35 @@
 #NEXUS
 
 BEGIN TAXA;
-    DIMENSIONS NTAX=26;
+    DIMENSIONS NTAX=27;
     TAXLABELS
         E01_Cosell66Lisp
         E02_Trembly17Cobol
         E03_SamsonXXLisp
         E04_KMPXXLisp
-        E05_JonLXXLisp_Test1
+        E05_JonLXXLisp
         E06_Babcock15BASIC
         E07_Hay21CPP
-        E08_Jull23BASIC
+        E08_Juul23BASIC
         E09_DavenportXXBASIC
         E10_Srijak08Python
         E11_Strout05Python
-        E12_Shrager73BASIC_Test1
+        E12_Shrager73BASIC
         E13_Norvig91Lisp
         E14_Cherry82Lisp
         E15_Bell79BASIC
         E16_Dunlop97JS
         E17_Platt79BASIC
-        E18_JonLXXLisp_Test2
+        E18_JonLXXLisp_clone
         E19_Weizenbaum65MADSLIP
-        E20_Shrager73BASIC_Test2
-        E21_Ciston25LadyMouthPython
-        E22_Shrager15FilerCPP
+        E20_Shrager73BASIC_clone
+        E21_Ciston15LadyMouthPython
+        E22_Shrager15FilerCPP_foil
         E23_Jull99Java
         E24_HaydenXXJava
         E25_Haxpor15PHP
         E26_Duquet70SNOBOL
+        E27_Fricks70B5500Algol
     ;
 END;
 
@@ -53,32 +54,33 @@ BEGIN CHARACTERS;
     ;
 
     MATRIX
-        E01_Cosell66Lisp    1 1 1 1 1 1 1 1 1 1 1 ? 1
+        E01_Cosell66Lisp    1 1 1 1 1 1 1 1 1 1 1 1 1
         E02_Trembly17Cobol    1 0 1 0 0 1 1 0 1 1 1 0 0
         E03_SamsonXXLisp    1 1 1 1 1 1 1 1 1 1 1 1 1
         E04_KMPXXLisp    1 0 1 0 0 1 1 1 1 1 1 1 0
-        E05_JonLXXLisp_Test1    1 1 1 1 1 1 1 1 1 1 1 1 1
+        E05_JonLXXLisp    1 1 1 1 1 1 1 1 1 1 1 1 1
         E06_Babcock15BASIC    1 1 0 0 0 1 1 0 1 1 1 0 0
         E07_Hay21CPP    1 1 1 1 1 1 1 1 1 1 1 1 1
-        E08_Jull23BASIC    1 1 1 0 0 1 1 0 1 0 1 0 0
-        E09_DavenportXXBASIC    1 1 1 0 1 0 1 0 1 0 1 0 0
-        E10_Srijak08Python    1 0 1 0 1 1 1 1 1 0 1 1 0
-        E11_Strout05Python    1 0 1 0 1 1 1 0 1 1 1 0 0
-        E12_Shrager73BASIC_Test1    1 1 1 0 0 0 1 0 1 0 1 0 0
-        E13_Norvig91Lisp    1 0 0 1 1 1 1 0 0 1 1 1 1
-        E14_Cherry82Lisp    1 1 0 0 0 0 0 0 0 ? 0 1 0
-        E15_Bell79BASIC    1 1 1 0 1 1 1 0 1 0 1 0 0
-        E16_Dunlop97JS    1 0 0 0 0 0 1 0 1 1 1 0 0
-        E17_Platt79BASIC    1 0 0 0 0 1 1 0 1 0 ? 0 0
-        E18_JonLXXLisp_Test2    1 1 1 1 1 1 1 1 1 1 1 ? 1
+        E08_Juul23BASIC    1 1 1 0 0 1 1 0 1 0 1 0 0
+        E09_DavenportXXBASIC    1 1 1 0 1 1 1 0 1 0 1 0 0
+        E10_Srijak08Python    1 0 1 1 1 1 1 1 1 0 1 1 0
+        E11_Strout05Python    1 0 1 0 1 1 1 0 1 0 1 0 0
+        E12_Shrager73BASIC    1 1 1 0 0 0 1 0 1 0 1 0 1
+        E13_Norvig91Lisp    1 0 0 1 1 1 1 0 0 1 1 1 0
+        E14_Cherry82Lisp    1 1 0 0 0 1 1 0 1 ? 1 1 0
+        E15_Bell79BASIC    1 0 1 0 0 1 1 0 1 0 1 0 0
+        E16_Dunlop97JS    1 0 0 0 0 1 1 0 1 1 1 0 0
+        E17_Platt79BASIC    1 0 0 0 0 1 1 0 1 0 0 0 0
+        E18_JonLXXLisp_clone    1 1 1 1 1 1 1 1 1 1 1 1 1
         E19_Weizenbaum65MADSLIP    1 1 ? 1 1 1 1 1 1 1 1 1 1
-        E20_Shrager73BASIC_Test2    1 0 1 0 0 0 1 0 1 0 1 0 0
-        E21_Ciston25LadyMouthPython    0 0 0 0 0 0 0 0 0 0 0 0 0
-        E22_Shrager15FilerCPP    1 0 0 1 1 1 1 0 0 0 0 0 0
+        E20_Shrager73BASIC_clone    1 1 1 0 0 0 1 0 1 0 1 0 1
+        E21_Ciston15LadyMouthPython    0 0 0 0 0 0 0 0 0 0 0 0 0
+        E22_Shrager15FilerCPP_foil    1 0 0 1 1 1 1 0 0 0 0 0 0
         E23_Jull99Java    1 0 1 0 0 0 1 0 1 0 1 0 0
         E24_HaydenXXJava    1 1 1 1 1 1 1 1 1 1 1 1 1
         E25_Haxpor15PHP    1 1 1 1 1 1 1 1 1 1 0 0 1
         E26_Duquet70SNOBOL    1 1 1 1 1 1 1 1 1 1 1 1 1
+        E27_Fricks70B5500Algol    1 1 1 1 1 1 1 1 1 1 1 1 1
     ;
 END;
 
