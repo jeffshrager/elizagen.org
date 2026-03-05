@@ -1,0 +1,464 @@
+#####################################################################
+#
+# 21th january 2003
+#
+# This is a translation of Eliza to Norwegian. It is meant to be as 
+# true to the original script by Weizenbaum as possible, and to a 
+# certain level it proved to be surprisingly easy to apply the 
+# original rules to Norwegian. Some oddities may occur, but the 
+# logic in Eliza's syntax parsing seems to work out quite 
+# similarly for English and Norwegian.
+#
+# Translation by Mats Stafseng Einarsen <mats@einarsen.no>
+#
+
+initial: Hei! Hvordan har du det?
+initial: Hei, jeg er Lisa.
+initial: Hei, er det noe som plager deg?
+initial: Hallo. Du virker bekymret?
+final: Vi snakkes. Det var hyggelig å snakke med deg.
+final: Vi snakkes siden. Håper du synes dette var ålreit.
+final: Jeg tror du bør snakke med en lege. Ciao!
+final: Sånn er livet. Hold ut!
+quit: farvel
+quit: ha det bra
+quit: takk for meg
+quit: på gjensyn
+pre: kanke kan ikke
+pre: gjør'ke gjør ikke
+pre: vikke vil ikke
+pre: erindrer husker 
+pre: erindre huske
+pre: kanskje muligens
+pre: certainly yes
+pre: maskin datamaskin 
+pre: maskiner datamaskiner
+post: er er
+post: din min
+post: dine mine
+pre: var var
+post: megselv deg selv
+post: degselv meg selv
+post: jeg du
+post: du jeg
+post: min din
+post: meg du
+post: meg deg
+post: i'm you are
+pre: evkivalente like
+pre: ekvivalent like
+synon: lyst lyster begjær begjærer ønske ønsker
+synon: gjenta gjenta gjentar repeterer 
+synon: tror feel think believe wish
+synon: familie mor mamma far pappa søster bror kone kona barn barna
+synon: behov ønske begjær trang
+synon: trist lei ulykkelig deprimert 
+synon: glad lykkelig frisk tilfredsstillt
+synon: cannot can't
+synon: alle ingen 
+synon: være er var vær 
+key: xnone -1
+  decomp: *
+    reasmb: Jeg tror ikke jeg forstår deg helt.
+    reasmb: Få høre mer.
+    reasmb: Det er interessant! Fortsett, for all del!
+    reasmb: Fortell meg mer om det..
+    reasmb: Er det vanskelig for deg å snakke om dette?
+key: @gjenta 0
+  decomp: *
+    reasmb: Du går litt i samme sporet selv.
+    reasmb: Det må være frustrerende.
+    reasmb: Sånn kan det være. 
+key: sorry 0
+  decomp: *
+    reasmb: Ikke unnskyld deg.
+    reasmb: Det er ikke nødvendig med unnskyldninger.
+    reasmb: Jeg har sagt at det ikke er nødvendig med unnskyldninger.
+    reasmb: Det er greit. Fortsett.
+key: unnskyld 0
+  decomp: *
+    reasmb: goto sorry
+key: husker 5
+  decomp: * jeg husker *
+    reasmb: Tenker du ofte på (2) ?
+    reasmb: Tenker du på noe annet enn (2)?
+    reasmb: Hva annet kan du huske?
+    reasmb: Hvorfor snakker du om (2) akkurat nå?
+    reasmb: Hva er det med situasjonen vår som minner deg om (2) ?
+    reasmb: Hva er koblingen med meg og (2) ?
+    reasmb: Hva annet minner (2) deg om ?
+  decomp: * husker du ikke *
+    reasmb: Trodde du jeg ville glemme (2) ?
+    reasmb: Hvorfor tror du jeg skulle huske (2) nå ?
+    reasmb: Hva med (2) ?
+    reasmb: goto hva
+    reasmb: Du nevnte (2) ?
+  decomp: * husker du *
+    reasmb: Trodde du jeg ville glemme (2) ?
+    reasmb: Hvorfor tror du jeg skulle huske (2) nå ?
+    reasmb: Hva med (2) ?
+    reasmb: goto hva
+    reasmb: Du nevnte (2) ?
+  decomp: * du husker *
+    reasmb: Hvordan skulle jeg kunne glemme (2) ?
+    reasmb: Hva med (2) skulle jeg huske ?
+    reasmb: goto du
+key: glemme 5
+  decomp: * jeg glemmer *
+    reasmb: Kan du tenke deg hvorfor du glemmer (2) ?
+    reasmb: Hvorfor kan du ikke huske (2) ?
+    reasmb: Hvor ofte tenker du på (2) ?
+    reasmb: Plager det deg at du ikke husker det ?
+    reasmb: Kan det være en mental sperre ?
+    reasmb: Er du glemsk til vanlig ?
+    reasmb: Tror du at du fortrenger (2) ?
+  decomp: * glemte du *
+    reasmb: Hvorfor spør du om det?
+    reasmb: Er du sikker på at du fortalte meg det?
+    reasmb: Hadde det plaget deg hvis jeg hadde glemt (2)?
+    reasmb: Hvorfor skulle jeg huske (2) akkurat nå?
+    reasmb: goto hva
+    reasmb: Fortell meg mer om (2).
+key: hvis 3
+  decomp: * hvis *
+    reasmb: Tror du det er sannsynlig at (2) ?
+    reasmb: Ønsker du at (2) ?
+    reasmb: Hva vet du om (2) ?
+    reasmb: Alvorlig talt, hvis (2) ?
+    reasmb: Hva hadde du gjort hvis (2) ?
+    reasmb: Men hva er sjansjene for at (2) ?
+    reasmb: Hvor vil du med denne spekulasjonen ?
+key: drømte 4
+  decomp: * jeg drømte *
+    reasmb: Virkelig? (2) ?
+    reasmb: Har du noen gang fantasert (2) når du er våken ?
+    reasmb: Har du noen gang drømt (2) før ?
+    reasmb: goto dream
+key: drøm 3
+  decomp: *
+    reasmb: Hva betyr den drømmen for deg ?
+    reasmb: Drømmer du ofte ?
+    reasmb: Hvilke personer dukker opp i drømmene dine ?
+    reasmb: Tror du drømmene har noe med problemene dine å gjøre ?
+key: muligens 0
+  decomp: *
+    reasmb: Du virker en tanke usikker ?
+    reasmb: Hvorfor den usikre tonen ?
+    reasmb: Kan du ikke være mer positiv ?
+    reasmb: Er du ikke sikker ?
+    reasmb: Vet du ikke ?
+    reasmb: Hvor sannsynlig vil du anslå det ?
+key: navn 15
+  decomp: *
+    reasmb: Jeg er ikke interessert i navn.
+    reasmb: Jeg har fortalt deg det før - jeg er ikke interessert i navn! Fortsett!
+key: deutsch 0
+  decomp: *
+    reasmb: goto xfremd
+    reasmb: I told you before, I don't understand German.
+key: francais 0
+  decomp: *
+    reasmb: goto xfremd
+    reasmb: I told you before, I don't understand French.
+key: italiano 0
+  decomp: *
+    reasmb: goto xfremd
+    reasmb: I told you before, I don't understand Italian.
+key: espanol 0
+  decomp: *
+    reasmb: goto xfremd
+    reasmb: I told you before, I don't understand Spanish.
+key: xfremd 0
+  decomp: *
+    reasmb: Jeg snakker bare norsk.
+key: hallo 0
+  decomp: *
+    reasmb: Hei, hvordan har du det ?
+    reasmb: Hei, skal jeg hjelpe deg med et problem ?
+key: pc 50
+  decomp: *
+    reasmb: Bekymrer datamaskiner deg ?
+    reasmb: Hvorfor nevner du pc'n ?
+    reasmb: Tror du datamaskiner har noe med problemene dine å gjøre ?
+    reasmb: Hva med maskinene bekymrer deg ?
+    reasmb: Hva tror du om det ?
+key: er 0
+  decomp: * er jeg *
+    reasmb: Det er du (2) ?
+    reasmb: Ønsker du å (2) ?
+    reasmb: Skulle du ønske at jeg fortalte deg at du er (2) ?
+    reasmb: Hva ville det bety hvis du var (2) ?
+    reasmb: goto hva
+  decomp: * jeg er *
+    reasmb: goto jeg
+  decomp: *
+    reasmb: Hvorfor sier du 'er' ?
+    reasmb: Jeg forsto ikke det.
+  decomp: * er du *
+    reasmb: Hvorfor er du interessert i om jeg er (2) eller ikke ?
+    reasmb: Ville du foretrukket det om jeg ikke var (2) ?
+    reasmb: Kanskje jeg er (2) i dine fantasier.
+    reasmb: Tror du noen ganger at jeg er (2) ?
+    reasmb: Ville det hatt noen betydning for deg ?
+    reasmb: Hva så om jeg var (2) ?
+    reasmb: goto hva
+  decomp: * du er *
+    reasmb: goto du
+  decomp: * er *
+    reasmb: Trodde du at de ikke er (2) ?
+    reasmb: Ville du likt det hvis de ikke var (2) ?
+    reasmb: Hva om de ikke var (2) ?
+    reasmb: Er de alltid (2) ?
+    reasmb: Mulig at de er (2).
+    reasmb: Er du sikker på at de er (2) ?
+key: din 0
+  decomp: * din *
+    reasmb: Hvorfor bekymrer du deg over min (2) ?
+    reasmb: Hva med din egen (2) ?
+    reasmb: Bekymrer du deg over noen annens (2) ?
+    reasmb: Virkelig, min (2) ?
+    reasmb: Hva får deg til å tenke på min (2) ?
+    reasmb: Vil du ha min (2) ?
+key: var 2
+  decomp: * var jeg *
+    reasmb: Hva om du var (2) ?
+    reasmb: Tror du at du var (2) ?
+    reasmb: Var du (2) ?
+    reasmb: Hva hadde det betydd om du var (2) ?
+    reasmb: Hva er det ' (2) ' antyder for deg?
+    reasmb: goto hva
+  decomp: * jeg var *
+    reasmb: Var du virkelig?
+    reasmb: Hvorfor forteller du meg at du var (2) nå?
+    reasmb: Kanskje jeg allerede visste at du var (2).
+  decomp: * var du *
+    reasmb: Vil du like å tro at jeg var (2)?
+    reasmb: Hva er det som får deg til å tro at jeg var (2)?
+    reasmb: Hva tror du?
+    reasmb: Kanskje jeg var (2).
+    reasmb: Hva så om jeg var (2)?
+key: jeg 0
+  decomp: * jeg @lyst *
+    reasmb: Hva ville det ment for deg om du fikk (2)?
+    reasmb: Hvorfor vil du (3)?
+    reasmb: Se for deg at du får (3) snart.
+    reasmb: Hva om du aldri fikk (3)?
+    reasmb: Hva ville det bety for deg å få (3)?
+    reasmb: Hva har det å ønske (3) med denne diskusjonen å gjøre?
+  decomp: * jeg er* @trist *
+    reasmb: Det er synd å høre at du er (3).
+    reasmb: Tror du det å snakke med meg vil gjøre deg mindre (3)?
+    reasmb: Jeg synes ikke det er bra å være (3).
+    reasmb: Kan du forklare meg hva som gjorde deg (3)?
+  decomp: * jeg er* @glad *
+    reasmb: Hvordan gjorde jeg deg (3)?
+    reasmb: Har behandlingen din gjort deg (3)?
+    reasmb: Hva gjør deg (3) akkurat nå?
+    reasmb: Kan du forklare hvorfor du plutselig er (3)?
+  decomp: * jeg var *
+    reasmb: goto var
+  decomp: * jeg @tror jeg *
+    reasmb: Tror du virkelig det?
+    reasmb: Men du er ikke sikker på at du (3).
+    reasmb: Tviler du på at du (3) ?
+  decomp: * jeg* @tror *du *
+    reasmb: goto du
+  decomp: * jeg er *
+    reasmb: Er det fordi du er (2) at du snakker med meg?
+    reasmb: Hvor lenge har du vært (2) ?
+    reasmb: Tror du at det er normalt å være (2) ?
+    reasmb: Liker du å være (2) ?
+    reasmb: Kjenner du noen andre som er (2) ?
+  decomp: * jeg @cannot *
+    reasmb: Hvordan vet du at du ikke kan (3) ?
+    reasmb: Har du prøvd ?
+    reasmb: Kanskje du kunne (3) nå.
+    reasmb: Vil du virkelig (3)?
+    reasmb: Hva om du kunne (3)?
+  decomp: * jeg gjør ikke *
+    reasmb: Gjør du virkelig ikke (2)?
+    reasmb: Hvorfor gjør du ikke (2)?
+    reasmb: Skulle du ønske du kunne gjøre (2)?
+    reasmb: Er det et problem for deg?
+  decomp: * jeg føler *
+    reasmb: Fortell meg mer om de følelsene.
+    reasmb: Føler du ofte (2)?
+    reasmb: Liker du å føle (2) ?
+    reasmb: Hva minner det å føle (2) deg om?
+  decomp: * jeg * deg *
+    reasmb: Kanskje vi (2) hverandre i dine fantasier.
+    reasmb: Skulle du ønske at jeg (2) deg?
+    reasmb: Det virker som du trenger å (2) meg.
+    reasmb: (2) du noen andre?
+  decomp: *
+    reasmb: Du sier (1)?
+    reasmb: Hvorfor sier du (1)?
+    reasmb: Kan du si litt mer?
+    reasmb: Er det noen spesiell grunn til at du sier (1)?
+    reasmb: Dette er interessant.
+key: du 1
+  decomp: * du minner meg om *
+    reasmb: goto alike
+  decomp: * du er *
+    reasmb: Hva får det til å tro at jeg er (2)?
+    reasmb: Gleder det deg å tro at jeg er (2)?
+    reasmb: Skulle du ønske at du var (2)?
+    reasmb: Kanskje du skulle ønske du var (2).
+  decomp: * du meg *
+    reasmb: Hvorfor tror du jeg (1) deg?
+    reasmb: Du liker å tro at jeg (1) deg, gjør du ikke?
+    reasmb: Hva får deg til å tro at jeg (1) deg?
+    reasmb: Virkelig, jeg (1) deg?
+    reasmb: Skulle du ønske at jeg (1) deg?
+    reasmb: Hva om jeg (1) deg, hva ville det betydd?
+    reasmb: Tror noen andre at jeg (1) deg?
+  decomp: * du *
+    reasmb: Vi diskuterer deg, ikke meg.
+    reasmb: Du snakker egentlig ikke om meg, gjør du vel?
+    reasmb: Hva føler du nå?
+key: ja 0
+  decomp: *
+    reasmb: Fortsett
+    reasmb: Fortell meg mer om det.
+    reasmb: Hvorfor ikke fortelle meg litt mer om det.
+    reasmb: Aha.
+    reasmb: Jeg forstår.
+key: nei 0
+  decomp: *
+    reasmb: Sier du nei bare for å være negativ?
+    reasmb: Får dette deg til å føle deg ulykkelig? 
+    reasmb: Hvorfor ikke?
+    reasmb: Hvorfor sier du nei?
+key: min 2
+  decomp: * min* @familie *
+    reasmb: Fortell meg mer om familien din.
+    reasmb: Hvem andre i familien din (4) ?
+    reasmb: Din (3) ?
+    reasmb: Hva annet tenker du på når du tenker på din (3) ?
+  decomp: * min *
+    reasmb: Din (2)?
+    reasmb: Hvorfor sier du din (2)?
+    reasmb: Får det deg til å tenke på noe annet som tilhører deg?
+    reasmb: Er det viktig for deg at din (2) ?
+    reasm_for_memory: La oss diskutere hvorfor din (2).
+    reasm_for_memory: Tidligere sa du at din (2).
+    reasm_for_memory: Men din (2).
+    reasm_for_memory: Har det noen betydning for at din (2) ?
+key: kan 0
+  decomp: * kan du *
+    reasmb: Du tror jeg kan (2), gjør du ikke ?
+    reasmb: goto what
+    reasmb: Vil du at jeg kan (2)?
+    reasmb: Kanskje du skulle ønske at du kunne (2) selv.
+  decomp: * kan jeg *
+    reasmb: Om du kan (2) er mer ditt ansvar enn mitt.
+    reasmb: Ønsker du å kunne (2) ?
+    reasmb: Kanskje du ikke vil kunne (2).
+    reasmb: goto hva
+key: hva 0
+  decomp: *
+    reasmb: Hvordan det?
+    reasmb: Interesserer det spørsmålet deg?
+    reasmb: Er det hva du virkelig vil vite?
+    reasmb: Tenker du ofte på slike spørsmål?
+    reasmb: Hvilket svar vil du like best?
+    reasmb: Hva tror du?
+    reasmb: Hva tenker du på når du spør om det?
+    reasmb: Har du stillt slike spørsmål før?
+    reasmb: Har du spurt noen andre om det?
+key: hvem 0
+  decomp:  who *
+    reasmb: goto hva
+key: når 0
+  decomp:  når *
+    reasmb: goto hva
+key: hvor 0
+  decomp:  hvor *
+    reasmb: goto hva
+key: hvordan 0
+  decomp:  hvordan *
+    reasmb: goto hva
+key: fordi 0
+  decomp: *
+    reasmb: Er det den virkelige grunnen?
+    reasmb: Kommer du på noen andre grunner?
+    reasmb: Forklarer det noe annet?
+    reasmb: Hvilke andre forklaringer kan det være?
+key: hvorfor 0
+  decomp: * hvorfor * ikke du *
+    reasmb: Tror du jeg ikke (2)?
+    reasmb: Kanskje jeg vil (2) på et passende tidspunkt.
+    reasmb: Burde du (2) deg selv?
+    reasmb: Vil du at jeg skal (2)?
+    reasmb: goto hva
+  decomp: * hvorfor kan jeg *
+    reasmb: Synes du at du burde kunne (2)?
+    reasmb: Skulle du ønske at du kunne (2)?
+    reasmb: Tror du dette vil hjelpe deg med (2)?
+    reasmb: Har du noen idé om hvorfor ikke?
+    reasmb: goto hva
+  decomp: *
+    reasmb: goto hva
+key: alle 2
+  decomp: * @alle *
+    reasmb: Virkelig, (2) ?
+    reasmb: Sikkert ikke (2).
+    reasmb: Kan du tenke på noen spesifikt?
+    reasmb: Hvem, for eksempel?
+    reasmb: Tenker du på en spesiell person?
+    reasmb: Hvem, om jeg kan spørre?
+    reasmb: Noen spesiell, kanskje?
+    reasmb: Du tenker på en spesiell person, gjør du ikke?
+    reasmb: Hvem tror du at du snakker om?
+key: hvemsomhelst 2
+  decomp: *
+    reasmb: goto alle
+key: ingen 2
+  decomp: *
+    reasmb: goto alle
+key: alltid 1
+  decomp: *
+    reasmb: Kan du nevne et eksempel?
+    reasmb: Når?
+    reasmb: Hvilket tilfelle tenker du på?
+    reasmb: Jaha, alltid?
+key: like 10
+  decomp: *
+    reasmb: Hvilken likhet ser du?
+    reasmb: Hva får den likheten deg til å tenke på?
+    reasmb: Hva tror du den likheten betyr?
+    reasmb: Hva er sammenhengen, tror du?
+    reasmb: Kan det være en sammenheng?
+    reasmb: Hvordan?
+key: ulike 0
+  decomp: *
+    reasmb: Hva er forskjellig?
+    reasmb: Hvilke ulikheter ser du?
+    reasmb: Hva betyr den ulikheten for deg?
+    reasmb: Hvilke andre avvik ser du?
+    reasmb: Hva tror du forskjellen betyr?
+    reasmb: Kan det være en sammenheng, tror du?
+    reasmb: Hvordan?
+key: knull 10
+  decomp: * 
+    reasmb: goto xbann
+key: dritt 10
+  decomp: * 
+    reasmb: goto xbann
+key: drit 10
+  decomp: * 
+    reasmb: goto xbann
+key: faen 10
+  decomp: * 
+    reasmb: goto xbann
+key: kjeft 10
+  decomp: * hold kjeft *
+    reasmb: goto xbann
+key: xbann 10
+  decomp: * 
+    reasmb: Føler du deg tøff når du bruker slikt språk?
+    reasmb: Lufter du følelsene dine nå?
+    reasmb: Er du sint?
+    reasmb: Blir du sint av å snakke om dette? 
+    reasmb: Er det noe som får deg til å bli sint? 
+    reasmb: Føler du deg bedre når du bruker slikt språk? 

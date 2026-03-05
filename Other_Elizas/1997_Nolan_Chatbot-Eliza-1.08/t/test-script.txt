@@ -1,0 +1,9 @@
+key: xnone -1
+    decomp: *
+        reasmb: Huh?
+key: feel 1
+    decomp: * i feel *
+        reasmb: Do you often feel (2)?
+key: like 1
+    decomp: i like *
+        reasmb: I like (1) too!

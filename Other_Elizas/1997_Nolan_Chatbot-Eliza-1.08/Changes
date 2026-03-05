@@ -1,0 +1,106 @@
+Revision history for Perl module Chatbot::Eliza
+
+1.08 2017-06-28 GRANTG
+    - Apply https://rt.cpan.org/Public/Bug/Display.html?id=122147 patch
+      to POD
+    - Fix surrounding EOL whitespace
+
+1.07 2017-04-08 GRANTG
+    - Implemented RT https://rt.cpan.org/Ticket/Display.html?id=120590 to
+      return reasmbs in order
+
+1.06 2015-10-29 NEILB
+    - Updated github repo URL after changing my github username
+    - Include a META.json in releases, and tag & push to github on release
+
+1.05 2014-04-17
+    - Moved Chatbot/Eliza.pm to lib/Chatbot/Eliza.pm
+    - Added this Changes file; moved changelog entries from pod to here.
+    - Moved all example scripts into examples/ directory
+    - Added a minimal test that actually exercises Eliza with a script
+    - Added "use warnings" and dropped use vars in favour of 'our'
+    - Added COPYRIGHT AND LICENSE section to pod
+    - Switched to Dist::Zilla
+
+1.04_01 2014-04-05
+    - All the changes in 1.05 (above) were first done
+      for this developer release.
+
+1.04 2003-01-24
+    - Added a Norwegian script, kindly contributed by Mats Stafseng Einarsen.
+      Thanks Mats!
+
+1.01 2003-01-17
+    - Added an empty DESTORY method, to eliminate some pesky warning messages.
+      Suggested by Stas Bekman.
+
+0.97 1999-10-31
+    - One tiny change to the regex which implements reassemble rules.
+      Thanks to Gidon Wise for suggesting this improvement.
+
+0.95 1999-07-09
+    - Fixed a bug in the way the bot invokes its random function
+      when it pulls a comment out of memory.
+
+0.93 1999-06-04
+    - Calling programs can now specify their own random-number generators.
+      Use this syntax:
+            $chatbot = new Chatbot::Eliza;
+            $chatbot->myrand( sub { #function goes here!  } );
+      The custom random function should have the same prototype
+      as perl's built-in rand() function.  That is, it should take
+      a single (numeric) expression as a parameter, and it should
+      return a floating-point value between 0 and that number.
+    - You can also now use a reference to an anonymous hash
+      as a parameter to the new() method to define any fields
+      in that bot instance:
+            $bot = new Chatbot::Eliza {
+                name       => "Brian",
+                scriptfile => "myscript.txt",
+                debug      => 1,
+            };
+
+0.91 1999-04-08
+    - Fixed some misspellings.
+    - Fixed a bug in the way individual bot objects store their memory.
+      Thanks to Randal Schwartz and to Robert Chin for pointing this out.
+    - Fixed a very stupid error in the way the random function is invoked.
+      Thanks to Antony Quintal for pointing out the error.
+    - Many corrections and improvements were made to the German script
+      by Matthias Hellmund.  Thanks, Matthias!
+    - Made a minor syntactical change, at the suggestion of Roy Stephan.
+    - The memory functionality can now be disabled by setting the
+      $Chatbot::Eliza::memory_on variable to 0, like so:
+                $bot->memory_on(0);
+      Thanks to Robert Chin for suggesting that.
+
+0.40 1998-07-25
+    - Re-implemented the memory functionality.
+    - Cleaned up and expanded the embedded POD documentation.
+    - Added a sample script in German.
+    - Modified the debugging behavior.  The transform() method itself
+      will no longer print any debugging output directly to STDOUT.
+      Instead, all debugging output is stored in a module variable
+      called "debug_text".  The "debug_text" variable is printed out
+      by the command_interface() method, if the debug flag is set.
+      But even if this flag is not set, the variable debug_text
+      is still available to any calling program.
+    - Added a few more example scripts which use the module.
+            simple       - simple script using Eliza.pm
+            simple.cgi   - simple CGI script using Eliza.pm
+            debug.cgi    - CGI script which displays debugging output
+            deutsch      - script using the German script
+            deutsch.cgi  - CGI script using the German script
+            twobots      - script which creates two distinct bots
+
+0.32 1997-12-13
+    - Fixed a bug in the way Eliza loads its default internal script data.
+      (Thanks to Randal Schwartz for pointing this out.)
+    - Removed the "memory" functions internal to Eliza.
+      When I get them working properly I will add them back in.
+    - Added one more example program.
+    - Fixed some minor errors in the embedded POD documentation.
+
+0.31 1997-12-06
+    - First release to CPAN
+
