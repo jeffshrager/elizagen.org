@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jeff Shrager&#x27;s Recollections on his BASIC ELIZA — ELIZAGEN</title>
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+<header>
+  <a class="sitename" href="../index.html">ELIZAGEN</a>
+  <span class="tagline">The Genealogy of ELIZA</span>
+  <nav>
+    <a href="../index.html">About</a>
+    <a href="../original-eliza.html">Original ELIZA</a>
+    <a href="../eliza-clones.html">ELIZA Clones</a>
+    <a href="../try-eliza.html">Try ELIZA</a>
+    <a href="../eliza-likes.html">ELIZA-likes</a>
+    <a href="../blog/index.html">Blog</a>
+    <a href="../news.html">News</a>
+    <a href="../resources.html">Resources</a>
+    <a href="../tertiary-clones.html">Tertiary Clones</a>
+  </nav>
+</header>
+<main>
+<section>
+
+<div class="block"><p>In early April of 2026 <a href="http://www.stefan-hoeltgen.de/">Dr. Dr. Stefan Höltgen, of The University of Bonn</a> (<a href="mailto:stefan.hoeltgen@uni-bonn.de">stefan.hoeltgen@uni-bonn.de</a>) asked Jeff Shrager for any recollections he had regarding the creation and publication of his <a href="../eliza-clones.html">BASIC ELIZA, which he wrote in 1973, and was published in Creative Computing in 1977</a>. Here is a slightly cleaned up (by Jeff) version of Shrager's response:</p><p>---</p><br><p>The original in 1973 was definitely developed on a time-sharing terminal -- an ASR-33 (with paper tape) connected to a time-sharing system via telephone modem coupler. This was at Haverford Junior High School near Philadelphia in 1973  (what we these days call a "middle school"). I clearly remember the room -- a converted closet -- that was our "computer room".  Given the year, this was likely either Tymeshare or RSTS service. (RSTS sounds vaguely familiar to me.)</p><br><p>That school was also where I was introduced to "real" computing. The school district's administrative computer, an IBM 1130, was, coincidentally, located in the basement of the junior high, and some students were allowed to use it when the administration was not using it. The reason that I mention the 1130 is that I wrote an ELIZA-like program for that machine (in Fortran, I think), called "logix" that did syllogisms, and which also took natural language input. For example, you would write, in plain English: "All men are mortal. Socrates is a man. What can you conclude about Socrates?" and that sort of thing, and it would do the syllogism and answer in complete sentences. It was not very sophisticated, but NLP and AI were in my head at that time. (2001 was my favorite movie -- still is! -- and I was completely blown away by HAL. That was definitely how I got interested in AI to begin with!)</p><br><p>Unfortunately, I don't know where I came across ELIZA at that time, but for reasons that I'll explain below, my guess is that the original was even simpler than the one that ended up being published. It is extremely unlikely that I saw the 1966 CACM paper (and I have no memory of having done so), so my guess is that all I had was the name and the concept, and that the "scripts" in the original BASIC version were even more simplistic than those that finally appeared in CC77.</p><br><p>When I went to High School (at Radnor township -- also near Philadelphia) we had two PDP-8s, as well as two modem-based time-sharing, as in Haverford Junior High, reached via ASR-33s. (Although I think that they were wired, not dial-in.) I was an avid user of both of these. Although I graduated in 1976, and I remember working on -- specifically improving the matching code -- it at Radnor, and that might have been either on the PDP-8s or the time sharing; I don't know which. (I'm guessing, again, that the ELIZA work remained on the time sharing BASIC, just because I don't have a memory of it on the PDP-8s, which had VT50 screens.)</p><br><p>I know that at about that time I got the idea of publishing my work, because I made two contributions to the DECUS library -- the DEC user's contributed code catalog. If you search for "shrager" in this document:</p><br><p>   <a href="https://bitsavers.org/pdf/dec/decus/programCatalogs/DECUS_PDP-8_Program_Library_Catalog_Jun79.pdf">https://bitsavers.org/pdf/dec/decus/programCatalogs/DECUS_PDP-8_Program_Library_Catalog_Jun79.pdf</a></p><br><p>you'll see these contributions. </p><br><p>Although this is a 1979 catalog, it's just the one that came to hand just now when I searched for it. By 1979 I was a junior at Penn, and these are PDP-8 codes that I developed in high school, so I'm sure that these would also appear in earlier version of the catalog, or anyway I submitted them way before 1979, but the point is that in high school the idea of publishing my programs came to my mind. This point is relevant because -- and here I am unfortunately guessing -- I think that in high school, when I got the idea to publish my programs, is when I improved my old middle school (1973) ELIZA, and sent it to Creative Computing which began publishing in 1974, and which was during my years in high school (recall that I graduated in 1976).</p><br><p>So one version of the history is that I took my old ELIZA code, improved the matcher slightly, found the 1966 paper with the script, and added many more script interactions from the paper, and then submitted it to CC. I've spoken to both Dave Ahl -- founder and publisher of CC -- and Steve North, who converted my code to MS BASIC and wrote the paper (it is under his by line, as you know), but they don't remember anything about how or when the submission arrived, and the records of CC are long gone.</p><br><p>Another even more plausible explanation for why my version's scripts are so similar to the CACM's (although, of course, greatly simplified), and that fits the time lines, is this: While I was in high school I took a course on Lisp at Penn. (My father was a doctor who worked at the university hospital, and he got me into courses as an auditor while I was still in high school.) This would have probably been in the summer of my junior year in high school, so 1974 or 1975 -- I'm not sure which. By that time, Bernie Cosell's Lisp ELIZA, and knockoffs of it, were quite common at Universities, and it's highly likely that, as a student of Lisp at Penn at that time, I would have been exposed to one of those Lisp ELIZA. (In fact, a couple of years ago a friend of mine from that time sent me the specific LISP ELIZA that I would likely have actually seen!) In fact, this path is more plausible than my having seen the 1966 paper, since I have no memory at all of having seen that ever (well, eventually, of course, but not back then).</p><p>[Anthony Hay, who was in this conversational loop, noted that Shrager's 1977 ELIZA script includes the keyword "FRIEND" which is in Bernie Cosell's Lisp ELIZA, but is <em>not</em> present in Weizenbaum's, lending weight to Shrager's second explanation.]</p></div>
+
+</section>
+</main>
+<footer>
+  <p>ELIZAGEN is curated by <a href="http://shrager.org">Jeff Shrager</a> (jshrager@gmail.com). We thank <a href="https://commerce.net/">CommerceNet</a> for their support.</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Code-Based ELIZA Phylogeny — ELIZAGEN</title>
+<link rel="stylesheet" href="../site/style.css">
+</head>
+<body>
+<header>
+  <a class="sitename" href="../index.html">ELIZAGEN</a>
+  <span class="tagline">The Genealogy of ELIZA</span>
+  <nav>
+    <a href="../index.html">About</a>
+    <a href="../original-eliza.html">Original ELIZA</a>
+    <a href="../eliza-clones.html">ELIZA Clones</a>
+    <a href="../try-eliza.html">Try ELIZA</a>
+    <a href="../eliza-likes.html">ELIZA-likes</a>
+    <a href="../blog/index.html">Blog</a>
+    <a href="../news.html">News</a>
+    <a href="../resources.html">Resources</a>
+    <a href="../tertiary-clones.html">Tertiary Clones</a>
+  </nav>
+</header>
+<main>
+<section>
+
+<div class="block"><p><strong>A Code-Based ELIZA Phylogeny</strong> </p><p><strong>Goals</strong>: The narrow goal of this project is to create a phylogeny -- perhaps specifically a phylogenetic tree -- of ELIZA programs, based (primarily) upon the source code, and perhaps some manually-constructed meta-data). A more general goal is to create a methodology for code genealogy that would enable one to drop a collection of sources and output something like a phylogenetic tree, or some other way of describing which code was based on which other code.  </p><p><strong>Data</strong>: One would have to first gather many versions of ELIZA. We know the three "original" versions: Weizenbaum's MAD-SLIP version, Cossell's Lisp version, and Shrager's BASIC version, but there are many -- probably hundreds! -- of others floating around and accessible either directly (e.g., github) or indirectly (e.g., old publications or the internet archive). The meta-data for these would have to be carefully curated. Another thing that might be useful to gather is crowd-sourced manual translations of parts of ELIZA code into other languages. </p><p><strong>Approach</strong>: Here is where we need to be a bit creative. There are standard methods of creating phylogenetic trees based upon either genome or protein sequences, or descriptions of organisms (e.g, Phylip, MrBayes). If we think of the code as analogous to the sequence, and the meta-data as analogous to the descriptions, a good first start might be to just run these through one of the standard methods. Another approach might be to learn how to measure the distance between parts of source codes (for example by asking programmers to compare them on a numerical "similarity" scale), and then apply these measures to the code, and use the distances to create the trees (as above). However, code has a well-defined semantics, and one could imagine a much more interesting (and difficult!) project of actually comparing the code bases at the semantic level, and then using this to create the phylogeny. The latter approach provides a much richer analysis of what was changed from one to the next version of ELIZA.</p></div>
+
+</section>
+</main>
+<footer>
+  <p>ELIZAGEN is curated by <a href="http://shrager.org">Jeff Shrager</a> (jshrager@gmail.com). We thank <a href="https://commerce.net/">CommerceNet</a> for their support.</p>
+</footer>
+</body>
+</html>

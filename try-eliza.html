@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Try ELIZA — ELIZAGEN</title>
+<link rel="stylesheet" href="site/style.css">
+</head>
+<body>
+<header>
+  <a class="sitename" href="index.html">ELIZAGEN</a>
+  <span class="tagline">The Genealogy of ELIZA</span>
+  <nav>
+    <a href="index.html">About</a>
+    <a href="original-eliza.html">Original ELIZA</a>
+    <a href="eliza-clones.html">ELIZA Clones</a>
+    <a href="try-eliza.html" class="current">Try ELIZA</a>
+    <a href="eliza-likes.html">ELIZA-likes</a>
+    <a href="blog/index.html">Blog</a>
+    <a href="news.html">News</a>
+    <a href="resources.html">Resources</a>
+    <a href="tertiary-clones.html">Tertiary Clones</a>
+  </nav>
+</header>
+<main>
+<section>
+
+<div class="block"><p>Here are a number of ways that you can run an ELIZA yourself:</p></div>
+
+</section>
+<section>
+
+<div class="block"><p>The simplest way to run an ELIZA that is essentially identical to the original, is to go here:</p><br><p>    <a href="https://anthay.github.io/eliza.html">https://anthay.github.io/eliza.html</a> </p><br><p>This was written in Javascript by Anthony Hay, who also wrote the most accurate C++ version(described below). Both versions closely follow Joseph Weizenbaum’s description in his <a href="https://dl.acm.org/doi/10.1145/365153.365168">January 1966 Communications of the ACM paper</a>, and are controlled by scripts that are identical to the one given in the appendix to that paper. Both versions exactly recreate the conversation in the 1966 paper. (In the js version, above, you can type: *cacm and it will run through the original conversation!)</p><br><p>The code for the above js version (linked above) is available here: <a href="https://github.com/anthay/ELIZA/blob/master/src/eliza.html">https://github.com/anthay/ELIZA/blob/master/src/eliza.html</a></p><br><p>By far the ELIZA most accurate reproduction of the original ELIZA is <a href="https://github.com/anthay/ELIZA">Anthony Hay's C++ implementation</a>.</p><p>You can run Anthony's C++ version of ELIZA yourself from the code, or by following these steps: </p><p>1. Go to <a href="https://raw.githubusercontent.com/anthay/ELIZA/master/src/eliza.cpp">https://raw.githubusercontent.com/anthay/ELIZA/master/src/eliza.cpp</a>, select all the text and copy to the clipboard.</p><br><p>2. Go to an online C++ repl* page, for example: <a href="https://www.online-cpp.com/">https://www.online-cpp.com/</a> or <a href="https://cpp.sh/">https://cpp.sh/</a> or <a href="https://replit.com/languages/cpp">https://replit.com/languages/cpp</a> (You have to create a free account on replit, but at this writing the others are open-access without having to register.) </p><br><p>3. Create a C++ repl and paste in the code that you copied above. (For some of the above-linked sites you're already in a C++ repl.)</p><br><p>4. Press the "Run" button and you'll be able to interact with ELIZA running the original DOCTOR script in the console window.</p><br><p>(* A "repl" -- pronounced a bit like "apple" -- is a "read eval print loop". It lets you run programs directly in a web-window.)</p></div>
+
+</section>
+<section>
+
+<div class="block"><p>We're working on a simulation of what is was like to use ELIZA in the mid 1960s, by embedding Antony Hay's ELIZA in an ASR33 simulator. So far the effort is pretty simplistic, but has basic sanity. Check it out here: <a href="https://rawcdn.githack.com/jeffshrager/elizagen.org/88764fba8d957f2a5a66d40f6530a41117a77522/ELIZA33/current/ELIZA33.html">[click here to execute the simulator in your browser (chrome works best)]</a></p><p>Here's the source code: <a href="ELIZA33/current/">https://github.com/jeffshrager/elizagen.org/tree/master/ELIZA33/current</a></p></div>
+
+</section>
+<section>
+
+<div class="block"><img src="site/images/9c4a113844.png" alt=""></div>
+
+</section>
+</main>
+<footer>
+  <p>ELIZAGEN is curated by <a href="http://shrager.org">Jeff Shrager</a> (jshrager@gmail.com). We thank <a href="https://commerce.net/">CommerceNet</a> for their support.</p>
+</footer>
+</body>
+</html>
