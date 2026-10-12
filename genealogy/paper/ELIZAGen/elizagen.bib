@@ -7,21 +7,24 @@
   publisher = {IEEE}
 }
 
-@inproceedings{kamiya2002ccfinder,
+@article{kamiya2002ccfinder,
   author    = {Kamiya, Toshihiro and Kusumoto, Shinji and Inoue, Katsuro},
-  title     = {CCFinder: A Multilinguistic Token-Based Code Clone Detection System for Large Scale Source Code},
-  booktitle = {IEEE Transactions on Software Engineering},
+  title     = {{CCFinder}: A Multilinguistic Token-Based Code Clone Detection System for Large Scale Source Code},
+  journal   = {IEEE Transactions on Software Engineering},
   volume    = {28},
   number    = {7},
   year      = {2002},
-  pages     = {654--670}
+  pages     = {654--670},
+  doi       = {10.1109/TSE.2002.1019480}
 }
 
-@article{roy2007clone,
-  author    = {Roy, Chanchal Kumar and Cordy, James},
-  title     = {A Survey on Software Clone Detection Research},
-  journal   = {Queen’s School of Computing Technical Report},
-  year      = {2007}
+@techreport{roy2007clone,
+  author      = {Roy, Chanchal Kumar and Cordy, James R.},
+  title       = {A Survey on Software Clone Detection Research},
+  institution = {School of Computing, Queen's University},
+  address     = {Kingston, Ontario},
+  number      = {2007-541},
+  year        = {2007}
 }
 @inproceedings{Godfrey2000,
   author = {Godfrey, Michael W. and Tu, Qiang},
@@ -33,46 +36,10 @@
   doi = {10.1109/ICSM.2000.883030}
 }
 
-@inproceedings{jalocha2011phylogenetic,
-  author    = {Jalocha, Piotr and O'Reilly, Una-May and Veeramachaneni, Kalyan},
-  title     = {A Phylogenetic Approach to Code Reuse Detection},
-  booktitle = {Proceedings of the 13th Annual Conference on Genetic and Evolutionary Computation},
-  year      = {2011},
-  pages     = {1851--1858}
-}
 
-@inproceedings{walenstein2007similarity,
-  author    = {Walenstein, Andrew and Mathur, Ajay and Chouchane, Rachid and Lakhotia, Arun},
-  title     = {The Design Space of Code Similarity Algorithms},
-  booktitle = {Proceedings of the 2nd ACM Workshop on Recurring Malcode},
-  year      = {2007},
-  pages     = {1--10}
-}
 
-@inproceedings{bailey2013malwarelineage,
-  author    = {Bailey, Michael and Dumitras, Tudor and et al.},
-  title     = {A System for Malware Lineage},
-  booktitle = {Proceedings of the IEEE Symposium on Security and Privacy},
-  year      = {2013},
-  pages     = {73--89}
-}
 
-@article{german2009studying,
-  author    = {German, Daniel M. and Hassan, Ahmed E.},
-  title     = {Studying Software Evolution Using CVS, Subversion, and Git},
-  journal   = {Empirical Software Engineering},
-  volume    = {14},
-  number    = {2},
-  pages     = {127--168},
-  year      = {2009}
-}
 
-@inproceedings{bird2006mining,
-  author    = {Bird, Christian and Zimmermann, Thomas and Nagappan, Nachiappan},
-  title     = {Mining Windows for Software Engineering Tools},
-  booktitle = {IEEE Software},
-  year      = {2006}
-}
 
 @book{marino2020critical,
   author    = {Marino, Mark C.},
@@ -107,7 +74,7 @@
 
 @inproceedings{wallace2009alice,
   author    = {Wallace, Richard S.},
-  title     = {The Anatomy of A.L.I.C.E.},
+  title     = {The Anatomy of {A.L.I.C.E.}},
   booktitle = {Parsing the Turing Test: Philosophical and Methodological Issues in the Quest for the Thinking Computer},
   editor    = {Epstein, Robert and Roberts, Gary and Beber, Grace},
   publisher = {Springer},
@@ -115,17 +82,71 @@
   pages     = {181--210}
 }
 
-@misc{ciston2019ladymouth,
+@article{ciston2019ladymouth,
   author    = {Ciston, Sarah},
-  title     = {LadyMouth: A Feminist Computational Intervention},
+  title     = {ladymouth: Anti-Social-Media Art as Research},
+  journal   = {Ada: A Journal of Gender, New Media, and Technology},
+  volume    = {15},
   year      = {2019},
-  howpublished = {Digital Art Project},
-  note      = {Available at: \url{https://sarahciston.com/ladymouth}}
+  doi       = {10.5399/uo/ada.2019.15.5}
 }
 
 @misc{cosell_personal_communication,
   author = {Cosell, Bernard},
-  title  = {Personal Communication regarding 1966 ELIZA reconstruction},
-  year   = {1966--2023},
-  note   = {Multiple conversations and email exchanges regarding the development of the first Lisp ELIZA implementation}
+  title  = {Personal Communication regarding the 1966 {BBN} {Lisp} {ELIZA}},
+  year   = {n.d.},
+  note   = {Email correspondence with the author; quoted at \url{https://elizagen.org/eliza-clones.html}}
+}
+
+@article{weizenbaum1966eliza,
+  author    = {Weizenbaum, Joseph},
+  title     = {{ELIZA}---A Computer Program for the Study of Natural Language Communication between Man and Machine},
+  journal   = {Communications of the ACM},
+  volume    = {9},
+  number    = {1},
+  pages     = {36--45},
+  year      = {1966},
+  doi       = {10.1145/365153.365168}
+}
+
+@inproceedings{walenstein2007software,
+  author    = {Walenstein, Andrew and Lakhotia, Arun},
+  title     = {The Software Similarity Problem in Malware Analysis},
+  booktitle = {Duplication, Redundancy, and Similarity in Software},
+  series    = {Dagstuhl Seminar Proceedings},
+  volume    = {06301},
+  publisher = {Internationales Begegnungs- und Forschungszentrum f{\"u}r Informatik (IBFI), Schloss Dagstuhl},
+  year      = {2007},
+  doi       = {10.4230/DagSemProc.06301.14}
+}
+
+@inproceedings{jang2013lineage,
+  author    = {Jang, Jiyong and Woo, Maverick and Brumley, David},
+  title     = {Towards Automatic Software Lineage Inference},
+  booktitle = {Proceedings of the 22nd USENIX Security Symposium},
+  pages     = {81--96},
+  publisher = {USENIX Association},
+  year      = {2013}
+}
+
+@article{german2016continuously,
+  author    = {German, Daniel M. and Adams, Bram and Hassan, Ahmed E.},
+  title     = {Continuously Mining Distributed Version Control Systems: An Empirical Study of How {Linux} Uses {Git}},
+  journal   = {Empirical Software Engineering},
+  volume    = {21},
+  number    = {1},
+  pages     = {260--299},
+  year      = {2016},
+  doi       = {10.1007/s10664-014-9356-2}
+}
+
+@article{nagappan2009mining,
+  author    = {Nagappan, Nachiappan and Zeller, Andreas and Zimmermann, Thomas},
+  title     = {Guest Editors' Introduction: Mining Software Archives},
+  journal   = {IEEE Software},
+  volume    = {26},
+  number    = {1},
+  pages     = {24--25},
+  year      = {2009},
+  doi       = {10.1109/MS.2009.14}
 }
