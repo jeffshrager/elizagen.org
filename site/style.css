@@ -72,3 +72,23 @@ pre { overflow-x: auto; }
 table { border-collapse: collapse; max-width: 100%; display: block; overflow-x: auto; }
 td, th { border: 1px solid var(--rule); padding: 4px 8px; vertical-align: top; }
 footer { border-top: 1px solid var(--rule); color: var(--muted); font-size: 0.9rem; text-align: center; padding: 16px; margin-top: 2em; }
+
+/* genealogy page */
+.lede { font-size: 1.15rem; }
+figure.wide { margin: 1em 0; text-align: center; }
+figure.wide img { display: block; margin: 0 auto; background: #fff; border: 1px solid var(--rule); }
+figure.wide figcaption { font-size: 0.9rem; color: var(--muted); margin-top: 6px; text-align: left; }
+dl.features dt { font-weight: 700; margin-top: 0.6em; }
+dl.features dd { margin: 0.1em 0 0 1.5em; }
+.matrix-wrap { overflow-x: auto; margin: 1em 0; }
+table.matrix { display: table; font-size: 0.85rem; border-collapse: collapse; }
+table.matrix th, table.matrix td { border: 1px solid var(--rule); padding: 2px 6px; }
+table.matrix thead th { vertical-align: bottom; height: 11em; padding: 4px 2px; }
+table.matrix thead th span { writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; font-weight: 600; }
+table.matrix thead th:first-child { vertical-align: bottom; text-align: left; }
+table.matrix tbody th { text-align: left; font-weight: normal; white-space: nowrap; }
+table.matrix .eid { color: var(--muted); font-variant-numeric: tabular-nums; }
+table.matrix td { text-align: center; width: 1.8em; }
+table.matrix td.yes { background: rgba(19,79,92,0.18); color: var(--accent); font-weight: 700; }
+table.matrix td.unk { color: var(--muted); }
+table.matrix tbody tr:hover { background: rgba(127,127,127,0.08); }
