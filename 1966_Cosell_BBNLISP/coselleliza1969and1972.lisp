@@ -34,7 +34,7 @@
 ;;; Thomas Russ, Patrick Stein, and Jeff Shrager. Made to work in
 ;;; modern CL by Peter De Wachter, Matt Niemeir, and Jeff Shrager.
 
-;;; For more information, please contact Jeff Shrager (jshrager@stanford.edu)
+;;; For more information, please contact Jeff Shrager (jshrager@gmail.com)
 
 ;;; LICENSE:
 
